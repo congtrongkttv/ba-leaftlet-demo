@@ -1,0 +1,76 @@
+<div class="panelContainer">
+  <div class="panelContainer-search">
+    <input
+      class="control-text"
+      type="text"
+      placeholder="Nhập BKS"
+      [(ngModel)]="currentTextSearch"
+      (blur)="onSearch()"
+    />
+  </div>
+  <div class="panelContainer-config">
+    <input
+      type="checkbox"
+      [ngModel]="IsUseCluster"
+      id="cbx_useCluster"
+      (change)="onChangeUseCluster($event)"
+    />
+    <label for="cbx_useCluster"> Cluster</label>
+  </div>
+  <div class="panelContainer-button"></div>
+  <div class="panelContainer-data">
+    <table class="control-table">
+      <thead>
+        <tr>
+          <th></th>
+          <th>BKS</th>
+          <th>Vận tốc</th>
+        </tr>
+      </thead>
+      <tbody *ngIf="IsOnlinePage">
+        <ag-virtual-scroll
+          #vs
+          [items]="ListVehicleOnlinesTemp"
+          height="350px"
+          width="100%"
+          min-row-height="50"
+          class="box-border"
+        >
+          <tr
+            *ngFor="let v of vs.items"
+            (click)="selectVehicle(v.VehicleID)"
+            [ngClass]="{
+              'control-table-tr-active':
+                CurrentVehicleIDSelected === v.VehicleID
+            }"
+            [id]="v.VehicleID"
+          >
+            <td><img src="assets/icons/Blue0.png" height="20" width="20" /></td>
+            <td>{{ v.VehiclePlate }}</td>
+            <td>{{ v.Speed }}</td>
+          </tr>
+        </ag-virtual-scroll>
+      </tbody>
+      <tbody *ngIf="!IsOnlinePage">
+        <tr
+          *ngFor="let v of ListVehiclesTemp"
+          (click)="selectVehicle(v.VehicleId)"
+          [ngClass]="{
+            'control-table-tr-active': CurrentVehicleIDSelected === v.VehicleId
+          }"
+          [id]="v.VehicleId"
+        >
+          <td><img src="assets/icons/Blue0.png" height="20" width="20" /></td>
+          <td>{{ v.VehiclePlate }}</td>
+          <td>{{ v.Velocity }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="panelContainer-status">
+    <label>Tổng số xe: </label>
+    <label class="panelContainer-status-item">{{
+      IsOnlinePage ? ListVehicleOnlinesTemp.length : ListVehiclesTemp.length
+    }}</label>
+  </div>
+</div>

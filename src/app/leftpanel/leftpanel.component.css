@@ -1,0 +1,96 @@
+.panelContainer {
+  margin-top: 60px;
+  position: absolute;
+  background-color: white;
+  top: 10px;
+  left: 10px;
+  z-index: 10000;
+  border-radius: 5px;
+  border: 1px solid gray;
+  width: 250px;
+  padding-top: 20px;
+}
+.panelContainer-search {
+  width: 100%;
+  text-align: center;
+}
+.control-text {
+  height: 20px;
+  font-size: 11px;
+  padding-left: 10px;
+  width: 90%;
+}
+.panelContainer-button {
+  width: 100%;
+  text-align: center;
+}
+.panelContainer-config {
+  margin-top: 15px;
+  margin-bottom: 10px;
+}
+.panelContainer-data {
+  margin-top: 10px;
+  margin-bottom: 20px;
+  width: 100%;
+  text-align: center;
+  max-height: 60vh;
+  overflow-y: scroll;
+}
+.control-table {
+  width: 95%;
+  border-collapse: collapse;
+  margin: auto;
+  position: relative;
+}
+.control-table tr {
+  cursor: pointer;
+}
+.control-table tr:hover {
+  background-color: #1976d2;
+  color: white;
+}
+.control-table-tr-active {
+  background-color: #1976d2;
+  color: white;
+}
+.control-table-tr-none-active {
+  background-color: white;
+  color: black;
+}
+
+.control-table td,
+th {
+  border: 1px solid lightgray;
+}
+
+.panelContainer-data::-webkit-scrollbar {
+  width: 0.5em;
+  display: block;
+}
+
+.panelContainer-data::-webkit-scrollbar-track {
+  border-radius: 3px;
+  border: 0.2px solid lightgray;
+}
+
+.panelContainer-data::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background-color: lightgray;
+}
+
+.panelContainer-status {
+  width: 95%;
+  margin: auto;
+  text-align: right;
+  font-weight: 700;
+  padding: 10px 10px 10px 3px;
+  margin-bottom: 5px;
+}
+.panelContainer-status-item {
+  background-color: orangered;
+  color: white;
+  padding: 5px;
+  height: 40px;
+  width: 40px;
+  border-radius: 20px;
+}

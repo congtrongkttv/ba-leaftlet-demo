@@ -1,0 +1,113 @@
+<div id="map">
+  <div
+    class="divBtn"
+    *ngIf="IsShowMenuContext"
+    [ngStyle]="{ 'left.px': MenuContext.X, 'top.px': MenuContext.Y }"
+  >
+    <input
+      type="button"
+      class="btn"
+      value="AddMarker"
+      (click)="addMarkerEvent()"
+      *ngIf="false"
+    />
+    <div class="hr" *ngIf="false"></div>
+    <input
+      type="button"
+      class="btn"
+      value="UpdateMarker"
+      (click)="updateMarkerEvent()"
+      *ngIf="false"
+    />
+    <div class="hr" *ngIf="false"></div>
+    <input
+      type="button"
+      class="btn"
+      value="RemoveMarker"
+      (click)="removeMarkerEvent()"
+      *ngIf="false"
+    />
+    <div class="hr" *ngIf="false"></div>
+    <input
+      type="button"
+      class="btn"
+      value="AddPolyline"
+      (click)="addPolylineEvent()"
+    />
+    <div class="hr"></div>
+    <input
+      type="button"
+      class="btn"
+      value="RemovePolyline"
+      (click)="removePolylineEvent()"
+    />
+    <div class="hr"></div>
+    <input
+      type="button"
+      class="btn"
+      value="Add polygon"
+      (click)="addPolygonEvent()"
+    />
+    <div class="hr"></div>
+    <input
+      type="button"
+      class="btn"
+      value="remove polygon"
+      (click)="removePolygonEvent()"
+    />
+    <div class="hr"></div>
+    <input
+      type="button"
+      class="btn"
+      value="Add multi marker"
+      (click)="add1000Marker()"
+    />
+    <div class="hr"></div>
+    <input
+      type="button"
+      class="btn"
+      value="remove multi marker"
+      (click)="removemultiMarkerEvent()"
+    />
+    <div class="hr"></div>
+    <input
+      type="button"
+      class="btn"
+      value="update multi marker"
+      (click)="updateMultiMarkerEvent()"
+    />
+    <div class="hr"></div>
+    <input
+      type="button"
+      class="btn"
+      value="Add Circle"
+      (click)="AddCircle()"
+      *ngIf="true"
+    />
+    <div class="hr" *ngIf="true"></div>
+    <input
+      type="button"
+      class="btn"
+      value="Draw Circle"
+      (click)="DrawCicles()"
+    />
+    <div class="hr"></div>
+    <input
+      type="button"
+      class="btn"
+      value="Draw polygon"
+      (click)="DrawPolygon()"
+    />
+    <div class="hr"></div>
+    <input
+      type="button"
+      class="btn"
+      value="Draw polyline"
+      (click)="DrawPolyline()"
+    />
+  </div>
+</div>
+<app-leftpanel
+  (onSelectVehicle)="onSelectVehicle($event)"
+  [IsOnlinePage]="true"
+></app-leftpanel>

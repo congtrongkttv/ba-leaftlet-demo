@@ -1,0 +1,124 @@
+#body {
+  margin-top: 60px;
+}
+
+#map {
+  height: 90vh;
+  width: 100%;
+  margin-top: 60px;
+}
+.divBtn {
+  position: relative;
+  max-width: 200px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+  padding: 4px;
+  border: 1px solid black;
+}
+.btn {
+  border: none;
+  background-color: transparent;
+  padding: 10px;
+  border-radius: 3px;
+  color: black;
+  cursor: pointer;
+  margin-bottom: 3px;
+  text-align: left;
+}
+.tbl-popup-marker tr td {
+  padding: 3px 8px 3px 8px;
+}
+
+.drawTooltip {
+  background-color: antiquewhite;
+  padding: 3px 10px;
+}
+
+.hr {
+  background-color: lightgray;
+  height: 1px;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* required styles */
+::ng-deep .cluster-group {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid white;
+  left: -20px;
+  top: -20px;
+  position: relative;
+  text-align: center;
+  line-height: 20px;
+  color: black;
+  font-weight: 700;
+  font-size: 12px;
+  background-color: rgba(26, 236, 19, 0.8);
+}
+
+::ng-deep .cluster-group-large {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid white;
+  left: -20px;
+  top: -20px;
+  position: relative;
+  text-align: center;
+  line-height: 20px;
+  color: black;
+  font-weight: 700;
+  font-size: 12px;
+  background-color: rgba(232, 236, 19, 0.8);
+}
+::ng-deep .cluster-group-super-large {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid white;
+  left: -20px;
+  top: -20px;
+  position: relative;
+  text-align: center;
+  line-height: 20px;
+  color: white;
+  font-weight: 700;
+  font-size: 12px;
+  background-color: rgba(236, 19, 19, 0.8);
+}
+::ng-deep .cluster-group-span {
+  position: absolute;
+  top: 10px;
+  left: 40%;
+}
+
+::ng-deep .cluster-group-large-span {
+  position: absolute;
+  top: 10px;
+  left: 33%;
+}
+::ng-deep .cluster-group-superlarge-span {
+  position: absolute;
+  top: 10px;
+  left: 25%;
+}
+
+::ng-deep .cluster-group-ssuperlarge-span {
+  position: absolute;
+  top: 10px;
+  left: 18%;
+}
+::ng-deep .leaflet-editing-icon {
+  border-radius: 15px;
+  height: 10px !important;
+  width: 10px !important;
+  background-color: rgba(255, 255, 255, 0.89) !important;
+  position: absolute !important;
+  left: 3px !important;
+  top: 3px !important;
+}
