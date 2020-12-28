@@ -29,6 +29,7 @@ export class TrackingComponent
   ngOnInit(): void {}
   ngAfterViewInit(): void {
     this.initMap('map', {});
+    this.addCustomControl({position: 'topright', backgroundColor: 'white', backgroundImage: 'https://upload.wikimedia.org/wikipedia/commons/7/73/Flat_tick_icon.svg', size: {h: 30, w: 30}}, this.OnClickCustomControl);
     this.map.addEventListener('zoomend', () => {
       // Nếu sử dụng cluster
       // Nếu xe đang theo dõi không mở popup thì không cho vào cluster và ngược lại
@@ -51,6 +52,11 @@ export class TrackingComponent
     this.MarkerGroup = L.featureGroup();
     this.getListVehicle();
   }
+
+  OnClickCustomControl(): void{
+    console.log('click custom control');
+  }
+
   OnRefresh(): void {
     this.getListVehicle();
   }

@@ -47,26 +47,31 @@ export class Mapbase {
   };
   private lstLayersDefault: L.TileLayer[];
 
-  public customControl = L.Control.extend({
-    options: {
-      position: 'topright',
-    },
 
-    onAdd(map): HTMLElement {
-      const container = L.DomUtil.create(
-        'div',
-        'leaflet-bar leaflet-control leaflet-control-custom'
-      );
-      container.style.backgroundColor = 'white';
-      container.style.backgroundImage =
-        'url(https://t1.gstatic.com/images?q=tbn:ANd9GcR6FCUMW5bPn8C4PbKak2BJQQsmC-K9-mbYBeFZm1ZM2w2GRy40Ew)';
-      container.style.backgroundSize = '30px 30px';
-      container.style.width = '30px';
-      container.style.height = '30px';
-      container.onclick = function () {};
-      return container;
-    },
-  });
+  public addCustomControl(optionsCustom: {position: string, backgroundColor: string, backgroundImage: string, size: {h: number, w: number} }, callbackfn: any): any{
+    const customControl = L.Control.extend({
+      options: {
+        position: optionsCustom.position,
+      },
+
+      onAdd(): HTMLElement {
+        const container = L.DomUtil.create(
+          'div',
+          'leaflet-bar leaflet-control leaflet-control-custom'
+        );
+        container.style.backgroundColor =  optionsCustom.backgroundColor;
+        container.style.backgroundImage = optionsCustom.backgroundImage;
+        container.style.backgroundSize =  optionsCustom.size.h.toString() + 'px ' + optionsCustom.size.w.toString() + 'px';
+        container.style.width = optionsCustom.size.w.toString() + 'px';
+        container.style.height = optionsCustom.size.h.toString() + 'px';
+        container.onclick = function () {
+          callbackfn();
+        };
+        return container;
+      },
+    });
+    this.map.addControl(new customControl)
+  }
 
   private async getBaseLayers() {
     const urlGoogleRoad =
@@ -132,7 +137,6 @@ export class Mapbase {
       this.getBaseLayers().then((baseLayers) => {
         // control chọn bản đổ
         this.map.addControl(L.control.layers(baseLayers));
-        // this.map.addControl(new this.customControl());
         // control phóng to thu nhỏ
         this.map.addControl(L.control.zoom({ position: 'topright' }));
         this.map.addControl(L.control.scale({ position: 'bottomleft' }));
@@ -407,7 +411,7 @@ export class Mapbase {
     this.map.setView(latlng, zoomLevel);
   }
 
-  DrawDoneAction(event: L.LeafletDrawEvent): void {}
+  DrawDoneAction(event: any): void {}
 }
 
 export enum DrawTypes {
