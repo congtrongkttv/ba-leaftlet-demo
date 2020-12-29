@@ -47,8 +47,16 @@ export class Mapbase {
   };
   private lstLayersDefault: L.TileLayer[];
 
-
-  public addCustomControl(optionsCustom: {position: string, backgroundColor: string, backgroundImage: string, size: {h: number, w: number} }, callbackfn: any): any{
+  // tslint:disable-next-line: max-line-length
+  public addCustomControl(
+    optionsCustom: {
+      position: string;
+      backgroundColor: string;
+      backgroundImage: string;
+      size: { h: number; w: number };
+    },
+    callbackfn: any
+  ): any {
     const customControl = L.Control.extend({
       options: {
         position: optionsCustom.position,
@@ -59,18 +67,23 @@ export class Mapbase {
           'div',
           'leaflet-bar leaflet-control leaflet-control-custom'
         );
-        container.style.backgroundColor =  optionsCustom.backgroundColor;
+        container.style.backgroundColor = optionsCustom.backgroundColor;
         container.style.backgroundImage = optionsCustom.backgroundImage;
-        container.style.backgroundSize =  optionsCustom.size.h.toString() + 'px ' + optionsCustom.size.w.toString() + 'px';
+        container.style.backgroundSize =
+          optionsCustom.size.h.toString() +
+          'px ' +
+          optionsCustom.size.w.toString() +
+          'px';
         container.style.width = optionsCustom.size.w.toString() + 'px';
         container.style.height = optionsCustom.size.h.toString() + 'px';
+        // tslint:disable-next-line: only-arrow-functions
         container.onclick = function () {
           callbackfn();
         };
         return container;
       },
     });
-    this.map.addControl(new customControl)
+    this.map.addControl(new customControl());
   }
 
   private async getBaseLayers() {

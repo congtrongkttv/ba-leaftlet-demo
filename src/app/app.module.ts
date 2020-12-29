@@ -8,7 +8,10 @@ import { OnlineComponent } from './online/online.component';
 import { TrackingComponent } from './tracking/tracking.component';
 import { LeftpanelComponent } from './leftpanel/leftpanel.component';
 import { HttpClientModule } from '@angular/common/http';
-import { AgVirtualScrollModule } from 'ag-virtual-scroll';
+import { VirtualScrollerModule } from 'ngx-virtual-scroller';
+import { AutocompleteLibModule } from 'angular-ng-autocomplete';
+import { SelectDropDownModule } from 'ngx-select-dropdown';
+import { DatetimePipe } from './pipe/datetime.pipe';
 
 @NgModule({
   declarations: [
@@ -16,6 +19,7 @@ import { AgVirtualScrollModule } from 'ag-virtual-scroll';
     OnlineComponent,
     TrackingComponent,
     LeftpanelComponent,
+    DatetimePipe,
   ],
   imports: [
     BrowserModule,
@@ -23,7 +27,9 @@ import { AgVirtualScrollModule } from 'ag-virtual-scroll';
     LeafletModule,
     FormsModule,
     HttpClientModule,
-    AgVirtualScrollModule,
+    VirtualScrollerModule,
+    AutocompleteLibModule,
+    SelectDropDownModule,
   ],
   providers: [],
   bootstrap: [AppComponent],

@@ -1,0 +1,219 @@
+.panelContainer {
+  margin-top: 60px;
+  position: absolute;
+  background-color: white;
+  top: 5px;
+  left: 5px;
+  z-index: 10000;
+  border-radius: 5px;
+  border: 1px solid gray;
+  width: 300px;
+  padding-top: 20px;
+}
+.panelContainer-search {
+  width: 100%;
+  text-align: center;
+  display: inline-flex;
+  .panelContainer-search-icon {
+    width: 40px;
+    height: 35px;
+    padding-top: 0.25rem;
+    border-radius: 4px 0 0 4px;
+    border: 1px solid lightgray;
+    margin-left: 10px;
+  }
+  .panelContainer-search-input {
+    width: 230px;
+    height: 35px;
+    border-radius: 0 4px 4px 0;
+    border: 1px solid lightgray;
+
+    ::ng-deep .autocomplete-container {
+      box-shadow: none;
+      position: relative;
+      overflow: visible;
+      height: 40px;
+      ::-webkit-scrollbar {
+        width: 0.5em;
+        display: block;
+      }
+
+      ::-webkit-scrollbar-track {
+        border-radius: 3px;
+        border: 0.2px solid lightgray;
+      }
+      ::-webkit-scrollbar-thumb {
+        border-radius: 10px;
+        background-color: lightgray;
+      }
+
+      .input-container input {
+        border-radius: 0 6px 6px 0;
+        width: 100%;
+        border: none;
+        height: 35px;
+        background-color: transparent;
+        background: none;
+        font-size: 13px;
+        padding: 3px 15px;
+      }
+      .suggestions-container ul li a {
+        padding: 3px 10px;
+        text-align: left;
+        display: block;
+        text-decoration: none;
+        cursor: pointer;
+        color: rgba(0, 0, 0, 0.87);
+        font-size: 15px;
+        border-bottom: 1px solid lightgray;
+        font-size: 13px;
+      }
+      .suggestions-container ul li div {
+        border: 0px 1px lightgray;
+      }
+      .suggestions-container ul li div:hover {
+        background-color: lightblue;
+        font-weight: 600;
+      }
+      .input-container .x {
+        position: absolute;
+        right: 10px;
+        margin: auto;
+        cursor: pointer;
+        top: 35%;
+        -webkit-transform: translateY(-50%);
+        transform: translateY(-50%);
+        .material-icons {
+          font-size: 16px;
+        }
+      }
+    }
+  }
+}
+
+.control-text {
+  height: 20px;
+  font-size: 11px;
+  padding-left: 10px;
+  width: 90%;
+}
+.panelContainer-button {
+  width: 100%;
+  text-align: center;
+}
+.panelContainer-config {
+  margin-top: 5px;
+  margin-bottom: 5px;
+  width: 100%;
+
+  .select-dropdown {
+    padding-left: 10px;
+    width: 270px;
+    margin-left: 10px;
+    height: 35px;
+    background-color: white;
+    border: 1px solid lightgray;
+    border-radius: 4px;
+    font-size: 13px !important;
+  }
+  .select-dropdown option {
+    height: 25px;
+  }
+}
+.panelContainer-data {
+  margin-top: 10px;
+  margin-bottom: 20px;
+  width: 100%;
+  text-align: center;
+  height: 100%;
+}
+virtual-scroller {
+  width: 300px;
+  height: 480px;
+}
+.control-table {
+  width: 95%;
+  border-collapse: collapse;
+  margin: auto;
+  font-size: 13px;
+  border: 1px solid lightgray;
+  .control-table-col2 {
+    text-align: left;
+  }
+}
+.control-table tr {
+  cursor: pointer;
+  border: 1px solid lightgray;
+  height: 22px;
+}
+.control-table tbody tr:hover {
+  background-color: lightgray;
+  color: white;
+}
+.control-table-tr-active {
+  background-color: #1976d2;
+  color: white;
+}
+.control-table-tr-none-active {
+  background-color: white;
+  color: black;
+}
+
+.control-table td {
+  white-space: normal;
+}
+
+.control-table th {
+  font-size: 12px;
+  height: 30px;
+  color: #1976d2;
+}
+
+.control-table thead tr {
+  background-color: white;
+  border-top: 2px solid lightgray;
+  border-left: 0.15rem solid lightgray;
+}
+
+virtual-scroller::-webkit-scrollbar {
+  width: 0.5em;
+  display: block;
+}
+
+virtual-scroller::-webkit-scrollbar-track {
+  border-radius: 3px;
+  border: 0.2px solid lightgray;
+}
+virtual-scroller::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background-color: lightgray;
+}
+
+.panelContainer-status {
+  width: 95%;
+  margin: auto;
+  text-align: right;
+  font-weight: 700;
+  padding: 10px 10px 10px 3px;
+  margin-bottom: 5px;
+}
+.panelContainer-status-item {
+  background-color: orangered;
+  color: white;
+  padding: 5px;
+  height: 40px;
+  width: 40px;
+  border-radius: 20px;
+}
+
+.suggestions-container ul {
+  text-align: left !important ;
+  .item {
+    height: 25px !important;
+  }
+}
+::ng-deep b,
+strong {
+  color: #1976d2 !important;
+  font-size: 12px;
+}

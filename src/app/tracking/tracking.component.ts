@@ -29,7 +29,6 @@ export class TrackingComponent
   ngOnInit(): void {}
   ngAfterViewInit(): void {
     this.initMap('map', {});
-    this.addCustomControl({position: 'topright', backgroundColor: 'white', backgroundImage: 'https://upload.wikimedia.org/wikipedia/commons/7/73/Flat_tick_icon.svg', size: {h: 30, w: 30}}, this.OnClickCustomControl);
     this.map.addEventListener('zoomend', () => {
       // Nếu sử dụng cluster
       // Nếu xe đang theo dõi không mở popup thì không cho vào cluster và ngược lại
@@ -53,12 +52,41 @@ export class TrackingComponent
     this.getListVehicle();
   }
 
-  OnClickCustomControl(): void{
+  OnClickCustomControl(): void {
     console.log('click custom control');
   }
 
   OnRefresh(): void {
     this.getListVehicle();
+  }
+
+  OnChangeVehicleState(vehicleStateID): void {
+    switch (vehicleStateID) {
+      case '0':
+        this.leftPanel.ListVehiclesTemp = this.leftPanel.listVehicles;
+        break;
+      case '1':
+        this.leftPanel.ListVehiclesTemp = this.leftPanel.listVehicles.filter(
+          (x) => x.Velocity < 5
+        );
+        break;
+      case '2':
+        this.leftPanel.ListVehiclesTemp = this.leftPanel.listVehicles.filter(
+          (x) => x.Velocity >= 5 && x.Velocity < 60
+        );
+        break;
+      case '3':
+        this.leftPanel.ListVehiclesTemp = this.leftPanel.listVehicles.filter(
+          (x) => x.Velocity >= 60
+        );
+        break;
+      case '4':
+        this.leftPanel.ListVehiclesTemp = this.leftPanel.listVehicles.filter(
+          (x) => new Date(x.GPSTime) < new Date()
+        );
+        break;
+    }
+    this.reDrawMarker(this.leftPanel.ListVehiclesTemp);
   }
   initVehicle(vehicles: any): void {
     const that = this;
@@ -121,24 +149,7 @@ export class TrackingComponent
       (x) => x.id === vehicle.vehicleID
     )[0];
     if (currentMarker !== undefined && currentMarker != null) {
-      this.PreviosMarker = this.CurrentMarker;
       this.CurrentMarker = currentMarker;
-      // Marker làm việc trước đó trước khi chuyển sang marker mới
-      // Nếu marker trước đó khác undefined và không có trong cluster thì cho vào cluster
-      if (
-        this.PreviosMarker !== undefined &&
-        !this.markersCluster.hasLayer(this.PreviosMarker)
-      ) {
-        this.markersCluster.addLayer(this.PreviosMarker);
-        this.map.removeLayer(this.PreviosMarker);
-      }
-      // Marker đang làm việc hiện tại
-      // Nếu có trong cluster thì cho ra để theo dõi
-      if (this.markersCluster.hasLayer(this.CurrentMarker)) {
-        this.markersCluster.removeLayer(this.CurrentMarker);
-        this.map.addLayer(this.CurrentMarker);
-      }
-
       // Nội dung content khi click vào marker
       let contenPopup = this.createPopup(vehicle);
 
@@ -146,10 +157,79 @@ export class TrackingComponent
       this.CurrentMarker.bindPopup(contenPopup);
       this.CurrentMarker.openPopup();
       const latlng = this.CurrentMarker.getLatLng();
-      this.panTo(latlng, 18);
+      this.panTo(latlng, this.map.getZoom());
+      const indexRow = this.leftPanel.ListVehiclesTemp.findIndex(
+        (x) => x.VehicleId === vehicle.vehicleID
+      );
+      const virtualHeight = this.leftPanel.virtualScroller.childHeight;
 
-      const el = document.getElementById(vehicle.vehicleID.toString());
-      el.scrollIntoView();
+      let position = indexRow * virtualHeight - 10;
+      if (indexRow > this.leftPanel.ListVehiclesTemp.length - 19) {
+        position += 300;
+        this.leftPanel.virtualScroller.scrollToPosition(position);
+      }
+      if (
+        indexRow > 19 &&
+        indexRow < this.leftPanel.ListVehiclesTemp.length - 19
+      ) {
+        this.leftPanel.virtualScroller.scrollToPosition(position);
+      }
+    }
+  }
+
+  reDrawMarker(data: Vehicle[]): void {
+    // Xóa marker khỏi bamnr đồ và cluster
+    this.ListMarker.forEach((element) => {
+      this.map.removeLayer(element);
+      if (this.markersCluster.hasLayer(element)) {
+        this.markersCluster.removeLayer(element);
+      }
+    });
+    this.ListMarker = [];
+    // Vẽ lại marker trên bản đồ
+    for (const vehicle of data) {
+      const vehiclesEntity = new VehicleEntity();
+      vehiclesEntity.VehicleID = vehicle.VehicleId;
+      vehiclesEntity.VehiclePlate = vehicle.VehiclePlate;
+      vehiclesEntity.Latitude = vehicle.Latitude;
+      vehiclesEntity.Longitude = vehicle.Longitude;
+      vehiclesEntity.IconPath = 'assets/icons/Blue0.png';
+      // Nội dung content khi click vào marker
+      let contenPopup =
+        '<table class="tbl-popup-marker"><tr><td>BKS</td><td>' +
+        vehicle.VehiclePlate +
+        '</td></tr>';
+      contenPopup +=
+        '<tr><td>Thời gian online</td><td>' +
+        vehicle.VehicleTime +
+        '</td></tr>';
+      contenPopup +=
+        '<tr><td>Tốc độ</td><td>' + vehicle.Velocity + ' km/h</td></tr>';
+      contenPopup +=
+        '<tr><td>Trạng thái</td><td>' + vehicle.State + '</td></tr>';
+      contenPopup += '</table>';
+      const marker = this.createMarker(
+        vehiclesEntity,
+        contenPopup,
+        false,
+        true
+      );
+      marker.id = vehicle.VehicleId;
+      marker.addEventListener('click', () => {
+        this.onSelectVehicle(vehicle.VehicleId);
+        this.leftPanel.CurrentVehicleIDSelected = vehicle.VehicleId;
+      });
+      if (this.leftPanel.IsUseCluster) {
+        this.markersCluster.addLayer(marker);
+      } else {
+        this.map.addLayer(marker);
+      }
+      this.ListMarker.push(marker);
+    }
+    if (this.leftPanel.IsUseCluster) {
+      this.map.addLayer(this.markersCluster);
+    } else {
+      this.map.removeLayer(this.markersCluster);
     }
   }
 
