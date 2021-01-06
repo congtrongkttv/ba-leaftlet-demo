@@ -3,23 +3,61 @@
   height: 91vh;
   width: 100%;
 }
-::ng-deep .row-detail-header {
-  font-weight: 700;
-  text-align: center;
+
+::ng-deep .divPopupVehicle {
+  min-width: 390px;
+  border: 1px solid black;
+  border-radius: 10px;
+  .tbl-popup-marker {
+    font-size: 12px;
+    width: 100%;
+    .tbl-popup-marker tr {
+      line-height: 25px;
+    }
+    .tbl-popup-marker td,
+    th {
+      padding: 0px;
+    }
+    .row-detail-header {
+      font-weight: 700;
+      font-size: 15px;
+      color: orangered;
+      text-align: center;
+    }
+
+    .row-detail-body-col1 {
+      padding: 3px 10px;
+      font-weight: bold;
+      width: 120px;
+    }
+
+    .row-detail-body-col2 {
+      padding: 3px 10px;
+    }
+
+    .row-detail-body-plate {
+      font-weight: 600;
+    }
+    hr {
+      margin-top: 2px;
+      margin-bottom: 2px;
+    }
+  }
+}
+::ng-deep .leaflet-popup-content-wrapper {
+  width: 400px;
+}
+::ng-deep .leaflet-popup-content {
+  margin: 5px;
 }
 
-::ng-deep .row-detail-body-col1 {
-  padding: 3px 10px;
+::ng-deep .leaflet-popup-close-button {
+  background-color: orangered !important;
+  padding: 3px 0 !important;
+  height: 20px !important;
+  width: 20px !important;
+  border-radius: 10px;
 }
-
-::ng-deep .row-detail-body-col2 {
-  padding: 3px 10px;
-}
-
-::ng-deep .row-detail-body-plate {
-  font-weight: 600;
-}
-
 /* required styles */
 ::ng-deep .cluster-group {
   width: 40px;

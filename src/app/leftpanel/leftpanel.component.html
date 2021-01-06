@@ -10,19 +10,19 @@
     </div>
     <div class="panelContainer-search-input">
       <ng-autocomplete
-        #au
-        searchKeyword="VehiclePlate"
-        [data]="ListVehiclesTemp"
+        #autocompleteVehicle
+        searchKeyword="vehiclePlate"
         [itemTemplate]="itemTemplate"
         [notFoundTemplate]="notFoundTemplate"
         [(ngModel)]="CurrentSelectedVehicle"
         placeholder="Nhập biển kiểm soát"
         (selected)="selectVehicle($event)"
+        [minQueryLength]="1"
       >
       </ng-autocomplete>
 
       <ng-template #itemTemplate let-item>
-        <a [innerHTML]="item.VehiclePlate"></a>
+        <a [innerHTML]="item.vehiclePlate"></a>
       </ng-template>
 
       <ng-template #notFoundTemplate let-notFound>
@@ -36,6 +36,7 @@
       id="ddlVehicleState"
       class="select-dropdown"
       (change)="selectVehicleState(vhState.value)"
+      [(ngModel)]="CurrentVehicleState4Search"
     >
       <option value="0" selected>Tất cả</option>
       <option value="1">Xe dừng đỗ</option>
@@ -46,49 +47,91 @@
   </div>
   <div class="panelContainer-button"></div>
   <div class="panelContainer-data">
-    <virtual-scroller
-      #vs
-      [items]="ListVehiclesTemp"
-      [childHeight]="10"
-      [scrollAnimationTime]="0"
-    >
+    <virtual-scroller #vs [items]="ListVehiclesTemp" [scrollAnimationTime]="0">
       <table class="control-table">
         <thead #header>
           <tr>
             <th style="width: 20px"></th>
             <th class="control-table-col2" style="width: 100px">Biển số</th>
-            <th style="width: 50px">Thời gian</th>
-            <th style="width: 50px">V(gps)</th>
+            <th style="width: 60px">Thời gian</th>
+            <th style="width: 50px">V(Gps)</th>
+            <th style="width: 50px">V(Cơ)</th>
           </tr>
         </thead>
-        <tbody *ngIf="!IsOnlinePage" #container>
+        <tbody #container>
           <tr
             *ngFor="let v of vs.viewPortItems"
             (click)="selectVehicle(v)"
             [ngClass]="{
               'control-table-tr-active':
-                CurrentVehicleIDSelected === v.VehicleId
+                CurrentVehicleIDSelected === v.vehicleId
             }"
-            [id]="v.VehicleId"
+            [id]="v.vehicleId"
           >
-            <td><img src="assets/icons/Blue0.png" height="18" width="18" /></td>
-            <td class="control-table-col2">{{ v.VehiclePlate }}</td>
+            <td><img src="{{ v.iconPath }}" height="18" width="18" /></td>
+            <td class="control-table-col2">{{ v.vehiclePlate }}</td>
             <td style="word-wrap: unset">
-              {{ v.GPSTime | time }}
+              {{ v.gpsTime | time }}
             </td>
-            <td *ngIf="false">
-              {{ v.Latitude.toFixed(6) }} - {{ v.Longitude.toFixed(6) }}
-            </td>
-            <td>{{ v.Velocity }}</td>
+            <td>{{ v.velocity }}</td>
+            <td>{{ v.velocityMechanical }}</td>
           </tr>
         </tbody>
       </table>
     </virtual-scroller>
   </div>
   <div class="panelContainer-status">
-    <label>Tổng số xe: </label>
-    <label class="panelContainer-status-item">{{
-      IsOnlinePage ? ListVehicleOnlinesTemp.length : ListVehiclesTemp.length
-    }}</label>
+    <div
+      (click)="selectVehicleState('1')"
+      [ngClass]="{
+        'panelContainer-status-item-active': CurrentVehicleState4Search === '1',
+        'panelContainer-status-item': CurrentVehicleState4Search !== '1'
+      }"
+    >
+      <img src="/assets/icons/Gray0.png" />
+      <label class="panelContainer-status-item-label">{{
+        numberVehicleXeDungDo
+      }}</label>
+      <span>Dừng đỗ</span>
+    </div>
+    <div
+      (click)="selectVehicleState('2')"
+      [ngClass]="{
+        'panelContainer-status-item-active': CurrentVehicleState4Search === '2',
+        'panelContainer-status-item': CurrentVehicleState4Search !== '2'
+      }"
+    >
+      <img src="/assets/icons/Blue0.png" />
+      <label class="panelContainer-status-item-label">{{
+        numberVehicleDiChuyen
+      }}</label>
+      <span>Di chuyển</span>
+    </div>
+    <div
+      (click)="selectVehicleState('3')"
+      [ngClass]="{
+        'panelContainer-status-item-active': CurrentVehicleState4Search === '3',
+        'panelContainer-status-item': CurrentVehicleState4Search !== '3'
+      }"
+    >
+      <img src="/assets/icons/Red0.png" />
+      <label class="panelContainer-status-item-label">{{
+        numberVehicleQuaTocDo
+      }}</label>
+      <span>Quá tốc</span>
+    </div>
+    <div
+      (click)="selectVehicleState('4')"
+      [ngClass]="{
+        'panelContainer-status-item-active': CurrentVehicleState4Search === '4',
+        'panelContainer-status-item': CurrentVehicleState4Search !== '4'
+      }"
+    >
+      <img src="/assets/icons/GpsLost.png" />
+      <label class="panelContainer-status-item-label">{{
+        numberVehicleLostGPS
+      }}</label>
+      <span>Mất GPS</span>
+    </div>
   </div>
 </div>

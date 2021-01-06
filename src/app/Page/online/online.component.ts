@@ -6,10 +6,12 @@ import {
   ViewChild,
 } from '@angular/core';
 import * as L from 'leaflet';
-import { DrawTypes, Mapbase } from '../Common/Mapbase';
-import { VehicleEntity } from '../entities/VehicleEntity';
-import { LeftpanelComponent } from '../leftpanel/leftpanel.component';
-import { BaPolygon, BaPolyline } from '../Common/BaControlLeaflet';
+import { DrawTypes, Mapbase } from '../../Common/Mapbase';
+import { LeftpanelComponent } from '../../leftpanel/leftpanel.component';
+import { BaPolygon } from '../../Common/LeafletControl/BaPolygon';
+import { BaMarker } from '../../Common/LeafletControl/BaMarker';
+import { BaPolyline } from '../../Common/LeafletControl/BaPolyline';
+import { Vehicle } from '../../entities/Vehicle';
 @Component({
   selector: 'app-online',
   templateUrl: './online.component.html',
@@ -102,22 +104,25 @@ export class OnlineComponent extends Mapbase implements OnInit, AfterViewInit {
     this.leftPanel.ListVehicleOnlinesTemp = this.leftPanel.listVehicleOnlines;
   }
 
-  private createRandomVehicle(): VehicleEntity {
-    const vehicle: VehicleEntity = new VehicleEntity();
-    vehicle.VehicleID = parseFloat((Math.random() * 10).toFixed(1));
-    vehicle.VehiclePlate =
+  private createRandomVehicle(): Vehicle {
+    const vehicle: Vehicle = new Vehicle('');
+    vehicle.vehicleId = parseFloat((Math.random() * 10).toFixed(1));
+    vehicle.vehiclePlate =
       this.generateRandomNumber(0, 100).toFixed(0) + 'M102243';
-    vehicle.Latitude = this.generateRandomNumber(
+    vehicle.latitude = this.generateRandomNumber(
       8.610515235803474,
       23.346901192682896
     );
-    vehicle.Longitude = this.generateRandomNumber(
+    vehicle.longitude = this.generateRandomNumber(
       102.17269363085188,
       109.42377919097898
     );
-    vehicle.Descriptions = 'Marker ' + vehicle.VehicleID;
-    vehicle.IconPath = 'assets/icons/Blue0.png';
-    vehicle.Speed = parseInt(this.generateRandomNumber(0, 100).toFixed(0), 0);
+    vehicle.address = 'Marker ' + vehicle.vehicleId;
+    vehicle.iconPath = 'assets/icons/Blue0.png';
+    vehicle.velocity = parseInt(
+      this.generateRandomNumber(0, 100).toFixed(0),
+      0
+    );
     return vehicle;
   }
 
@@ -180,11 +185,11 @@ export class OnlineComponent extends Mapbase implements OnInit, AfterViewInit {
     return Math.random() * (max - min) + min;
   }
 
-  private addMarkerToMap(vehicle: VehicleEntity): void {
+  private addMarkerToMap(vehicle: Vehicle): void {
     // Nội dung content khi click vào marker
     let contenPopup =
       '<table class="tbl-popup-marker"><tr><td>BKS</td><td>' +
-      vehicle.VehiclePlate +
+      vehicle.vehiclePlate +
       '</td></tr>';
     contenPopup += '<tr><td>Tinh trang may</td><td>Mở</td></tr>';
     contenPopup += '<tr><td>Nhiệt độ</td><td>35 C</td></tr>';
@@ -328,6 +333,7 @@ export class OnlineComponent extends Mapbase implements OnInit, AfterViewInit {
     };
     const circle = this.createCircle(center, options);
     this.map.addLayer(circle.circle);
+    this.map.addLayer(circle.center);
     this.CurrentCircle = circle.circle;
   }
 

@@ -1,11 +1,11 @@
 /* tslint:disable:no-unused-variable */
 
 import { TestBed, async } from '@angular/core/testing';
-import { DatetimePipe } from './datetime.pipe';
+import { SortPipe } from './sort.pipe';
 
-describe('Pipe: Datetimee', () => {
+describe('Pipe: Sorte', () => {
   it('create an instance', () => {
-    let pipe = new DatetimePipe();
+    let pipe = new SortPipe();
     expect(pipe).toBeTruthy();
   });
 });

@@ -6,28 +6,30 @@
   left: 5px;
   z-index: 10000;
   border-radius: 5px;
-  border: 1px solid gray;
+
   width: 300px;
-  padding-top: 20px;
+  padding: 20px 10px 30px 10px;
+  box-shadow: 2px 3px 3px rgba(0, 127, 255, 0.5);
 }
 .panelContainer-search {
   width: 100%;
   text-align: center;
   display: inline-flex;
+
   .panelContainer-search-icon {
-    width: 40px;
+    width: 15%;
     height: 35px;
     padding-top: 0.25rem;
     border-radius: 4px 0 0 4px;
-    border: 1px solid lightgray;
-    margin-left: 10px;
+    border: 1px solid rgb(165, 165, 165);
+    background-color: lightgray;
+    fill-opacity: 0.1;
   }
   .panelContainer-search-input {
-    width: 230px;
+    width: 85%;
     height: 35px;
     border-radius: 0 4px 4px 0;
-    border: 1px solid lightgray;
-
+    border: 1px solid rgb(165, 165, 165);
     ::ng-deep .autocomplete-container {
       box-shadow: none;
       position: relative;
@@ -95,7 +97,7 @@
   height: 20px;
   font-size: 11px;
   padding-left: 10px;
-  width: 90%;
+  width: 100%;
 }
 .panelContainer-button {
   width: 100%;
@@ -108,11 +110,10 @@
 
   .select-dropdown {
     padding-left: 10px;
-    width: 270px;
-    margin-left: 10px;
+    width: 100%;
     height: 35px;
     background-color: white;
-    border: 1px solid lightgray;
+    border: 1px solid rgb(165, 165, 165);
     border-radius: 4px;
     font-size: 13px !important;
   }
@@ -126,29 +127,30 @@
   width: 100%;
   text-align: center;
   height: 100%;
+  border: 1px solid rgb(165, 165, 165);
 }
 virtual-scroller {
-  width: 300px;
+  width: 100%;
   height: 480px;
 }
 .control-table {
-  width: 95%;
+  width: 100%;
   border-collapse: collapse;
   margin: auto;
+
   font-size: 13px;
-  border: 1px solid lightgray;
   .control-table-col2 {
     text-align: left;
   }
 }
 .control-table tr {
   cursor: pointer;
-  border: 1px solid lightgray;
+  border-bottom: 1px solid rgb(165, 165, 165);
   height: 22px;
 }
 .control-table tbody tr:hover {
-  background-color: lightgray;
-  color: white;
+  background-color: lightblue;
+  color: black;
 }
 .control-table-tr-active {
   background-color: #1976d2;
@@ -171,13 +173,13 @@ virtual-scroller {
 
 .control-table thead tr {
   background-color: white;
-  border-top: 2px solid lightgray;
-  border-left: 0.15rem solid lightgray;
 }
 
-virtual-scroller::-webkit-scrollbar {
+::ng-deep virtual-scroller::-webkit-scrollbar {
+  position: absolute !important;
+  right: 100px !important;
   width: 0.5em;
-  display: block;
+  display: none;
 }
 
 virtual-scroller::-webkit-scrollbar-track {
@@ -190,24 +192,81 @@ virtual-scroller::-webkit-scrollbar-thumb {
 }
 
 .panelContainer-status {
-  width: 95%;
+  width: 100%;
   margin: auto;
-  text-align: right;
+  text-align: left;
   font-weight: 700;
-  padding: 10px 10px 10px 3px;
-  margin-bottom: 5px;
+  font-size: 11px;
+  display: flex;
+  flex-direction: row;
 }
 .panelContainer-status-item {
-  background-color: orangered;
-  color: white;
-  padding: 5px;
-  height: 40px;
-  width: 40px;
-  border-radius: 20px;
+  color: red;
+  height: 50px;
+  width: 50px;
+  border: 1px solid #1976d2;
+  border-radius: 25px;
+  margin-right: 10px;
+  position: relative;
+  span {
+    font-size: 9px;
+    position: absolute;
+    color: rgb(32, 32, 32);
+    top: 52px;
+    left: 0;
+  }
+  img {
+    margin-left: 10px;
+    margin-top: 10px;
+    height: 30px;
+    width: 30px;
+  }
+  .panelContainer-status-item-label {
+    position: absolute;
+    top: -7px;
+    right: -7px;
+    color: white;
+    background-color: orangered;
+    padding: 2px;
+    border-radius: 10px;
+  }
+}
+
+.panelContainer-status-item-active {
+  color: red;
+  height: 50px;
+  width: 50px;
+  border: 1px solid #1976d2;
+  background-color: lightblue;
+  border-radius: 25px;
+  margin-right: 10px;
+  position: relative;
+  span {
+    font-size: 9px;
+    position: absolute;
+    color: rgb(32, 32, 32);
+    top: 52px;
+    left: 0;
+  }
+  img {
+    margin-left: 10px;
+    margin-top: 10px;
+    height: 30px;
+    width: 30px;
+  }
+  .panelContainer-status-item-label {
+    position: absolute;
+    top: -7px;
+    right: -7px;
+    color: white;
+    background-color: orangered;
+    padding: 2px;
+    border-radius: 10px;
+  }
 }
 
 .suggestions-container ul {
-  text-align: left !important ;
+  text-align: center !important ;
   .item {
     height: 25px !important;
   }

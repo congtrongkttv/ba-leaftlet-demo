@@ -1,14 +1,13 @@
 import * as L from 'leaflet';
-import { VehicleEntity } from '../entities/VehicleEntity';
 import 'leaflet.markercluster';
 import 'leaflet-draw';
 import 'leaflet-editable';
-import {
-  BaPolygon,
-  BaPolyline,
-  BaMarker,
-  PolygonDrawOptions,
-} from './BaControlLeaflet';
+import 'leaflet.marker.slideto';
+import { BaPolygon, PolygonDrawOptions } from './LeafletControl/BaPolygon';
+import { BaMarker } from './LeafletControl/BaMarker';
+import { BaPolyline } from './LeafletControl/BaPolyline';
+import { Vehicle } from '../entities/Vehicle';
+import { Marker } from 'leaflet';
 
 export class Mapbase {
   public map: L.Map;
@@ -216,21 +215,21 @@ export class Mapbase {
 
   // tạo marker
   public createMarker(
-    vehicle: VehicleEntity,
+    vehicle: Vehicle,
     contentPopup: string,
     isDraggable: boolean,
     isShowLabel?: boolean
   ): BaMarker {
     const customMarkerIcon = this.createDivIcon(
-      [30, 30],
-      [15, 15],
-      vehicle.IconPath,
+      [25, 25],
+      [12, 10],
+      vehicle.iconPath,
       '',
-      vehicle.VehiclePlate,
+      vehicle.vehiclePlate,
       isShowLabel,
-      0
+      vehicle.direction
     );
-    const marker = new BaMarker([vehicle.Latitude, vehicle.Longitude], {
+    const marker = new BaMarker([vehicle.latitude, vehicle.longitude], {
       icon: customMarkerIcon,
       draggable: isDraggable,
     });
@@ -239,22 +238,22 @@ export class Mapbase {
   }
 
   // update vị trí mới cho marker
-  public updateMarker(marker: L.Marker, vehicle: VehicleEntity): void {
-    const latlng = new L.LatLng(vehicle.Latitude, vehicle.Longitude);
+  public updateMarker(marker: L.Marker, vehicle: Vehicle): void {
+    const latlng = new L.LatLng(vehicle.latitude, vehicle.longitude);
     marker.setLatLng(latlng);
     const customMarkerIcon = this.createDivIcon(
-      [30, 30],
-      [14, 25],
-      vehicle.IconPath,
+      [25, 25],
+      [12, 14],
+      vehicle.iconPath,
       '',
-      vehicle.VehiclePlate,
+      vehicle.vehiclePlate,
       true,
-      0
+      vehicle.direction
     );
     marker.setIcon(customMarkerIcon);
   }
   // Tạo icon cho markker
-  private createDivIcon(
+  public createDivIcon(
     iSize: any,
     aSize: any,
     iUrl: string,
@@ -266,7 +265,7 @@ export class Mapbase {
     let htmlIcon = '';
     if (labelVisible) {
       htmlIcon += `<label style="position:absolute;bottom:100%;
-      display:inline-table;margin-left:-50%;
+      display:inline-table;margin-left:-50%; top: -28px;
       padding:4px;white-space:nowrap; background-color: wheat;
       border-radius: 3px; border: 1px solid lightgray;">`;
       htmlIcon += labelContent + '</label>';
@@ -326,10 +325,10 @@ export class Mapbase {
       option = this.CIRCLE_OPTIONS;
     }
     const c = L.circle(center, option);
-    const v = new VehicleEntity();
-    v.Latitude = option.center[0];
-    v.Longitude = option.center[1];
-    v.IconPath = option.iconPath;
+    const v = new Vehicle('');
+    v.latitude = option.center[0];
+    v.longitude = option.center[1];
+    v.iconPath = option.iconPath;
     const marker = this.createMarker(v, '', option.dragable, false);
     marker.addEventListener('drag', (e: L.LeafletMouseEvent) => {
       c.setLatLng(e.latlng);
@@ -422,6 +421,13 @@ export class Mapbase {
 
   panTo(latlng: L.LatLng, zoomLevel: number): void {
     this.map.setView(latlng, zoomLevel);
+  }
+
+  slideTo(newLatlng: L.LatLng, marker: any): void {
+    marker.sliderTo(newLatlng, {
+      duration: 2000,
+      keepAtCenter: true,
+    });
   }
 
   DrawDoneAction(event: any): void {}

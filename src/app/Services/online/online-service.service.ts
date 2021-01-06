@@ -3,7 +3,7 @@ import { Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { VehicleDetail } from '../../entities/VehicleDetail';
 import { APIResponseModel, Vehicle } from 'src/app/entities/Vehicle';
-import { CurrentData } from 'src/app/tracking/tracking.component';
+import { CurrentData } from 'src/app/Page/tracking/tracking.component';
 
 @Injectable({
   providedIn: 'root',

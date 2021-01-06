@@ -1,4 +1,4 @@
-export class Vehicle {
+export class VehicleOnline {
   public vehicleId: number;
   public vehiclePlate: string;
   public latitude: number;
@@ -7,19 +7,17 @@ export class Vehicle {
   public velocity: number;
   public gpsTime: Date;
   public vehicleTime: Date;
+  public iconCode: number;
+  public privateCode: string;
   public dataExt: number;
+  public direction: number;
   public stopTime: number;
   public lastTimeMove: Date;
   public velocityMechanical: number;
-  public iconCode: number;
-  public iconPath: string;
-  public privateCode: string;
-  public address: string;
   public isLocked: boolean;
   public isShow: boolean;
   public flags: number;
   public xnCode: number;
-  public direction: number;
   constructor(data: any) {
     this.vehicleId = data[0];
     this.vehiclePlate = data[1];
@@ -31,16 +29,14 @@ export class Vehicle {
     this.vehicleTime = data[7];
     this.iconCode = data[8];
     this.privateCode = data[9];
-    this.dataExt = data[14];
-    this.direction = data[17];
-    this.stopTime = data[22];
+    this.lastTimeMove = data[10];
+    this.velocityMechanical = data[11];
+    this.isLocked = data[12];
+    this.isShow = data[13];
+    this.flags = data[14];
+    this.dataExt = data[15];
+    this.direction = data[16];
+    this.xnCode = data[17];
+    this.stopTime = data[18];
   }
-}
-
-export class APIResponseModel {
-  data: any;
-  statusCode: number;
-  responseCode: number;
-  userMessage: string;
-  internalMessage: string;
 }

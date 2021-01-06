@@ -9,8 +9,8 @@ export class VehicleDetail {
   vehiceState: number;
   velocityGPS: number;
   velocityMechanical: number;
-  gpsTime: string;
-  vehicleTime: string;
+  gpsTime: Date;
+  vehicleTime: Date;
   iconCode: number;
   privateCode: string;
   groupNames: null;
@@ -38,6 +38,8 @@ export class VehicleDetail {
   fuel: Fuel;
   temperature: Temperature;
   onlineExtend: OnlineExtend;
+  direction: number;
+  iconPath: string;
 }
 
 export class EXTTransport {
