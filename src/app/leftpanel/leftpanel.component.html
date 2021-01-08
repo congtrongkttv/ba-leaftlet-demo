@@ -14,7 +14,7 @@
         searchKeyword="vehiclePlate"
         [itemTemplate]="itemTemplate"
         [notFoundTemplate]="notFoundTemplate"
-        [(ngModel)]="CurrentSelectedVehicle"
+        [(ngModel)]="CurrentVehicle"
         placeholder="Nhập biển kiểm soát"
         (selected)="selectVehicle($event)"
         [minQueryLength]="1"
@@ -64,7 +64,7 @@
             (click)="selectVehicle(v)"
             [ngClass]="{
               'control-table-tr-active':
-                CurrentVehicleIDSelected === v.vehicleId
+                CurrentVehicle.vehicleId === v.vehicleId
             }"
             [id]="v.vehicleId"
           >

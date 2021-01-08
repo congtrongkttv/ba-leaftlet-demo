@@ -16,9 +16,9 @@ export class BaMarker extends Marker {
   private slideDraggingWasAllowed = false;
   private slideFrame = 0;
 
-  addInitHook = () => {
+  addInitHook(): void {
     this.on('move', this.slideCancel, this);
-  };
+  }
   slideTo = (latlng: LatLngExpression, options: SlideOptions) => {
     if (!this._map) {
       return;
@@ -51,7 +51,7 @@ export class BaMarker extends Marker {
     L.Util.cancelAnimFrame(this.slideFrame);
   }
 
-  private _slideTo = () => {
+  private _slideTo() {
     if (!this._map) {
       return;
     }
@@ -87,7 +87,7 @@ export class BaMarker extends Marker {
     }
 
     this.slideFrame = Util.requestAnimFrame(this._slideTo, this);
-  };
+  }
 }
 
 interface SlideOptions {

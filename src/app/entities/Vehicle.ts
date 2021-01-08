@@ -20,20 +20,22 @@ export class Vehicle {
   public flags: number;
   public xnCode: number;
   public direction: number;
-  constructor(data: any) {
-    this.vehicleId = data[0];
-    this.vehiclePlate = data[1];
-    this.latitude = data[2];
-    this.longitude = data[3];
-    this.state = data[4];
-    this.velocity = data[5];
-    this.gpsTime = data[6];
-    this.vehicleTime = data[7];
-    this.iconCode = data[8];
-    this.privateCode = data[9];
-    this.dataExt = data[14];
-    this.direction = data[17];
-    this.stopTime = data[22];
+  constructor(data?: any) {
+    if (data != null && data !== undefined) {
+      this.vehicleId = data[0];
+      this.vehiclePlate = data[1];
+      this.latitude = data[2];
+      this.longitude = data[3];
+      this.state = data[4];
+      this.velocity = data[5];
+      this.gpsTime = data[6];
+      this.vehicleTime = data[7];
+      this.iconCode = data[8];
+      this.privateCode = data[9];
+      this.dataExt = data[14];
+      this.direction = data[17];
+      this.stopTime = data[22];
+    }
   }
 }
 

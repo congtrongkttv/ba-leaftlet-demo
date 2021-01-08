@@ -14,5 +14,6 @@ export class VehiclePopupComponent implements OnInit {
   Address: string;
   MachineState: string;
   DoorState: string;
+  NearestVehicles: string;
   ngOnInit(): void {}
 }

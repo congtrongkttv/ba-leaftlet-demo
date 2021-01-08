@@ -9,13 +9,14 @@ import { APIResponseModel } from 'src/app/entities/Vehicle';
   providedIn: 'root',
 })
 export class AddressService {
+  token: string;
   constructor(private http: HttpClient) {}
   getAddress(
     lat: number,
     lng: number,
     useLandmark: boolean = false,
     companyID: number = 0
-  ) {
+  ): Observable<any> {
     const url =
       'http://192.168.1.48:8000/api/v1/addresses' +
       '/' +
@@ -38,7 +39,7 @@ export class AddressService {
       .pipe();
   }
 
-  getListAddress(listLatLng: AddressModel[]) {
+  getListAddress(listLatLng: AddressModel[]): Observable<any> {
     const url = 'http://192.168.1.48:8000/api/v1/addresses';
     return this.http
       .post<any>(
