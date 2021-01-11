@@ -10,6 +10,7 @@
     </div>
     <div class="panelContainer-search-input">
       <ng-autocomplete
+        [data]="ListVehiclesTemp"
         #autocompleteVehicle
         searchKeyword="vehiclePlate"
         [itemTemplate]="itemTemplate"
