@@ -1,0 +1,71 @@
+<div class="form-base">
+  <div class="form-base-col form-base-col-leftpanel" *ngIf="false"></div>
+  <div class="form-base-col form-base-col-rightpanel">
+    <div class="rightpanel-titlepanel">
+      {{ pageTitle }}
+    </div>
+    <div class="rightpanel-searchpanel">
+      <div>
+        <ng-content select=".rightpanel-search"></ng-content>
+      </div>
+      <div class="rightpanel-buttonpanel">
+        <input
+          type="button"
+          value="Tìm kiếm"
+          (click)="onSearch_Click()"
+          class="button"
+        />
+        <input
+          type="button"
+          value="Thêm mới"
+          (click)="onAdd_Click(mymodal)"
+          class="button"
+        />
+      </div>
+    </div>
+    <div class="rightpanel-optionpanel">
+      <div class="rightpanel-optionpanel-option">
+        <i class="fa fa-file-excel-o" aria-hidden="true"></i>
+      </div>
+      <div class="rightpanel-optionpanel-checkbox"></div>
+    </div>
+    <div class="rightpanel-datapanel">
+      <ng-content select=".rightpanel-data"></ng-content>
+    </div>
+  </div>
+</div>
+<ng-template #mymodal let-modal class="modal">
+  <div class="modal-header">
+    {{ modalTitle }}
+    <i
+      class="fa fa-times"
+      aria-hidden="true"
+      (click)="modal.dismiss('Cross click')"
+    ></i>
+  </div>
+  <div class="modal-body">
+    <ng-content select=".modal-content"> </ng-content>
+  </div>
+  <div class="modal-footer">
+    <ng-content select=".modal-button"> </ng-content>
+    <input type="button" value="Lưu" (click)="onSave_Click()" class="button" />
+    <input
+      type="button"
+      value="Lưu và thêm mới"
+      (click)="onAdd_Click(mymodal)"
+      class="button"
+    />
+    <input
+      type="button"
+      value="Xóa"
+      (click)="modal.dismiss('Cross click')"
+      class="button-dangerous"
+    />
+    <input
+      type="button"
+      value="Đóng"
+      (click)="modal.dismiss('Cross click')"
+      class="button"
+    />
+  </div>
+</ng-template>

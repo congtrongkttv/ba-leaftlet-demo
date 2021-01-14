@@ -1,5 +1,5 @@
 import * as L from 'leaflet';
-import { Mapbase } from '../../Common/Mapbase';
+import { Mapbase } from '../../Common/map-base';
 import {
   Component,
   OnInit,

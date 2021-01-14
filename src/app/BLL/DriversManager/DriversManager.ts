@@ -1,19 +1,34 @@
-import { AdminBaseManager } from '../BaseManager/AdminBaseManager';
-import { Driver } from '../../entities/Driver';
+import { BaseManager } from '../BaseManager/BaseManager';
+import { Driver, DriverEntity } from '../../entities/Driver/Driver';
 import { DriverService } from '../../Services/driver/driver.service';
 import { AppInjector } from '../../app.module';
-export class DriversManager extends AdminBaseManager<Driver> {
+import { DriverFilter } from '../../entities/Driver/DriverFilter';
+export class DriversManager extends BaseManager<Driver> {
   driverService: DriverService;
+
   constructor() {
     super();
     this.driverService = AppInjector.get(DriverService);
   }
 
-  GetDataReport(): Driver[] {
-
-    return this.driverService?.getAllData().filter(x => x.RowIndex >= );
+  getDataReport(): Driver[] {
+    // Các trường cần tìm kiếm
+    const filter: DriverFilter = new DriverFilter();
+    filter.pager = this.currentPager;
+    filter.contentSearch = this.searchContent;
+    // Lấy dữ liệu
+    return this.driverService.getData(filter);
   }
-  GetRowCountReport(): number {
-    return this.driverService?.getAllData().length;
+
+  getRowCountReport(): number {
+    // Các trường cần tìm kiếm
+    const filter: DriverFilter = new DriverFilter();
+    filter.pager = this.pagerAll;
+    filter.contentSearch = this.searchContent;
+    return this.driverService.getData(filter).length;
+  }
+
+  addNewDriver(entity: Driver): boolean {
+    return this.driverService.AddNew(entity);
   }
 }

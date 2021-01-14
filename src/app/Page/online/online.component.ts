@@ -6,7 +6,7 @@ import {
   ViewChild,
 } from '@angular/core';
 import * as L from 'leaflet';
-import { DrawTypes, Mapbase } from '../../Common/Mapbase';
+import { DrawTypes, Mapbase } from '../../Common/map-base';
 import { LeftpanelComponent } from '../../leftpanel/leftpanel.component';
 import { BaPolygon } from '../../Common/LeafletControl/BaPolygon';
 import { BaMarker } from '../../Common/LeafletControl/BaMarker';

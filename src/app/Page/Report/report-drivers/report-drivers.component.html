@@ -1,0 +1,95 @@
+<app-two-column
+  [pageTitle]="title"
+  [modalTitle]="modalTitle"
+  (onSearch)="onSearch_Click()"
+  (onSave)="onSave_Click($event)"
+>
+  <!-- Khung tìm kiếm -->
+  <div class="rightpanel-search">
+    <table class="search-table-control">
+      <tr>
+        <td class="col-label">Từ ngày</td>
+        <td class="col-control">
+          <input
+            type="text"
+            placeholder="Từ ngày"
+            [(ngModel)]="baseManager.fromDate"
+          />
+        </td>
+        <td class="col-label">Đến ngày</td>
+        <td>
+          <input
+            type="text"
+            placeholder="Đến ngày"
+            [(ngModel)]="baseManager.toDate"
+          />
+        </td>
+      </tr>
+      <tr>
+        <td class="col-label">Lái xe</td>
+        <td colspan="3">
+          <input
+            type="text"
+            placeholder="Nhập nội dung tìm kiếm"
+            [(ngModel)]="baseManager.searchContent"
+          />
+        </td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- Khung lưới dữ liệu -->
+  <div class="rightpanel-data">
+    <kendo-grid
+      [data]="dataGrid"
+      [pageSize]="pageSize"
+      [pageable]="true"
+      [skip]="skip"
+      (pageChange)="pageChange($event)"
+    >
+      <kendo-grid-column field="RowIndex" title="STT" width="50">
+      </kendo-grid-column>
+      <kendo-grid-column field="FullName" title="Họ tên" width="250">
+      </kendo-grid-column>
+      <kendo-grid-column field="BirthDay" title="Ngày sinh" width="250">
+      </kendo-grid-column>
+      <kendo-grid-column field="LiscenseDriver" title="Bằng lái xe">
+      </kendo-grid-column>
+      <kendo-grid-column field="LiscenseDay" title="Ngày cấp">
+      </kendo-grid-column>
+    </kendo-grid>
+  </div>
+
+  <div class="modal-content">
+    <table>
+      <tr>
+        <td class="col-label">Họ tên</td>
+        <td>
+          <input
+            type="text"
+            placeholder="Nhập họ tên đầy đủ"
+            [(ngModel)]="currentObject.FullName"
+          />
+        </td>
+      </tr>
+      <tr>
+        <td class="col-label">Ngày sinh</td>
+        <td><input type="text" placeholder="Nhập ngày sinh" /></td>
+      </tr>
+      <tr>
+        <td class="col-label">Bằng lái xe</td>
+        <td>
+          <input
+            type="text"
+            placeholder="NHập bằng lái xe"
+            [(ngModel)]="currentObject.LiscenseDriver"
+          />
+        </td>
+      </tr>
+      <tr>
+        <td class="col-label">Ngày cấp</td>
+        <td><input type="text" placeholder="Nhập ngày cấp" /></td>
+      </tr>
+    </table>
+  </div>
+</app-two-column>
