@@ -1,4 +1,10 @@
-import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  Input,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import {
   DataStateChangeEvent,
   GridComponent,
@@ -7,6 +13,8 @@ import { ExcelExportData } from '@progress/kendo-angular-excel-export';
 import { Driver, DriverEntity } from 'src/app/entities/Driver/Driver';
 import { DriversManager } from '../../../BLL/DriversManager/DriversManager';
 import { BaseReport } from '../../../Common/base-report';
+import { DriverService } from '../../../Services/driver/driver.service';
+import { BaseService } from '../../../Services/Base/base.service';
 
 @Component({
   selector: 'app-report-drivers',
@@ -14,24 +22,20 @@ import { BaseReport } from '../../../Common/base-report';
   styleUrls: ['./report-drivers.component.scss'],
 })
 export class ReportDriversComponent
-  extends BaseReport<DriversManager, Driver>
+  extends BaseReport<DriversManager, DriverEntity>
   implements OnInit, AfterViewInit {
-  private driverService: DriversManager;
+  /**
+   * Danh sách properties override
+   */
   public title = 'Danh sách lái xe';
   public modalTitle = 'Thêm mới lái xe';
-  public pageSize = 15;
+  public pageSize = 10;
   @ViewChild(GridComponent) private grid: GridComponent;
+  @Input() allData: () => Promise<ExcelExportData>;
   constructor() {
-    super(DriversManager, Driver);
+    super(DriversManager, DriverEntity);
   }
-  public ngAfterViewInit(): void {
-    this.grid.dataStateChange.subscribe(
-      ({ skip, take }: DataStateChangeEvent) => {
-        this.skip = skip;
-        this.pageSize = take;
-      }
-    );
-  }
+  public ngAfterViewInit(): void {}
 
   // Hàm khởi tạo trang
   public ngOnInit(): void {}
@@ -40,7 +44,7 @@ export class ReportDriversComponent
   public onSave_Click(messID: number): void {
     // Nếu thêm mới thành công
     if (this.baseManager.addNewDriver(this.currentObject)) {
-      this.currentObject = new Driver();
+      this.currentObject = new DriverEntity();
       super.onSave_Click(messID);
     }
   }

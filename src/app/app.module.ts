@@ -18,9 +18,8 @@ import { VehiclePopupComponent } from './Page/Modal/vehicle-popup/vehicle-popup.
 import { ReportDriversComponent } from './Page/Report/report-drivers/report-drivers.component';
 import { GridModule } from '@progress/kendo-angular-grid';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { inject } from '@angular/core/testing';
 import { OneColumnComponent } from './Page/Report/BaseReport/one-column/one-column.component';
-import { Router } from '@angular/router';
+import { ReportUsersComponent } from './Page/Report/report-users/report-users.component';
 
 export let AppInjector: Injector;
 
@@ -34,6 +33,7 @@ export let AppInjector: Injector;
     SortPipe,
     VehiclePopupComponent,
     ReportDriversComponent,
+    ReportUsersComponent,
     TwoColumnComponent,
     OneColumnComponent,
   ],

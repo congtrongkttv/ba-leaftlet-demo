@@ -1,4 +1,6 @@
 import { Pager } from '../../Common/pager';
+import { Observable } from 'rxjs';
+import { BaseService } from '../../Services/Base/base.service';
 /**
  * Trang quản lý để xử lý logic, truy xuất dữ liệu
  * @template TEntity ĐỐi tượng trả về
@@ -20,18 +22,20 @@ export class BaseManager<TEntity> {
   public currentPager: Pager;
   // Thông tin pager: Sử dụng khi get Rowcount
   public pagerAll: Pager = new Pager(Number.MAX_SAFE_INTEGER, 0);
+  // BaseSerrvice
+  public baseService: any;
 
   /**
    * Lấy dữ liệu
    */
-  public getDataReport(): TEntity[] {
-    return [];
+  public async getDataReport(): Promise<TEntity[]> {
+    return null;
   }
 
   /**
    * Lấy số dòng dữ liệu để phân trang custom
    */
-  public getRowCountReport(): number {
-    return 0;
+  public async getRowCountReport(): Promise<number> {
+    return null;
   }
 }

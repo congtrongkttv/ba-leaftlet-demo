@@ -4,6 +4,8 @@ import { Pager } from './pager';
 import { BaseEntity } from '../entities/Base/BaseEntity';
 import { route } from '../app-routing.module';
 import { DateTime } from '../Helper/DateTimeHelper';
+import { Observable } from 'rxjs';
+import { BaseService } from '../Services/Base/base.service';
 export class BaseReport<
   TManager extends BaseManager<TEntity>,
   TEntity extends BaseEntity
@@ -31,6 +33,8 @@ export class BaseReport<
   public skip = 0;
   // ĐỐi tượng dùng để thêm mới hoặc xóa/sửa
   public currentObject: TEntity = new this.currentObj();
+  //
+  public isLoading = false;
   //#endregion
 
   //#region METHODS
@@ -71,7 +75,7 @@ export class BaseReport<
   /**
    * Dữ liệu đầu vào cho báo cáo
    */
-  public SetDataInput(): void {
+  public setDataInput(): void {
     const pager = new Pager(this.pageSize, this.pageIndex);
     this.baseManager.currentPager = pager;
   }
@@ -79,23 +83,29 @@ export class BaseReport<
   /**
    * Lấy dữ liệu
    */
-  public GetData(): TEntity[] {
-    this.SetDataInput();
-    return this.baseManager.getDataReport();
+  public async getData(): Promise<TEntity[]> {
+    this.setDataInput();
+    let entities = [];
+    entities = await this.baseManager.getDataReport();
+    return entities;
   }
 
   /**
    * Lấy số dòng dữ liệu để phân trang
    */
-  public GetRowCount(): number {
-    return this.baseManager.getRowCountReport();
+  public async GetRowCount(): Promise<number> {
+    let count = 0;
+    count = await this.baseManager.getRowCountReport();
+    return count;
   }
   // Hàm lấy dữ liệu để fill lên lưới
-  public bindData(): void {
+  public async bindData(): Promise<void> {
     if (this.validateData) {
-      this.dataSource = this.GetData();
-      this.rowCount = this.GetRowCount();
+      this.isLoading = true;
+      this.dataSource = await this.getData();
+      this.rowCount = await this.GetRowCount();
       this.dataGrid = { data: this.dataSource, total: this.rowCount };
+      this.isLoading = false;
     }
   }
 

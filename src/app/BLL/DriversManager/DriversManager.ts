@@ -3,7 +3,8 @@ import { Driver, DriverEntity } from '../../entities/Driver/Driver';
 import { DriverService } from '../../Services/driver/driver.service';
 import { AppInjector } from '../../app.module';
 import { DriverFilter } from '../../entities/Driver/DriverFilter';
-export class DriversManager extends BaseManager<Driver> {
+import { Observable } from 'rxjs';
+export class DriversManager extends BaseManager<DriverEntity> {
   driverService: DriverService;
 
   constructor() {
@@ -11,24 +12,37 @@ export class DriversManager extends BaseManager<Driver> {
     this.driverService = AppInjector.get(DriverService);
   }
 
-  getDataReport(): Driver[] {
+  async getDataReport(): Promise<any> {
     // Các trường cần tìm kiếm
     const filter: DriverFilter = new DriverFilter();
     filter.pager = this.currentPager;
     filter.contentSearch = this.searchContent;
     // Lấy dữ liệu
-    return this.driverService.getData(filter);
+    let entities = [];
+    await this.driverService.getData(filter).then((x: any) => {
+      entities = x.data;
+      let i = 0;
+      entities.forEach((dr: any) => {
+        i++;
+        dr.rowIndex = this.currentPager.startRow - 1 + i;
+      });
+    });
+    return entities;
   }
 
-  getRowCountReport(): number {
+  async getRowCountReport(): Promise<number> {
     // Các trường cần tìm kiếm
     const filter: DriverFilter = new DriverFilter();
-    filter.pager = this.pagerAll;
     filter.contentSearch = this.searchContent;
-    return this.driverService.getData(filter).length;
+    // Lấy dữ liệu
+    let count = 0;
+    await this.driverService.getRowCount(filter).then((x: any) => {
+      count = x.data;
+    });
+    return count;
   }
 
-  addNewDriver(entity: Driver): boolean {
+  addNewDriver(entity: DriverEntity): boolean {
     return this.driverService.AddNew(entity);
   }
 }

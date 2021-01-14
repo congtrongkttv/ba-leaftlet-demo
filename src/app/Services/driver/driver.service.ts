@@ -1,15 +1,22 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Driver, DriverEntity } from '../../entities/Driver/Driver';
+import {
+  Driver,
+  DriverEntity,
+  ResponseResult,
+} from '../../entities/Driver/Driver';
 import { DateTime } from '../../Helper/DateTimeHelper';
 import { DriverFilter } from '../../entities/Driver/DriverFilter';
+import { Observable } from 'rxjs';
+import { BaseService } from '../Base/base.service';
 
 @Injectable({
   providedIn: 'root',
 })
-export class DriverService {
+export class DriverService extends BaseService {
   lstDriver: Driver[] = [];
   constructor(private http: HttpClient) {
+    super();
     let i = 0;
     while (i < 100) {
       // tslint:disable-next-line: new-parens
@@ -25,49 +32,23 @@ export class DriverService {
     }
   }
 
-  getData(filter: DriverFilter): Driver[] {
-    let data = this.lstDriver;
-    if (filter.contentSearch !== '' && filter.contentSearch !== undefined) {
-      data = this.lstDriver.filter(
-        (x) =>
-          x.FullName.toLowerCase().indexOf(
-            filter.contentSearch.toLowerCase()
-          ) >= 0 ||
-          x.LiscenseDriver.toLowerCase().indexOf(
-            filter.contentSearch.toLowerCase()
-          ) >= 0
-      );
-    }
-    let i = 0;
-    data.forEach((dr) => {
-      i++;
-      dr.RowIndex = i;
-    });
-    data = data.filter(
-      (x) =>
-        x.RowIndex >= filter.pager.startRow && x.RowIndex <= filter.pager.endRow
-    );
-    return data;
-  }
-
-  getAllDataApi(pageIndex: number): Promise<DriverEntity[]> {
+  getData(filter: DriverFilter): Promise<any> {
     const loginParams = new HttpParams()
       .set('keyword', '')
-      .set('page', (pageIndex + 1).toString());
+      .set('page', (filter.pager.pageIndex + 1).toString());
     return this.http
       .post('https://10.1.11.107:8036/api/hrmEmp/list', loginParams)
-      .toPromise()
-      .then((x: any) => {
-        return x.data;
-      });
+      .toPromise();
   }
 
-  AddNew(driver: Driver): boolean {
-    driver.RowIndex = this.lstDriver.length + 1;
-    driver.DriverID = this.lstDriver.length + 1;
-    driver.BirthDay = new DateTime(new Date()).toFormat('dd/MM/yyyy');
-    driver.LiscenseDay = new DateTime(new Date()).toFormat('dd/MM/yyyy');
-    this.lstDriver.push(driver);
+  getRowCount(filter: DriverFilter): Promise<any> {
+    const loginParams = new HttpParams().set('keyword', filter.contentSearch);
+    return this.http
+      .post('https://10.1.11.107:8036/api/hrmEmp/count', loginParams)
+      .toPromise();
+  }
+
+  AddNew(driver: DriverEntity): boolean {
     return true;
   }
 }
