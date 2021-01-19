@@ -1,35 +1,67 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output,
+  ViewChild,
+} from '@angular/core';
 import { NgbModal, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
+import { time } from 'console';
+import { MessageType } from 'src/app/Enum/message-type.enum';
 import { AppInjector } from '../../../../app.module';
+import { SaveType } from '../../../../Enum/save-type.enum';
 @Component({
   selector: 'app-two-column',
   templateUrl: './two-column.component.html',
   styleUrls: ['./two-column.component.scss'],
 })
 export class TwoColumnComponent implements OnInit {
-  constructor() {}
   @Input() pageTitle: string;
   @Input() modalTitle: string;
   // tslint:disable-next-line: no-output-on-prefix
   @Output() onSearch = new EventEmitter<any>();
   // tslint:disable-next-line: no-output-on-prefix
+  @Output() onCreate = new EventEmitter<any>();
+  // tslint:disable-next-line: no-output-on-prefix
   @Output() onSave = new EventEmitter<any>();
-  modalService: NgbModal;
-  ngOnInit(): void {
-    this.modalService = AppInjector.get(NgbModal);
+  @Input() messageContent;
+  @Input() messageType: number;
+  @Input() isShowMessageBox: boolean;
+  @ViewChild('mymodal', { static: true }) input: ElementRef;
+
+  // Thêm mới hay cập nhật
+  isNew = false;
+  // Lưu và thêm mới
+  isContinue = false;
+
+  constructor(private modalService: NgbModal) {}
+
+  ngOnInit(): void {}
+  /**
+   * Sự kieenj mowr modal để thêm mới
+   */
+  create(): void {
+    this.isNew = true;
+    this.modalService.open(this.input, { ariaLabelledBy: 'modal-basic-title' });
+    // firing sang component cha để reset lại đối tượng đang làm việc
+    this.onCreate.emit();
   }
   /**
-   * Sự kieenj mowr modal để thêm mới hoặc sửa
-   * @param modal tên modal cần mở
+   * Sự kieenj mowr modal để sửa
    */
-  onAdd_Click(modal): void {
-    this.modalService
-      .open(modal, { ariaLabelledBy: 'modal-basic-title' })
-      .result.then(
-        (result) => {},
-        (reason) => {}
-      );
+  edit(): void {
+    this.isNew = false;
+    this.modalService.open(this.input, { ariaLabelledBy: 'modal-basic-title' });
   }
+  /**
+   * Sự kieenj đóng modal
+   */
+  close(): void {
+    this.modalService.dismissAll();
+  }
+
   /**
    * Sự kiện tìm kiếm
    */
@@ -40,7 +72,32 @@ export class TwoColumnComponent implements OnInit {
   /**
    * Sự kiện ấn nút lưu
    */
-  onSave_Click(): void {
-    this.onSave.emit(1);
+  onSave_Click(isAddMore: boolean): void {
+    if (this.isNew) {
+      this.onSave.emit(SaveType.create);
+    } else {
+      this.onSave.emit(SaveType.update);
+    }
+    this.isContinue = isAddMore;
+  }
+  /**
+   * Sự kiện ấn nút xóa
+   */
+  onDelete_Click(): void {
+    this.onSave.emit(SaveType.delete);
+  }
+  // Hiển thị thông báo
+  showMessageBox(messageType: MessageType, content: string): void {
+    this.isShowMessageBox = true;
+    this.messageContent = content;
+    this.messageType = messageType;
+    const timer = setTimeout(() => {
+      this.hideMessageBox();
+    }, 3000);
+  }
+  // ẩn thông báo
+  hideMessageBox(): void {
+    this.isShowMessageBox = false;
+    this.messageContent = '';
   }
 }

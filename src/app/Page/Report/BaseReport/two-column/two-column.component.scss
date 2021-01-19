@@ -77,6 +77,33 @@
       font-size: 14px;
     }
   }
+
+  .modal-message-success {
+    background-color: rgba(0, 136, 0, 0.705);
+    padding: 5px 10px;
+    color: white;
+  }
+
+  .modal-message-error {
+    background-color: rgba(255, 0, 0, 0.5);
+    padding: 5px 10px;
+    color: white;
+  }
+
+  .modal-message-info {
+    background-color: rgba(0, 136, 0, 0.705);
+    padding: 5px 10px;
+    color: white;
+    font-style: italic;
+  }
+
+  .modal-message-warning {
+    background-color: darkkhaki;
+    padding: 5px 10px;
+    color: white;
+    font-style: italic;
+  }
+
   .modal-body {
     padding: 5px 10px;
     .modal-content {

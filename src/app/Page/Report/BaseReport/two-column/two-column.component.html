@@ -4,6 +4,7 @@
     <div class="rightpanel-titlepanel">
       {{ pageTitle }}
     </div>
+
     <div class="rightpanel-searchpanel">
       <div>
         <ng-content select=".rightpanel-search"></ng-content>
@@ -18,7 +19,7 @@
         <input
           type="button"
           value="Thêm mới"
-          (click)="onAdd_Click(mymodal)"
+          (click)="create()"
           class="button"
         />
       </div>
@@ -43,29 +44,46 @@
       (click)="modal.dismiss('Cross click')"
     ></i>
   </div>
+  <div
+    *ngIf="isShowMessageBox"
+    [ngClass]="{
+      'modal-message-success ': messageType === 1,
+      'modal-message-error': messageType === 2,
+      'modal-message-info': messageType === 3,
+      'modal-message-warning': messageType === 4
+    }"
+  >
+    {{ messageContent }}
+  </div>
   <div class="modal-body">
     <ng-content select=".modal-content"> </ng-content>
   </div>
   <div class="modal-footer">
     <ng-content select=".modal-button"> </ng-content>
-    <input type="button" value="Lưu" (click)="onSave_Click()" class="button" />
+    <input
+      type="button"
+      value="Lưu"
+      class="button"
+      (click)="onSave_Click(false)"
+    />
     <input
       type="button"
       value="Lưu và thêm mới"
-      (click)="onAdd_Click(mymodal)"
       class="button"
+      (click)="onSave_Click(true)"
     />
     <input
       type="button"
       value="Xóa"
-      (click)="modal.dismiss('Cross click')"
       class="button-dangerous"
+      *ngIf="!isNew"
+      (click)="onDelete_Click()"
     />
     <input
       type="button"
       value="Đóng"
-      (click)="modal.dismiss('Cross click')"
       class="button"
+      (click)="modal.dismiss('Cross click')"
     />
   </div>
 </ng-template>

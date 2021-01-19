@@ -1,6 +1,5 @@
 import { BaseEntity } from '../Base/BaseEntity';
 export class Driver extends BaseEntity {
-  public RowIndex: number;
   public DriverID: number;
   public FullName: string;
   public BirthDay: string;
@@ -12,33 +11,32 @@ export class Driver extends BaseEntity {
 }
 
 export class DriverEntity {
-  rowIndex: number;
-  pK_EmployeeID: number;
-  employeeCode: string;
-  fK_CompanyID: number;
-  fK_DepartmentID: number;
-  name: string;
-  displayName: string;
-  birthday: null;
-  sex: number;
-  address: string;
-  mobile: string;
-  phoneNumber1: string;
-  phoneNumber2: string;
-  employeeType: number;
-  identityNumber: string;
-  driverLicense: string;
-  issueLicenseDate: null;
-  issueLicensePlace: string;
-  expireLicenseDate: null;
-  createdByUser: string;
-  createdDate: string;
-  updatedByUser: string;
-  updatedDate: string;
-  flags: number;
-  isSent: boolean;
-  licenseType: null;
-  driverImage: null;
+  PK_EmployeeID: number;
+  EmployeeCode: string;
+  FK_CompanyID: number;
+  FK_DepartmentID: number;
+  Name: string;
+  DisplayName: string;
+  Birthday: null;
+  Sex: number;
+  Address: string;
+  Mobile: string;
+  PhoneNumber1: string;
+  PhoneNumber2: string;
+  EmployeeType: number;
+  IdentityNumber: string;
+  DriverLicense: string;
+  IssueLicenseDate: null;
+  IssueLicensePlace: string;
+  ExpireLicenseDate: null;
+  CreatedByUser: string;
+  CreatedDate: string;
+  UpdatedByUser: string;
+  UpdatedDate: string;
+  Flags: number;
+  IsSent: boolean;
+  LicenseType: null;
+  DriverImage: null;
 }
 
 export interface ResponseResult {

@@ -1,11 +1,18 @@
-import { Pager } from '../../Common/pager';
+import { Injector } from '@angular/core';
 import { Observable } from 'rxjs';
+import { Pager } from '../../Core/pager';
 import { BaseService } from '../../Services/Base/base.service';
+import { BaseFilter } from '../../entities/Base/BaseFilter';
+import { AppInjector } from '../../app.module';
+import { DriverService } from '../../Services/driver/driver.service';
+
 /**
  * Trang quản lý để xử lý logic, truy xuất dữ liệu
  * @template TEntity ĐỐi tượng trả về
  */
-export class BaseManager<TEntity> {
+export class BaseManager<TEntity, TFilter extends BaseFilter> {
+  constructor() {}
+
   // ID Công ty
   public companyID: number;
   // Từ ngày
@@ -22,7 +29,7 @@ export class BaseManager<TEntity> {
   public currentPager: Pager;
   // Thông tin pager: Sử dụng khi get Rowcount
   public pagerAll: Pager = new Pager(Number.MAX_SAFE_INTEGER, 0);
-  // BaseSerrvice
+  // BaseService
   public baseService: any;
 
   /**
@@ -31,7 +38,6 @@ export class BaseManager<TEntity> {
   public async getDataReport(): Promise<TEntity[]> {
     return null;
   }
-
   /**
    * Lấy số dòng dữ liệu để phân trang custom
    */

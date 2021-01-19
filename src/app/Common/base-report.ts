@@ -1,14 +1,16 @@
 import { GridDataResult, PageChangeEvent } from '@progress/kendo-angular-grid';
 import { BaseManager } from '../BLL/BaseManager/BaseManager';
-import { Pager } from './pager';
+import { Pager } from '../Core/pager';
 import { BaseEntity } from '../entities/Base/BaseEntity';
 import { route } from '../app-routing.module';
 import { DateTime } from '../Helper/DateTimeHelper';
 import { Observable } from 'rxjs';
 import { BaseService } from '../Services/Base/base.service';
+import { BaseFilter } from '../entities/Base/BaseFilter';
 export class BaseReport<
-  TManager extends BaseManager<TEntity>,
-  TEntity extends BaseEntity
+  TManager extends any,
+  TEntity extends BaseEntity,
+  TFilter extends BaseFilter
 > {
   constructor(
     private bManager: new () => TManager,
@@ -53,8 +55,8 @@ export class BaseReport<
    */
   public initPageData(): void {
     // Set dữ liệu đầu vào cho các control tìm kiếm
-    this.baseManager.fromDate = new Date();
-    this.baseManager.toDate = new Date();
+    // this.baseManager.fromDate = new Date();
+    // this.baseManager.toDate = new Date();
   }
 
   checkPermission(): boolean {
@@ -77,7 +79,7 @@ export class BaseReport<
    */
   public setDataInput(): void {
     const pager = new Pager(this.pageSize, this.pageIndex);
-    this.baseManager.currentPager = pager;
+    // this.baseManager.currentPager = pager;
   }
 
   /**
@@ -86,7 +88,7 @@ export class BaseReport<
   public async getData(): Promise<TEntity[]> {
     this.setDataInput();
     let entities = [];
-    entities = await this.baseManager.getDataReport();
+    // entities = await this.baseManager.getDataReport();
     return entities;
   }
 
@@ -95,7 +97,7 @@ export class BaseReport<
    */
   public async GetRowCount(): Promise<number> {
     let count = 0;
-    count = await this.baseManager.getRowCountReport();
+    // count = await this.baseManager.getRowCountReport();
     return count;
   }
   // Hàm lấy dữ liệu để fill lên lưới
