@@ -2,7 +2,42 @@
   <div class="form-base-col form-base-col-leftpanel" *ngIf="false"></div>
   <div class="form-base-col form-base-col-rightpanel">
     <div class="rightpanel-titlepanel">
-      {{ pageTitle }}
+      <label>{{ pageTitle }}</label>
+      <div class="rightpanel-titlepanel-button">
+        <i
+          class="fa fa-plus"
+          aria-hidden="true"
+          title="Thêm mới lái xe"
+          (click)="create()"
+        ></i>
+        <i
+          class="fa fa-bars"
+          aria-hidden="true"
+          title="Ẩn hiện cột"
+          (click)="showCustomColumn()"
+        ></i>
+        <div class="rightpanel-optionpanel-checkbox" *ngIf="isShowCustomColumn">
+          <div class="rightpanel-optionpanel-checkbox-cbx">
+            <div *ngFor="let item of columnsCustom">
+              <input
+                type="checkbox"
+                value="{{ item.feild }}"
+                [(ngModel)]="item.checked"
+                id="cbx_{{ item.feild }}"
+              />
+              <label for="cbx_{{ item.feild }}">{{ item.title }}</label>
+            </div>
+          </div>
+          <div class="rightpanel-optionpanel-checkbox-btn">
+            <input
+              type="button"
+              value="Lưu"
+              class="button-sm"
+              (click)="onSaveCustomColumns_Click()"
+            />
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="rightpanel-searchpanel">
@@ -16,19 +51,7 @@
           (click)="onSearch_Click()"
           class="button"
         />
-        <input
-          type="button"
-          value="Thêm mới"
-          (click)="create()"
-          class="button"
-        />
       </div>
-    </div>
-    <div class="rightpanel-optionpanel">
-      <div class="rightpanel-optionpanel-option">
-        <i class="fa fa-file-excel-o" aria-hidden="true"></i>
-      </div>
-      <div class="rightpanel-optionpanel-checkbox"></div>
     </div>
     <div class="rightpanel-datapanel">
       <ng-content select=".rightpanel-data"></ng-content>

@@ -5,21 +5,14 @@ import {
   OnInit,
   ViewChild,
 } from '@angular/core';
-import {
-  DataStateChangeEvent,
-  GridComponent,
-} from '@progress/kendo-angular-grid';
-import { ExcelExportData } from '@progress/kendo-angular-excel-export';
-import { Driver, DriverEntity } from 'src/app/entities/Driver/Driver';
+import { DriverEntity } from 'src/app/entities/Driver/Driver';
 import { DriversManager } from '../../../BLL/DriversManager/DriversManager';
-import { BaseReport } from '../../../Common/base-report';
-import { DriverService } from '../../../Services/driver/driver.service';
-import { BaseService } from '../../../Services/Base/base.service';
 import { DriverFilter } from '../../../entities/Driver/DriverFilter';
 import { InputBase } from '../../../Core/InputBase';
 import { TwoColumnComponent } from '../BaseReport/two-column/two-column.component';
 import { MessageType } from 'src/app/Enum/message-type.enum';
 import { SaveType } from '../../../Enum/save-type.enum';
+import { DateTime } from '../../../Helper/DateTimeHelper';
 
 @Component({
   selector: 'app-report-drivers',
@@ -34,13 +27,18 @@ export class ReportDriversComponent
    */
   public title = 'Danh sách lái xe';
   public modalTitle = 'Thêm mới lái xe';
+  public reportTitle = 'Danh sách lái xe';
+  public reportDate = new DateTime(new Date()).toFormat();
+  public reportVehicle = 'Vehicles plate';
   public pageSize = 10;
-
   @ViewChild(TwoColumnComponent) form: TwoColumnComponent;
+
   constructor() {
     super(DriversManager, DriverEntity);
   }
-  public ngAfterViewInit(): void {}
+  ngAfterViewInit(): void {
+    this.getColumnsGridCustom();
+  }
 
   // Hàm khởi tạo trang
   public ngOnInit(): void {}
@@ -133,11 +131,10 @@ export class ReportDriversComponent
    * Sự kiện ấn nút thêm mới để mở popup thêm mới
    */
   public onCreate_Click(): void {
-    this.currentEntity = new DriverEntity();
     this.modalTitle = 'Thêm mới lái xe';
   }
   /**
-   * Sự kiện ấn detail để sửa haowcj xóa
+   * Sự kiện command trên lưới
    */
   public onRowComand_Click(event: {
     action: string;

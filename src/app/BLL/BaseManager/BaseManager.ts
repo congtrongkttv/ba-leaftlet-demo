@@ -1,17 +1,19 @@
-import { Injector } from '@angular/core';
+import { Component, Injector } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Pager } from '../../Core/pager';
 import { BaseService } from '../../Services/Base/base.service';
 import { BaseFilter } from '../../entities/Base/BaseFilter';
 import { AppInjector } from '../../app.module';
 import { DriverService } from '../../Services/driver/driver.service';
+import { SummaryItems } from '../../entities/summary-items';
 
 /**
  * Trang quản lý để xử lý logic, truy xuất dữ liệu
  * @template TEntity ĐỐi tượng trả về
  */
+
 export class BaseManager<TEntity, TFilter extends BaseFilter> {
-  constructor() {}
+  constructor(protected bFilter: new () => TFilter) {}
 
   // ID Công ty
   public companyID: number;
@@ -28,14 +30,37 @@ export class BaseManager<TEntity, TFilter extends BaseFilter> {
   // Thông tin pager
   public currentPager: Pager;
   // Thông tin pager: Sử dụng khi get Rowcount
-  public pagerAll: Pager = new Pager(Number.MAX_SAFE_INTEGER, 0);
+  // public pagerAll: Pager = new Pager(387590 * 1000, 0);
+  public pagerAll: Pager = new Pager(100, 0);
   // BaseService
   public baseService: any;
+  public baseFilter: TFilter = new this.bFilter();
+
+  // ds cột cần tính tổng
+  public columnsSummaryItemsRequest: string[] = [];
+
+  // ds cột bắt buộc của lưới dữ liệu
+  public columnsGridRequired: any[];
+
+  // ds cột cho phép ẩn hiện của lưới dữ liệu
+  public columnsGridCustom: {
+    title: string;
+    feild: string;
+    checked: boolean;
+  }[];
+  // ds cột không cho phép hiện lên khi xuất báo cáo
+  public columnsGridExclude: any[];
 
   /**
    * Lấy dữ liệu
    */
-  public async getDataReport(): Promise<TEntity[]> {
+  public async getDataReport(): Promise<{ data: TEntity[]; total: 0 }> {
+    return null;
+  }
+  /**
+   * Lấy tất cả dữ liệu
+   */
+  public async getAllDataReport(): Promise<{ data: TEntity[]; total: 0 }> {
     return null;
   }
   /**
@@ -44,4 +69,21 @@ export class BaseManager<TEntity, TFilter extends BaseFilter> {
   public async getRowCountReport(): Promise<number> {
     return null;
   }
+
+  /**
+   * Lấy số dòng dữ liệu để phân trang custom
+   */
+  public async getSummaryReport(): Promise<SummaryItems> {
+    return null;
+  }
+
+  public getColumnsGridCustom(): {
+    title: string;
+    feild: string;
+    checked: boolean;
+  }[] {
+    return null;
+  }
+
+  public saveCustomColumns(): void {}
 }

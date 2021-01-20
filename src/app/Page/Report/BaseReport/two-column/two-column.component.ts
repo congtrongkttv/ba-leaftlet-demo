@@ -12,6 +12,7 @@ import { time } from 'console';
 import { MessageType } from 'src/app/Enum/message-type.enum';
 import { AppInjector } from '../../../../app.module';
 import { SaveType } from '../../../../Enum/save-type.enum';
+import { CurrentData } from '../../../tracking/tracking.component';
 @Component({
   selector: 'app-two-column',
   templateUrl: './two-column.component.html',
@@ -26,9 +27,12 @@ export class TwoColumnComponent implements OnInit {
   @Output() onCreate = new EventEmitter<any>();
   // tslint:disable-next-line: no-output-on-prefix
   @Output() onSave = new EventEmitter<any>();
+  @Output() onSaveCustomColumns = new EventEmitter<any>();
   @Input() messageContent;
   @Input() messageType: number;
   @Input() isShowMessageBox: boolean;
+  @Input() isShowCustomColumn: boolean;
+  @Input() columnsCustom: { title: any; feild: any; checked: boolean }[];
   @ViewChild('mymodal', { static: true }) input: ElementRef;
 
   // Thêm mới hay cập nhật
@@ -84,8 +88,16 @@ export class TwoColumnComponent implements OnInit {
    * Sự kiện ấn nút xóa
    */
   onDelete_Click(): void {
-    this.onSave.emit(SaveType.delete);
+    if (confirm('Bạn có muốn xóa lái xe này không?')) {
+      this.onSave.emit(SaveType.delete);
+    }
   }
+
+  onSaveCustomColumns_Click(): void {
+    this.onSaveCustomColumns.emit();
+    this.isShowCustomColumn = false;
+  }
+
   // Hiển thị thông báo
   showMessageBox(messageType: MessageType, content: string): void {
     this.isShowMessageBox = true;
@@ -99,5 +111,9 @@ export class TwoColumnComponent implements OnInit {
   hideMessageBox(): void {
     this.isShowMessageBox = false;
     this.messageContent = '';
+  }
+
+  showCustomColumn(): void {
+    this.isShowCustomColumn = !this.isShowCustomColumn;
   }
 }

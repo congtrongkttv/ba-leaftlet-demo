@@ -36,14 +36,16 @@ export class InputBase<
     return true;
   }
 
-  public async delete(entity: TEntity): Promise<boolean> {
+  public async delete(id: any): Promise<boolean> {
     return true;
   }
 
   public async lock(entity: TEntity): Promise<boolean> {
     return true;
   }
-  public onCreate_Click(): void {}
+  public onCreate_Click(): void {
+    this.currentEntity = new this.cObj();
+  }
   public async onSave_Click(saveType: SaveType): Promise<void> {}
   public onRowComand_Click(event: any): void {}
   public onLock_Click(): void {}

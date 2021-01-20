@@ -18,6 +18,7 @@
     margin: auto;
 
     .rightpanel-titlepanel {
+      position: relative;
       background-color: #1976d2;
       padding: 5px 10px;
       text-transform: uppercase;
@@ -26,6 +27,55 @@
       color: white;
       min-height: 32px;
       width: 100%;
+      display: flex;
+      justify-content: flex-start;
+      .rightpanel-titlepanel-button {
+        position: absolute;
+        display: flex;
+        flex-direction: row;
+        right: 10px;
+        margin-top: 4px;
+        i {
+          font-size: 17px;
+          margin-left: 10px;
+          cursor: pointer;
+        }
+        .rightpanel-optionpanel-checkbox {
+          position: absolute;
+          min-height: 100px;
+          width: 530px;
+          right: 10px;
+          top: 25px;
+          border: 2px solid lightblue;
+          background-color: #fff;
+          z-index: 9999;
+          padding: 10px 20px;
+          box-shadow: 3px 2px 5px #ccc;
+          text-transform: none;
+          color: #4b4b4b;
+          font-weight: 400;
+          .rightpanel-optionpanel-checkbox-cbx {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            div {
+              align-items: flex-start;
+              width: 120px;
+              text-align: left;
+              position: relative;
+              margin-top: 10px;
+              label {
+                margin-left: 5px;
+                margin-top: -2px;
+                position: absolute;
+              }
+            }
+          }
+          .rightpanel-optionpanel-checkbox-btn {
+            float: right;
+          }
+        }
+      }
     }
     ::ng-deep .rightpanel-searchpanel {
       min-height: 100px;
@@ -57,6 +107,14 @@
         text-align: right;
         background-color: lightblue;
         padding: 5px 10px;
+        position: relative;
+        i {
+          font-size: 18px;
+          font-weight: 500;
+          color: blue;
+          margin-left: 20px;
+          cursor: pointer;
+        }
       }
     }
   }
@@ -137,6 +195,18 @@
   padding-top: -5px;
 }
 
+.button-sm {
+  margin-left: 5px;
+  background-color: #1976d2;
+  color: white;
+  height: 25px;
+  width: 60px;
+  border: none;
+  border-radius: 5px;
+  min-width: 80px;
+  padding-top: -5px;
+}
+
 .button-dangerous {
   margin-left: 5px;
   background-color: orangered;
@@ -145,4 +215,55 @@
   border: none;
   border-radius: 5px;
   min-width: 80px;
+}
+::ng-deep .k-toolbar {
+  justify-content: flex-end;
+  padding-right: 20px;
+  font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+    "Lucida Sans Unicode", Geneva, Verdana, sans-serif !important;
+  .fa {
+    cursor: pointer;
+    .k-icon {
+      font-size: 18px;
+    }
+  }
+  .fa-bars {
+    color: #1976d2;
+  }
+  .rightpanel-optionpanel-checkbox {
+    position: absolute;
+    min-height: 100px;
+    width: 530px;
+    right: 10px;
+    top: 25px;
+    border: 1px solid rgb(1, 136, 182);
+    border-radius: 5px;
+    background-color: #fff;
+    z-index: 1;
+    padding: 10px 20px;
+    box-shadow: 2px 3px 3px 2px #ccc;
+
+    .rightpanel-optionpanel-checkbox-cbx {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      div {
+        align-items: flex-start;
+        width: 120px;
+        text-align: left;
+        position: relative;
+        margin-top: 10px;
+        label {
+          margin-left: 5px;
+          margin-top: -2px;
+          position: absolute;
+        }
+      }
+    }
+  }
+}
+::ng-deep .k-grid-table {
+  i {
+    font-size: 17px;
+  }
 }

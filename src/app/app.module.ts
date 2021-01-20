@@ -16,10 +16,15 @@ import { TimePipe } from './pipe/time.pipe';
 import { SortPipe } from './pipe/sort.pipe';
 import { VehiclePopupComponent } from './Page/Modal/vehicle-popup/vehicle-popup.component';
 import { ReportDriversComponent } from './Page/Report/report-drivers/report-drivers.component';
-import { GridModule } from '@progress/kendo-angular-grid';
+import {
+  ExcelModule,
+  GridModule,
+  PDFModule,
+} from '@progress/kendo-angular-grid';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { OneColumnComponent } from './Page/Report/BaseReport/one-column/one-column.component';
 import { ReportUsersComponent } from './Page/Report/report-users/report-users.component';
+import { FilterPipePipe } from './pipe/filter-pipe.pipe';
 
 export let AppInjector: Injector;
 
@@ -31,6 +36,7 @@ export let AppInjector: Injector;
     LeftpanelComponent,
     TimePipe,
     SortPipe,
+    FilterPipePipe,
     VehiclePopupComponent,
     ReportDriversComponent,
     ReportUsersComponent,
@@ -48,6 +54,8 @@ export let AppInjector: Injector;
     SelectDropDownModule,
     GridModule,
     BrowserAnimationsModule,
+    ExcelModule,
+    PDFModule,
   ],
   providers: [],
   bootstrap: [AppComponent],

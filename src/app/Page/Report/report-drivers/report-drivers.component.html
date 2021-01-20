@@ -4,31 +4,15 @@
   [messageContent]=""
   [isShowMessageBox]="false"
   [messageType]="1"
+  [columnsCustom]="baseManager.columnsGridCustom"
   (onSearch)="onSearch_Click()"
   (onCreate)="onCreate_Click()"
   (onSave)="onSave_Click($event)"
+  (onSaveCustomColumns)="onSaveCustomColumns_Click()"
 >
   <div class="rightpanel-search">
     <!-- Bắt đầu control search ở đây -->
     <table class="search-table-control">
-      <tr>
-        <td class="col-label">Từ ngày</td>
-        <td class="col-control">
-          <input
-            type="text"
-            placeholder="Từ ngày"
-            [(ngModel)]="baseManager.fromDate"
-          />
-        </td>
-        <td class="col-label">Đến ngày</td>
-        <td>
-          <input
-            type="text"
-            placeholder="Đến ngày"
-            [(ngModel)]="baseManager.toDate"
-          />
-        </td>
-      </tr>
       <tr>
         <td class="col-label">Lái xe</td>
         <td colspan="3">
@@ -46,6 +30,7 @@
   <div class="rightpanel-data">
     <!-- Bắt đầu control grid ở đây -->
     <kendo-grid
+      #grid
       [data]="dataGrid"
       [pageSize]="pageSize"
       [pageable]="true"
@@ -54,23 +39,152 @@
       (edit)="onRowComand_Click($event)"
       (remove)="onRowComand_Click($event)"
       (pageChange)="pageChange($event)"
+      (excelExport)="exportExcel($event, grid)"
     >
-      <kendo-grid-column field="rowIndex" title="STT" width="100">
+      <ng-template
+        kendoGridToolbarTemplate
+        *ngIf="this.dataGrid.data.length > 0"
+      >
+        <i
+          kendoGridExcelCommand
+          class="fa fa-file-excel-o"
+          aria-hidden="true"
+          style="color: green"
+          title="Xuất excel"
+          icon="file-excel"
+          >Xuất excel</i
+        >
+        <i
+          kendoGridPDFCommand
+          class="fa fa-file-pdf-o"
+          aria-hidden="true"
+          title="Xuất pdf"
+          style="color: orangered"
+          icon="file-pdf"
+          (click)="exportPdf($event, grid)"
+          >Xuất pdf</i
+        >
+      </ng-template>
+      <kendo-grid-column
+        field="rowIndex"
+        title="STT"
+        width="100"
+        [headerStyle]="{
+          'text-align': 'center'
+        }"
+      >
         <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
           {{ rowIndex + 1 }}
         </ng-template>
       </kendo-grid-column>
-      <kendo-grid-column field="EmployeeCode" title="Mã LX">
+      <kendo-grid-column
+        field="FK_CompanyID"
+        [headerStyle]="{
+          'text-align': 'center'
+        }"
+        title="Công ty"
+        [hidden]="!checkIsShowColumn('FK_CompanyID')"
+      >
+        <ng-template
+          kendoGridFooterTemplate
+          *ngIf="baseManager.columnsSummaryItemsRequest.length > 0"
+        >
+          {{ columnsSummaryItemsResponse.column1 }}
+        </ng-template>
       </kendo-grid-column>
-      <kendo-grid-column field="DisplayName" title="Tên hiển thị">
+      <kendo-grid-column
+        [headerStyle]="{
+          'text-align': 'center'
+        }"
+        field="DisplayName"
+        title="Tên hiển thị"
+        [hidden]="!checkIsShowColumn('DisplayName')"
+      >
       </kendo-grid-column>
-      <kendo-grid-column field="Name" title="Tên"> </kendo-grid-column>
-      <kendo-grid-command-column title="command" width="220">
+      <kendo-grid-column
+        [headerStyle]="{
+          'text-align': 'center'
+        }"
+        field="Name"
+        title="Tên"
+        [hidden]="!checkIsShowColumn('Name')"
+      >
+      </kendo-grid-column>
+      <kendo-grid-column
+        [headerStyle]="{
+          'text-align': 'center'
+        }"
+        field="FK_DepartmentID"
+        title="Phòng ban"
+        [hidden]="!checkIsShowColumn('FK_DepartmentID')"
+      >
+        <ng-template
+          kendoGridFooterTemplate
+          *ngIf="baseManager.columnsSummaryItemsRequest.length > 0"
+        >
+          {{ columnsSummaryItemsResponse.column2 }}
+        </ng-template>
+      </kendo-grid-column>
+      <kendo-grid-column
+        [headerStyle]="{
+          'text-align': 'center'
+        }"
+        field="EmployeeCode"
+        title="Mã LX"
+        [hidden]="!checkIsShowColumn('EmployeeCode')"
+      >
+      </kendo-grid-column>
+
+      <kendo-grid-column
+        [headerStyle]="{
+          'text-align': 'center'
+        }"
+        field="Flags"
+        title="Flags"
+        [hidden]="!checkIsShowColumn('Flags')"
+      >
+        <ng-template
+          kendoGridFooterTemplate
+          *ngIf="baseManager.columnsSummaryItemsRequest.length > 0"
+        >
+          {{ columnsSummaryItemsResponse.column6 }}
+        </ng-template>
+      </kendo-grid-column>
+      <kendo-grid-command-column
+        field="command"
+        [headerStyle]="{
+          'text-align': 'center'
+        }"
+        title="Sửa"
+        width="70"
+        [hidden]="!checkIsShowColumn('command')"
+      >
         <ng-template kendoGridCellTemplate let-dataItems="dataItems">
-          <button kendoGridEditCommand class="k-primary">Edit</button>
-          <button kendoGridRemoveCommand>Remove</button>
+          <i class="fa fa-edit" kendoGridEditCommand aria-hidden="true"
+            ><i class="fa fa-edit" aria-hidden="true"></i
+          ></i>
         </ng-template>
       </kendo-grid-command-column>
+      <kendo-grid-command-column
+        field="command"
+        [headerStyle]="{
+          'text-align': 'center'
+        }"
+        title="Xóa"
+        width="65"
+        [hidden]="!checkIsShowColumn('command')"
+      >
+        <ng-template kendoGridCellTemplate let-dataItems="dataItems">
+          <i class="fa fa-trash" kendoGridRemoveCommand aria-hidden="true"
+            ><i class="fa fa-trash" aria-hidden="true"></i
+          ></i>
+        </ng-template>
+      </kendo-grid-command-column>
+      <kendo-grid-excel
+        fileName="{{ reportName + '.xlsx' }}"
+        [fetchData]="allDataGrid"
+      >
+      </kendo-grid-excel>
     </kendo-grid>
     <!-- kết thúc control grid ở đây -->
   </div>
