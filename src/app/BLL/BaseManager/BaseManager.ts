@@ -11,33 +11,20 @@ import { SummaryItems } from '../../entities/summary-items';
  * Trang quản lý để xử lý logic, truy xuất dữ liệu
  * @template TEntity ĐỐi tượng trả về
  */
-
 export class BaseManager<TEntity, TFilter extends BaseFilter> {
   constructor(protected bFilter: new () => TFilter) {}
 
-  // ID Công ty
-  public companyID: number;
-  // Từ ngày
-  public fromDate: Date;
-  // Đến ngày
-  public toDate: Date;
-  // ds mã xe
-  public vehicleIDs: string;
-  // ds biển số xe
-  public vehiclePlates: string;
-  // Nọi dung tìm kiếm
-  public searchContent = '';
-  // Thông tin pager
-  public currentPager: Pager;
-  // Thông tin pager: Sử dụng khi get Rowcount
-  // public pagerAll: Pager = new Pager(387590 * 1000, 0);
-  public pagerAll: Pager = new Pager(100, 0);
+  // Thông tin pagerAll: Sử dụng khi get Rowcount, lấy tất cả dữ liệu
+  public pagerAll: Pager = new Pager(387590 * 1000, 0);
+
   // BaseService
   public baseService: any;
+
+  // baseFilter: bộ lọc dữ liệu - điều kiện tìm kiếm
   public baseFilter: TFilter = new this.bFilter();
 
   // ds cột cần tính tổng
-  public columnsSummaryItemsRequest: string[] = [];
+  public columnsSummaryItems: string[] = [];
 
   // ds cột bắt buộc của lưới dữ liệu
   public columnsGridRequired: any[];
@@ -48,6 +35,7 @@ export class BaseManager<TEntity, TFilter extends BaseFilter> {
     feild: string;
     checked: boolean;
   }[];
+
   // ds cột không cho phép hiện lên khi xuất báo cáo
   public columnsGridExclude: any[];
 
@@ -57,12 +45,14 @@ export class BaseManager<TEntity, TFilter extends BaseFilter> {
   public async getDataReport(): Promise<{ data: TEntity[]; total: 0 }> {
     return null;
   }
+
   /**
    * Lấy tất cả dữ liệu
    */
   public async getAllDataReport(): Promise<{ data: TEntity[]; total: 0 }> {
     return null;
   }
+
   /**
    * Lấy số dòng dữ liệu để phân trang custom
    */
@@ -77,6 +67,9 @@ export class BaseManager<TEntity, TFilter extends BaseFilter> {
     return null;
   }
 
+  /**
+   * Lấy ra cấu hình ẩn hiện cột
+   */
   public getColumnsGridCustom(): {
     title: string;
     feild: string;
@@ -85,5 +78,20 @@ export class BaseManager<TEntity, TFilter extends BaseFilter> {
     return null;
   }
 
+  /**
+   * Lưu cấu hình ẩn hiện cột
+   */
   public saveCustomColumns(): void {}
+
+  public async addNew(entity: TEntity): Promise<boolean> {
+    return null;
+  }
+
+  public async update(entity: TEntity): Promise<boolean> {
+    return null;
+  }
+
+  public async delete(id: any): Promise<boolean> {
+    return null;
+  }
 }

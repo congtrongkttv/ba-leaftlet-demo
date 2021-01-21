@@ -1,10 +1,9 @@
 <app-two-column
   [pageTitle]="title"
   [modalTitle]="modalTitle"
-  [messageContent]=""
-  [isShowMessageBox]="false"
-  [messageType]="1"
   [columnsCustom]="baseManager.columnsGridCustom"
+  [enableAdd]="hasPermission(permissionKeyNameAdd)"
+  [enableOption]="hasPermission(permissionKeyNameOption)"
   (onSearch)="onSearch_Click()"
   (onCreate)="onCreate_Click()"
   (onSave)="onSave_Click($event)"
@@ -19,7 +18,7 @@
           <input
             type="text"
             placeholder="Nhập nội dung tìm kiếm"
-            [(ngModel)]="baseManager.searchContent"
+            [(ngModel)]="searchContent"
           />
         </td>
       </tr>
@@ -43,7 +42,10 @@
     >
       <ng-template
         kendoGridToolbarTemplate
-        *ngIf="this.dataGrid.data.length > 0"
+        *ngIf="
+          this.dataGrid.data.length > 0 &&
+          hasPermission(permissionKeyNameExport)
+        "
       >
         <i
           kendoGridExcelCommand
@@ -122,7 +124,7 @@
           kendoGridFooterTemplate
           *ngIf="baseManager.columnsSummaryItemsRequest.length > 0"
         >
-          {{ columnsSummaryItemsResponse.column2 }}
+          {{ columnsSummaryItemsResponse.column4 }}
         </ng-template>
       </kendo-grid-column>
       <kendo-grid-column
@@ -157,7 +159,10 @@
         }"
         title="Sửa"
         width="70"
-        [hidden]="!checkIsShowColumn('command')"
+        [hidden]="
+          !checkIsShowColumn('command') ||
+          !hasPermission(permissionKeyNameUpdate)
+        "
       >
         <ng-template kendoGridCellTemplate let-dataItems="dataItems">
           <i class="fa fa-edit" kendoGridEditCommand aria-hidden="true"
@@ -172,7 +177,10 @@
         }"
         title="Xóa"
         width="65"
-        [hidden]="!checkIsShowColumn('command')"
+        [hidden]="
+          !checkIsShowColumn('command') ||
+          !hasPermission(permissionKeyNameDelete)
+        "
       >
         <ng-template kendoGridCellTemplate let-dataItems="dataItems">
           <i class="fa fa-trash" kendoGridRemoveCommand aria-hidden="true"
@@ -185,6 +193,18 @@
         [fetchData]="allDataGrid"
       >
       </kendo-grid-excel>
+      <ng-template
+        kendoPagerTemplate
+        let-totalPages="totalPages"
+        let-currentPage="currentPage"
+      >
+        <kendo-pager-prev-buttons></kendo-pager-prev-buttons>
+        <kendo-pager-numeric-buttons
+          [buttonCount]="buttonNumber"
+        ></kendo-pager-numeric-buttons>
+        <kendo-pager-next-buttons></kendo-pager-next-buttons>
+        <kendo-pager-info></kendo-pager-info>
+      </ng-template>
     </kendo-grid>
     <!-- kết thúc control grid ở đây -->
   </div>
@@ -198,7 +218,7 @@
           <input
             type="text"
             placeholder="Nhập mã lái xe"
-            [(ngModel)]="currentEntity.EmployeeCode"
+            [(ngModel)]="currentDataModel.EmployeeCode"
           />
         </td>
       </tr>
@@ -208,7 +228,7 @@
           <input
             type="text"
             placeholder="Nhập tên hiển thị"
-            [(ngModel)]="currentEntity.DisplayName"
+            [(ngModel)]="currentDataModel.DisplayName"
           />
         </td>
       </tr>
@@ -218,7 +238,7 @@
           <input
             type="text"
             placeholder="Nhập tên"
-            [(ngModel)]="currentEntity.Name"
+            [(ngModel)]="currentDataModel.Name"
           />
         </td>
       </tr>

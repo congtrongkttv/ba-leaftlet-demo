@@ -16,8 +16,8 @@ export class DriverService extends BaseService<DriverEntity, DriverFilter> {
   getData(filter: DriverFilter): Observable<any> {
     const params = {
       keyword: filter.searchContent,
-      pageIndex: filter.pager.pageIndex,
-      pageSize: filter.pager.pageSize,
+      pageIndex: filter.currentPager.pageIndex,
+      pageSize: filter.currentPager.pageSize,
     };
     return this.http.post('https://10.1.11.107:8036/api/hrmEmp/list', params);
   }

@@ -83,9 +83,22 @@ export class DateTime extends Date {
       case 'dd/MM/yyyy':
         retValue = dateStr + '/' + monthStr + '/' + yearStr;
         break;
+      case 'HH:mm dd/MM/yyyy':
+        retValue =
+          hourStr +
+          ':' +
+          minutesStr +
+          ' ' +
+          dateStr +
+          '/' +
+          monthStr +
+          '/' +
+          yearStr;
+        break;
       case 'yyyy/MM/dd':
         retValue = dateStr + '/' + monthStr + '/' + yearStr;
         break;
+
       default:
         retValue =
           dateStr +

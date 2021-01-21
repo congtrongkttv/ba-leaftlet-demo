@@ -6,6 +6,7 @@ import { DriverFilter } from '../../entities/Driver/DriverFilter';
 import { Observable } from 'rxjs';
 import { SummaryItems } from '../../entities/summary-items';
 import { CurrentData } from 'src/app/Page/tracking/tracking.component';
+import { Pager } from 'src/app/Core/pager';
 export class DriversManager extends BaseManager<DriverEntity, DriverFilter> {
   constructor() {
     super(DriverFilter);
@@ -26,9 +27,6 @@ export class DriversManager extends BaseManager<DriverEntity, DriverFilter> {
   ];
 
   async getDataReport(): Promise<{ data: DriverEntity[]; total: 0 }> {
-    // Các trường cần tìm kiếm
-    this.baseFilter.pager = this.currentPager;
-    this.baseFilter.searchContent = this.searchContent;
     // Lấy dữ liệu
     return await this.baseService
       .getData(this.baseFilter)
@@ -36,16 +34,14 @@ export class DriversManager extends BaseManager<DriverEntity, DriverFilter> {
       .then((x: any) => {
         return { data: x.Data.Data, total: x.Data.Count };
       })
-      .catch(() => {
-        return null;
+      .catch((ex) => {
+        return { data: [], total: 0 };
       });
   }
 
   async getAllDataReport(): Promise<{ data: DriverEntity[]; total: 0 }> {
-    // Các trường cần tìm kiếm
-    this.baseFilter.pager = this.pagerAll;
-    this.baseFilter.searchContent = this.searchContent;
     // Lấy dữ liệu
+    this.baseFilter.currentPager = this.pagerAll;
     return await this.baseService
       .getData(this.baseFilter)
       .toPromise()
@@ -58,8 +54,6 @@ export class DriversManager extends BaseManager<DriverEntity, DriverFilter> {
   }
 
   async getRowCountReport(): Promise<number> {
-    // Các trường cần tìm kiếm
-    this.baseFilter.searchContent = this.searchContent;
     // Lấy dữ liệu
     return await this.baseService
       .getRowCount(this.baseFilter)
@@ -73,9 +67,6 @@ export class DriversManager extends BaseManager<DriverEntity, DriverFilter> {
   }
 
   async getSummaryReport(): Promise<SummaryItems> {
-    // Các trường cần tìm kiếm
-    this.baseFilter.searchContent = this.searchContent;
-    this.baseFilter.feildSum = this.columnsSummaryItemsRequest.join(',');
     // Lấy dữ liệu
     const summaryItems = new SummaryItems();
     return await this.baseService
@@ -84,7 +75,7 @@ export class DriversManager extends BaseManager<DriverEntity, DriverFilter> {
       .then((x: any) => {
         const data: DriverEntity = x.Data;
         summaryItems.column1 = data.FK_CompanyID;
-        summaryItems.column2 = data.FK_DepartmentID;
+        summaryItems.column4 = data.FK_DepartmentID;
         summaryItems.column6 = data.Flags;
         return summaryItems;
       })
@@ -115,16 +106,16 @@ export class DriversManager extends BaseManager<DriverEntity, DriverFilter> {
     }
   }
 
-  async addNewDriver(entity: DriverEntity): Promise<boolean> {
+  async addNew(entity: DriverEntity): Promise<boolean> {
     return this.baseService
       .add(entity)
       .toPromise()
-      .then((x) => {
+      .then((x: any) => {
         return true;
       });
   }
 
-  async updateDriver(entity: DriverEntity): Promise<boolean> {
+  async update(entity: DriverEntity): Promise<boolean> {
     return this.baseService
       .update(entity)
       .toPromise()
@@ -133,7 +124,7 @@ export class DriversManager extends BaseManager<DriverEntity, DriverFilter> {
       });
   }
 
-  async deleteDriver(id: any): Promise<boolean> {
+  async delete(id: any): Promise<boolean> {
     return this.baseService
       .delete(id)
       .toPromise()

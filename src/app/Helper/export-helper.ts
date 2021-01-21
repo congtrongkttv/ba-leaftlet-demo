@@ -17,7 +17,8 @@ export class ExportHelper {
   constructor(
     private reportTitle: string,
     private reportDate: string,
-    private reportVehicle: string
+    private reportVehicle: string,
+    private reportContent: string
   ) {}
   /**
    * Thêm tiêu đề cho file excel
@@ -57,24 +58,42 @@ export class ExportHelper {
       cell.verticalAlign = 'center';
       cell.fontSize = 15;
     });
+    // Thêm dòng nội dung tìm kiếm
+    if (this.reportContent !== '') {
+      rows.unshift({ cells: [] });
+      rows.unshift({
+        cells: [
+          {
+            value: this.reportContent,
+            colSpan: numberColumns,
+            rowSpan: 1,
+            textAlign: 'center',
+            verticalAlign: 'center',
+            bold: false,
+            fontSize: 12,
+            wrap: true,
+          },
+        ],
+      });
+    }
 
     // Thêm dòng xe / nhóm xe
-    rows.unshift({ cells: [] });
-    rows.unshift({
-      cells: [
-        {
-          value: this.reportVehicle,
-          colSpan: numberColumns,
-          rowSpan: 1,
-          textAlign: 'center',
-          verticalAlign: 'center',
-          bold: false,
-          fontSize: 12,
-          fontFamily: 'Times New Roman',
-          wrap: true,
-        },
-      ],
-    });
+    if (this.reportVehicle !== '') {
+      rows.unshift({
+        cells: [
+          {
+            value: this.reportVehicle,
+            colSpan: numberColumns,
+            rowSpan: 1,
+            textAlign: 'center',
+            verticalAlign: 'center',
+            bold: false,
+            fontSize: 12,
+            wrap: true,
+          },
+        ],
+      });
+    }
     // Thêm dòng ngày tháng
     rows.unshift({
       cells: [
@@ -86,7 +105,6 @@ export class ExportHelper {
           verticalAlign: 'center',
           bold: false,
           fontSize: 12,
-          fontFamily: 'Times New Roman',
           wrap: true,
         },
       ],
@@ -103,10 +121,37 @@ export class ExportHelper {
           verticalAlign: 'center',
           bold: true,
           fontSize: 16,
-          fontFamily: 'Times New Roman',
           wrap: true,
         },
       ],
     });
+    const columnsHalfNumber = Math.round(numberColumns / 2) - 1;
+    rows.push({ cells: [] });
+    rows.push({
+      cells: [
+        {
+          value: '        Phụ trách đơn vị'.toUpperCase(),
+          colSpan: columnsHalfNumber,
+          rowSpan: 2,
+          textAlign: 'left',
+          verticalAlign: 'center',
+          bold: true,
+          fontSize: 16,
+          wrap: false,
+        },
+        {
+          value: 'Người lập biểu             '.toUpperCase(),
+          colSpan: numberColumns - columnsHalfNumber,
+          rowSpan: 2,
+          textAlign: 'right',
+          verticalAlign: 'center',
+          bold: true,
+          fontSize: 16,
+          wrap: false,
+        },
+      ],
+    });
   }
+
+  public exportExcelFromServer(): void {}
 }

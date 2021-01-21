@@ -5,7 +5,8 @@ import { BaseService } from '../Services/Base/base.service';
 import { GeneralBaseReport } from './GeneralBaseReport';
 import { Pager } from './pager';
 import { SaveType } from '../Enum/save-type.enum';
-export class InputBase<
+import { Observable } from 'rxjs';
+export class CRUDBase<
   TEntity extends BaseEntity,
   TManager extends BaseManager<TEntity, TFilter>,
   TFilter extends BaseFilter
@@ -18,7 +19,7 @@ export class InputBase<
 
   public isNew: boolean;
 
-  public currentEntity: TEntity = new this.cObj();
+  public currentDataModel: TEntity = new this.cObj();
 
   public validateDataBeChanged(): boolean {
     return true;
@@ -29,22 +30,22 @@ export class InputBase<
   }
 
   public async create(entity: TEntity): Promise<boolean> {
-    return true;
+    return this.baseManager.addNew(entity);
   }
 
   public async update(entity: TEntity): Promise<boolean> {
-    return true;
+    return this.baseManager.update(entity);
   }
 
   public async delete(id: any): Promise<boolean> {
-    return true;
+    return this.baseManager.delete(id);
   }
 
   public async lock(entity: TEntity): Promise<boolean> {
     return true;
   }
   public onCreate_Click(): void {
-    this.currentEntity = new this.cObj();
+    this.currentDataModel = new this.cObj();
   }
   public async onSave_Click(saveType: SaveType): Promise<void> {}
   public onRowComand_Click(event: any): void {}

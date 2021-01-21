@@ -8,12 +8,14 @@
           class="fa fa-plus"
           aria-hidden="true"
           title="Thêm mới lái xe"
+          *ngIf="enableAdd"
           (click)="create()"
         ></i>
         <i
           class="fa fa-bars"
           aria-hidden="true"
           title="Ẩn hiện cột"
+          *ngIf="enableOption"
           (click)="showCustomColumn()"
         ></i>
         <div class="rightpanel-optionpanel-checkbox" *ngIf="isShowCustomColumn">
@@ -22,8 +24,8 @@
               <input
                 type="checkbox"
                 value="{{ item.feild }}"
-                [(ngModel)]="item.checked"
                 id="cbx_{{ item.feild }}"
+                [(ngModel)]="item.checked"
               />
               <label for="cbx_{{ item.feild }}">{{ item.title }}</label>
             </div>

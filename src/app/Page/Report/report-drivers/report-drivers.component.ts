@@ -8,11 +8,13 @@ import {
 import { DriverEntity } from 'src/app/entities/Driver/Driver';
 import { DriversManager } from '../../../BLL/DriversManager/DriversManager';
 import { DriverFilter } from '../../../entities/Driver/DriverFilter';
-import { InputBase } from '../../../Core/InputBase';
+import { CRUDBase } from '../../../Core/CRUDBase';
 import { TwoColumnComponent } from '../BaseReport/two-column/two-column.component';
 import { MessageType } from 'src/app/Enum/message-type.enum';
 import { SaveType } from '../../../Enum/save-type.enum';
 import { DateTime } from '../../../Helper/DateTimeHelper';
+import { Pager } from 'src/app/Core/pager';
+import { get } from 'http';
 
 @Component({
   selector: 'app-report-drivers',
@@ -20,22 +22,30 @@ import { DateTime } from '../../../Helper/DateTimeHelper';
   styleUrls: ['./report-drivers.component.scss'],
 })
 export class ReportDriversComponent
-  extends InputBase<DriverEntity, DriversManager, DriverFilter>
+  extends CRUDBase<DriverEntity, DriversManager, DriverFilter>
   implements OnInit, AfterViewInit {
+  constructor() {
+    super(DriversManager, DriverEntity);
+  }
+  @ViewChild(TwoColumnComponent) form: TwoColumnComponent;
+  public searchContent = '';
+
   /**
    * Danh sách properties override
    */
   public title = 'Danh sách lái xe';
   public modalTitle = 'Thêm mới lái xe';
   public reportTitle = 'Danh sách lái xe';
-  public reportDate = new DateTime(new Date()).toFormat();
-  public reportVehicle = 'Vehicles plate';
   public pageSize = 10;
-  @ViewChild(TwoColumnComponent) form: TwoColumnComponent;
+  public buttonNumber = 3;
 
-  constructor() {
-    super(DriversManager, DriverEntity);
-  }
+  // Phân quyền
+  public permissionKeyNameAdd = 1;
+  public permissionKeyNameOption = 2;
+  public permissionKeyNameUpdate = 3;
+  public permissionKeyNameDelete = 4;
+  public permissionKeyNameExport = 5;
+
   ngAfterViewInit(): void {
     this.getColumnsGridCustom();
   }
@@ -43,29 +53,38 @@ export class ReportDriversComponent
   // Hàm khởi tạo trang
   public ngOnInit(): void {}
 
+  /**
+   * Thiết lập thông tin đầu vào
+   * @param pager thông tin trang
+   */
+  setDataInput(pager: Pager): void {
+    super.setDataInput(pager);
+    this.baseManager.baseFilter.searchContent = this.searchContent;
+    this.baseManager.baseFilter.feildSum = this.baseManager.columnsSummaryItemsRequest.join(
+      ','
+    );
+  }
+
+  setHeaderReport(): void {
+    super.setHeaderReport();
+    this.reportContent = this.searchContent;
+  }
+
+  /**
+   * validate dữ liệu trước khi thêm mới / sửa
+   */
   validateDataBeChanged(): boolean {
     if (
-      (this.currentEntity.DisplayName === '' ||
-        this.currentEntity.DisplayName === undefined) &&
-      (this.currentEntity.EmployeeCode === '' ||
-        this.currentEntity.EmployeeCode === undefined)
+      (this.currentDataModel.DisplayName === '' ||
+        this.currentDataModel.DisplayName === undefined) &&
+      (this.currentDataModel.EmployeeCode === '' ||
+        this.currentDataModel.EmployeeCode === undefined)
     ) {
       return false;
     }
     return true;
   }
 
-  async create(entity: DriverEntity): Promise<boolean> {
-    return await this.baseManager.addNewDriver(entity);
-  }
-
-  async update(entity: DriverEntity): Promise<boolean> {
-    return await this.baseManager.updateDriver(entity);
-  }
-
-  async delete(id: any): Promise<boolean> {
-    return await this.baseManager.deleteDriver(id);
-  }
   // Hàm thực hiện lưu khi ấn nút lưu ở modal
   public async onSave_Click(saveType: SaveType): Promise<void> {
     if (!this.validateDataBeChanged()) {
@@ -77,11 +96,11 @@ export class ReportDriversComponent
     }
     // Theem moiws
     if (saveType === SaveType.create) {
-      const isSucess = await this.create(this.currentEntity);
+      const isSucess = await this.create(this.currentDataModel);
       if (!isSucess) {
         this.form.showMessageBox(
           MessageType.error,
-          'Thêm mới không thành công'
+          'Thêm mới lái xe không thành công'
         );
       } else {
         if (!this.form.isContinue) {
@@ -91,13 +110,13 @@ export class ReportDriversComponent
             MessageType.success,
             'Thêm mới lái xe thành công'
           );
-          this.currentEntity = new DriverEntity();
+          this.currentDataModel = new DriverEntity();
         }
         this.bindData();
       }
     } else if (saveType === SaveType.update) {
       // Cập nhật
-      const isSucess = await this.update(this.currentEntity);
+      const isSucess = await this.update(this.currentDataModel);
       if (!isSucess) {
         this.form.showMessageBox(
           MessageType.error,
@@ -111,13 +130,13 @@ export class ReportDriversComponent
             MessageType.success,
             'Cập nhật lái xe thành công'
           );
-          this.currentEntity = new DriverEntity();
+          this.currentDataModel = new DriverEntity();
         }
         this.bindData();
       }
     } else if (saveType === SaveType.delete) {
       // Remove
-      const isSucess = await this.delete(this.currentEntity.PK_EmployeeID);
+      const isSucess = await this.delete(this.currentDataModel.PK_EmployeeID);
       if (!isSucess) {
         this.form.showMessageBox(MessageType.error, 'Xóa không thành công');
       } else {
@@ -133,6 +152,7 @@ export class ReportDriversComponent
   public onCreate_Click(): void {
     this.modalTitle = 'Thêm mới lái xe';
   }
+
   /**
    * Sự kiện command trên lưới
    */
@@ -143,12 +163,12 @@ export class ReportDriversComponent
   }): void {
     switch (event.action) {
       case 'edit':
-        this.currentEntity = event.dataItem;
+        this.currentDataModel = event.dataItem;
         this.modalTitle = 'Sửa thông tin lái xe';
         this.form.edit();
         break;
       case 'remove':
-        this.currentEntity = event.dataItem;
+        this.currentDataModel = event.dataItem;
         this.modalTitle = 'Xóa thông tin lái xe';
         this.form.edit();
         break;

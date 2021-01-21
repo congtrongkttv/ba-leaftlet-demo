@@ -32,7 +32,10 @@ export class TwoColumnComponent implements OnInit {
   @Input() messageType: number;
   @Input() isShowMessageBox: boolean;
   @Input() isShowCustomColumn: boolean;
+  @Input() enableAdd: boolean;
+  @Input() enableOption: boolean;
   @Input() columnsCustom: { title: any; feild: any; checked: boolean }[];
+  public permissions = CurrentData.permissions;
   @ViewChild('mymodal', { static: true }) input: ElementRef;
 
   // Thêm mới hay cập nhật
