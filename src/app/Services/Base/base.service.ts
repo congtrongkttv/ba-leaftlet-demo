@@ -8,11 +8,11 @@ import { BaseFilter } from 'src/app/entities/Base/BaseFilter';
 export class BaseService<TEntity, TFilter> {
   constructor() {}
 
-  getData(filter: TFilter): Observable<TEntity[]> {
+  getData(filter: TFilter): Observable<any> {
     return null;
   }
 
-  getDetail(id: any): Observable<TEntity> {
+  getDetail(id: any): Observable<any> {
     return null;
   }
 

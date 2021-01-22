@@ -30,7 +30,8 @@ export class TwoColumnComponent implements OnInit {
   @Output() onSaveCustomColumns = new EventEmitter<any>();
   @Input() messageContent;
   @Input() messageType: number;
-  @Input() isShowMessageBox: boolean;
+  @Input() isShowMessagePopup: boolean;
+  @Input() isShowMessagePage: boolean;
   @Input() isShowCustomColumn: boolean;
   @Input() enableAdd: boolean;
   @Input() enableOption: boolean;
@@ -49,18 +50,29 @@ export class TwoColumnComponent implements OnInit {
   /**
    * Sự kieenj mowr modal để thêm mới
    */
-  create(): void {
+  create(size?: 'sm' | 'md' | 'lg' | 'xl' | string): void {
     this.isNew = true;
-    this.modalService.open(this.input, { ariaLabelledBy: 'modal-basic-title' });
+    this.isContinue = true;
+    this.modalService.open(this.input, {
+      backdrop: 'static',
+      size: size ?? 'md',
+      animation: true,
+      scrollable: true,
+    });
     // firing sang component cha để reset lại đối tượng đang làm việc
     this.onCreate.emit();
   }
   /**
    * Sự kieenj mowr modal để sửa
    */
-  edit(): void {
+  edit(size?: 'sm' | 'md' | 'lg' | 'xl' | string): void {
     this.isNew = false;
-    this.modalService.open(this.input, { ariaLabelledBy: 'modal-basic-title' });
+    this.modalService.open(this.input, {
+      backdrop: 'static',
+      size: size ?? 'md',
+      animation: true,
+      scrollable: true,
+    });
   }
   /**
    * Sự kieenj đóng modal
@@ -91,9 +103,7 @@ export class TwoColumnComponent implements OnInit {
    * Sự kiện ấn nút xóa
    */
   onDelete_Click(): void {
-    if (confirm('Bạn có muốn xóa lái xe này không?')) {
-      this.onSave.emit(SaveType.delete);
-    }
+    this.onSave.emit(SaveType.delete);
   }
 
   onSaveCustomColumns_Click(): void {
@@ -102,17 +112,36 @@ export class TwoColumnComponent implements OnInit {
   }
 
   // Hiển thị thông báo
-  showMessageBox(messageType: MessageType, content: string): void {
-    this.isShowMessageBox = true;
+  showMessageBoxOnPopup(messageType: MessageType, content: string): void {
+    this.isShowMessagePopup = true;
+    this.isShowMessagePage = false;
     this.messageContent = content;
     this.messageType = messageType;
     const timer = setTimeout(() => {
-      this.hideMessageBox();
+      this.hideMessageBoxOnPopup();
     }, 3000);
   }
   // ẩn thông báo
-  hideMessageBox(): void {
-    this.isShowMessageBox = false;
+  hideMessageBoxOnPopup(): void {
+    this.isShowMessagePopup = false;
+    this.isShowMessagePage = false;
+    this.messageContent = '';
+  }
+
+  // Hiển thị thông báo
+  showMessageBoxOnPage(messageType: MessageType, content: string): void {
+    this.isShowMessagePopup = false;
+    this.isShowMessagePage = true;
+    this.messageContent = content;
+    this.messageType = messageType;
+    const timer = setTimeout(() => {
+      this.hideMessageBoxOnPage();
+    }, 3000);
+  }
+  // ẩn thông báo
+  hideMessageBoxOnPage(): void {
+    this.isShowMessagePopup = false;
+    this.isShowMessagePage = false;
     this.messageContent = '';
   }
 

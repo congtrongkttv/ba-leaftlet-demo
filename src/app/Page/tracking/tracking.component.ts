@@ -488,6 +488,7 @@ export class CurrentData {
   ];
   public static CompanyID = 15076;
   public static UserID = '846abf4f-fb3e-4d04-9d7e-01ee491093c5';
+  public static Username = 'trongdc';
   public static XNCode = 7643;
   public static UserType = 1;
   public static CompanyType = 3;

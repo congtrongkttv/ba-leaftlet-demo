@@ -11,18 +11,26 @@
 >
   <div class="rightpanel-search">
     <!-- Bắt đầu control search ở đây -->
-    <table class="search-table-control">
-      <tr>
-        <td class="col-label">Lái xe</td>
-        <td colspan="3">
-          <input
-            type="text"
-            placeholder="Nhập nội dung tìm kiếm"
-            [(ngModel)]="searchContent"
-          />
-        </td>
-      </tr>
-    </table>
+    <div class="rightpanel-search-items">
+      <div class="col-label">Lái xe</div>
+      <div class="col-input">
+        <input
+          type="text"
+          placeholder="Nhập nội dung tìm kiếm"
+          [(ngModel)]="searchContent"
+        />
+      </div>
+    </div>
+
+    <div class="rightpanel-search-items">
+      <i
+        value="Tìm kiếm"
+        (click)="onSearch_Click()"
+        class="fa fa-search fa-button fa-button-blue"
+      >
+        Tìm kiếm</i
+      >
+    </div>
     <!-- kết thúc control search ở đây -->
   </div>
 
@@ -35,6 +43,7 @@
       [pageable]="true"
       [loading]="isLoading"
       [skip]="skip"
+      scrollable="none"
       (edit)="onRowComand_Click($event)"
       (remove)="onRowComand_Click($event)"
       (pageChange)="pageChange($event)"
@@ -68,69 +77,69 @@
         >
       </ng-template>
       <kendo-grid-column
-        field="rowIndex"
+        [headerClass]="'table-report-header'"
+        [class]="'table-report-body'"
+        [footerClass]="'table-report-header'"
         title="STT"
-        width="100"
-        [headerStyle]="{
-          'text-align': 'center'
-        }"
+        field="rowIndex"
+        width="50"
       >
         <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
           {{ rowIndex + 1 }}
         </ng-template>
       </kendo-grid-column>
       <kendo-grid-column
-        field="FK_CompanyID"
-        [headerStyle]="{
-          'text-align': 'center'
-        }"
-        title="Công ty"
+        [headerClass]="'table-report-header'"
+        [class]="'table-report-body'"
+        [footerClass]="'table-report-header'"
         [hidden]="!checkIsShowColumn('FK_CompanyID')"
+        field="FK_CompanyID"
+        title="Công ty"
       >
         <ng-template
           kendoGridFooterTemplate
-          *ngIf="baseManager.columnsSummaryItemsRequest.length > 0"
+          *ngIf="baseManager.columnsSummaryItems.length > 0"
         >
           {{ columnsSummaryItemsResponse.column1 }}
         </ng-template>
       </kendo-grid-column>
       <kendo-grid-column
-        [headerStyle]="{
-          'text-align': 'center'
-        }"
+        [headerClass]="'table-report-header'"
+        [class]="'table-report-body'"
+        [footerClass]="'table-report-header'"
         field="DisplayName"
         title="Tên hiển thị"
         [hidden]="!checkIsShowColumn('DisplayName')"
       >
       </kendo-grid-column>
       <kendo-grid-column
-        [headerStyle]="{
-          'text-align': 'center'
-        }"
+        [headerClass]="'table-report-header'"
+        [class]="'table-report-body'"
+        [footerClass]="'table-report-header'"
         field="Name"
         title="Tên"
         [hidden]="!checkIsShowColumn('Name')"
       >
       </kendo-grid-column>
       <kendo-grid-column
-        [headerStyle]="{
-          'text-align': 'center'
-        }"
+        [headerClass]="'table-report-header'"
+        [class]="'table-report-body'"
+        [footerClass]="'table-report-header'"
         field="FK_DepartmentID"
         title="Phòng ban"
         [hidden]="!checkIsShowColumn('FK_DepartmentID')"
       >
         <ng-template
           kendoGridFooterTemplate
-          *ngIf="baseManager.columnsSummaryItemsRequest.length > 0"
+          *ngIf="baseManager.columnsSummaryItems.length > 0"
         >
           {{ columnsSummaryItemsResponse.column4 }}
         </ng-template>
       </kendo-grid-column>
       <kendo-grid-column
-        [headerStyle]="{
-          'text-align': 'center'
-        }"
+        [headerClass]="'table-report-header'"
+        [class]="'table-report-body'"
+        [footerClass]="'table-report-header'"
         field="EmployeeCode"
         title="Mã LX"
         [hidden]="!checkIsShowColumn('EmployeeCode')"
@@ -138,54 +147,58 @@
       </kendo-grid-column>
 
       <kendo-grid-column
-        [headerStyle]="{
-          'text-align': 'center'
-        }"
+        [headerClass]="'table-report-header'"
+        [class]="'table-report-body'"
+        [footerClass]="'table-report-header'"
         field="Flags"
         title="Flags"
         [hidden]="!checkIsShowColumn('Flags')"
       >
         <ng-template
           kendoGridFooterTemplate
-          *ngIf="baseManager.columnsSummaryItemsRequest.length > 0"
+          *ngIf="baseManager.columnsSummaryItems.length > 0"
         >
           {{ columnsSummaryItemsResponse.column6 }}
         </ng-template>
       </kendo-grid-column>
       <kendo-grid-command-column
         field="command"
-        [headerStyle]="{
-          'text-align': 'center'
-        }"
+        [headerClass]="'table-report-header'"
+        [class]="'table-report-body'"
+        [footerClass]="'table-report-header'"
         title="Sửa"
-        width="70"
+        width="50"
         [hidden]="
           !checkIsShowColumn('command') ||
           !hasPermission(permissionKeyNameUpdate)
         "
       >
         <ng-template kendoGridCellTemplate let-dataItems="dataItems">
-          <i class="fa fa-edit" kendoGridEditCommand aria-hidden="true"
-            ><i class="fa fa-edit" aria-hidden="true"></i
-          ></i>
+          <button kendoGridEditCommand>
+            <i class="fa fa-edit" aria-hidden="true"></i>
+          </button>
         </ng-template>
       </kendo-grid-command-column>
       <kendo-grid-command-column
-        field="command"
-        [headerStyle]="{
-          'text-align': 'center'
-        }"
+        [headerClass]="'table-report-header'"
+        [class]="'table-report-body'"
+        [footerClass]="'table-report-header'"
         title="Xóa"
-        width="65"
+        field="command"
+        width="50"
         [hidden]="
           !checkIsShowColumn('command') ||
           !hasPermission(permissionKeyNameDelete)
         "
       >
         <ng-template kendoGridCellTemplate let-dataItems="dataItems">
-          <i class="fa fa-trash" kendoGridRemoveCommand aria-hidden="true"
-            ><i class="fa fa-trash" aria-hidden="true"></i
-          ></i>
+          <button kendoGridRemoveCommand>
+            <i
+              class="fa fa-trash"
+              aria-hidden="true"
+              style="font-size: 15px"
+            ></i>
+          </button>
         </ng-template>
       </kendo-grid-command-column>
       <kendo-grid-excel
@@ -200,7 +213,7 @@
       >
         <kendo-pager-prev-buttons></kendo-pager-prev-buttons>
         <kendo-pager-numeric-buttons
-          [buttonCount]="buttonNumber"
+          [buttonCount]="buttonCount"
         ></kendo-pager-numeric-buttons>
         <kendo-pager-next-buttons></kendo-pager-next-buttons>
         <kendo-pager-info></kendo-pager-info>
@@ -211,38 +224,7 @@
 
   <div class="modal-content">
     <!-- Bắt đầu cho modal ở đây -->
-    <table>
-      <tr>
-        <td class="col-label">Mã lái xe</td>
-        <td>
-          <input
-            type="text"
-            placeholder="Nhập mã lái xe"
-            [(ngModel)]="currentDataModel.EmployeeCode"
-          />
-        </td>
-      </tr>
-      <tr>
-        <td class="col-label">Tên hiển thị</td>
-        <td>
-          <input
-            type="text"
-            placeholder="Nhập tên hiển thị"
-            [(ngModel)]="currentDataModel.DisplayName"
-          />
-        </td>
-      </tr>
-      <tr>
-        <td class="col-label">Tên</td>
-        <td>
-          <input
-            type="text"
-            placeholder="Nhập tên"
-            [(ngModel)]="currentDataModel.Name"
-          />
-        </td>
-      </tr>
-    </table>
+    <app-driver-edit [entity]="currentDataModel"></app-driver-edit>
     <!-- Kết thúc cho modal ở đây -->
   </div>
 </app-two-column>

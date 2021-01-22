@@ -25,6 +25,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { OneColumnComponent } from './Page/Report/BaseReport/one-column/one-column.component';
 import { ReportUsersComponent } from './Page/Report/report-users/report-users.component';
 import { FilterPipePipe } from './pipe/filter-pipe.pipe';
+import { DriverEditComponent } from './Page/Report/report-drivers/driver-edit/driver-edit.component';
+import { DropDownsModule } from '@progress/kendo-angular-dropdowns';
 
 export let AppInjector: Injector;
 
@@ -42,6 +44,7 @@ export let AppInjector: Injector;
     ReportUsersComponent,
     TwoColumnComponent,
     OneColumnComponent,
+    DriverEditComponent,
   ],
   imports: [
     BrowserModule,
@@ -56,6 +59,7 @@ export let AppInjector: Injector;
     BrowserAnimationsModule,
     ExcelModule,
     PDFModule,
+    DropDownsModule,
   ],
   providers: [],
   bootstrap: [AppComponent],

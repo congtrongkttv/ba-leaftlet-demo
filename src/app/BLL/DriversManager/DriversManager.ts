@@ -14,7 +14,7 @@ export class DriversManager extends BaseManager<DriverEntity, DriverFilter> {
   }
   baseService: DriverService;
   // Ds các cột cần tính tổng
-  columnsSummaryItemsRequest = ['FK_CompanyID', 'FK_DepartmentID', 'Flags'];
+  columnsSummaryItems = ['FK_CompanyID', 'FK_DepartmentID', 'Flags'];
 
   columnsGridCustom = [
     { title: 'Công ty', feild: 'FK_CompanyID', checked: false },

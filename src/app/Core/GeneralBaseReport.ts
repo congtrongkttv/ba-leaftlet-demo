@@ -229,7 +229,9 @@ export class GeneralBaseReport<
         this.reportTitle,
         this.reportDate,
         this.reportVehicle,
-        this.reportContent
+        this.reportContent,
+        this.convertUnicodeToStringNotAccented(this.reportTitle),
+        {}
       );
       exportHelper.customExportExcel(e, grid);
     } else {
@@ -238,7 +240,8 @@ export class GeneralBaseReport<
         this.reportTitle,
         this.reportDate,
         this.reportVehicle,
-        this.reportContent
+        this.reportContent,
+        this.convertUnicodeToStringNotAccented(this.reportTitle)
       );
       exportHelper.exportExcelFromServer();
     }
@@ -274,6 +277,12 @@ export class GeneralBaseReport<
       if (this.baseManager.columnsSummaryItems.length > 0) {
         this.columnsSummaryItemsResponse = await this.getSummaryItems();
       }
+      this.reportName =
+        this.convertUnicodeToStringNotAccented(this.reportTitle) +
+        '_' +
+        CurrentData.Username +
+        '_' +
+        new DateTime(new Date()).toFormat('dd_MM_yyyy_HH_mm_ss');
       this.isLoading = false;
     }
   }
@@ -298,7 +307,7 @@ export class GeneralBaseReport<
   /**
    * Sự kiện lưu cấu hình ẩn hiện cột
    */
-  onSaveCustomColumns_Click(): void {
+  public onSaveCustomColumns_Click(): void {
     this.baseManager.saveCustomColumns();
   }
 
@@ -306,10 +315,25 @@ export class GeneralBaseReport<
    * Kiểm tra xem cột có được ẩn hiện không?
    * @param feild Tên trường cần kiểm tra
    */
-  checkIsShowColumn(feild: string): boolean {
+  public checkIsShowColumn(feild: string): boolean {
     return this.baseManager.columnsGridCustom.filter(
       (x) => x.feild === feild
     )[0]?.checked;
+  }
+
+  public convertUnicodeToStringNotAccented(text: string): string {
+    let outPut = text;
+    outPut = outPut.toLowerCase();
+    outPut = outPut.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g, 'a');
+    outPut = outPut.replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ/g, 'e');
+    outPut = outPut.replace(/ì|í|ị|ỉ|ĩ/g, 'i');
+    outPut = outPut.replace(/ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ/g, 'o');
+    outPut = outPut.replace(/ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ/g, 'u');
+    outPut = outPut.replace(/ỳ|ý|ỵ|ỷ|ỹ/g, 'y');
+    outPut = outPut.replace(/đ/g, 'd');
+    outPut = outPut.replace(/^\-+|\-+$/g, '');
+    outPut = outPut.replace(/ /g, '_');
+    return outPut;
   }
   //#endregion
 }

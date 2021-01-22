@@ -1,23 +1,26 @@
 <div class="form-base">
-  <div class="form-base-col form-base-col-leftpanel" *ngIf="false"></div>
   <div class="form-base-col form-base-col-rightpanel">
     <div class="rightpanel-titlepanel">
       <label>{{ pageTitle }}</label>
       <div class="rightpanel-titlepanel-button">
         <i
-          class="fa fa-plus"
+          class="fa fa-plus fa-button fa-button-white"
           aria-hidden="true"
           title="Thêm mới lái xe"
           *ngIf="enableAdd"
-          (click)="create()"
-        ></i>
+          (click)="create('md')"
+        >
+          Thêm mới</i
+        >
         <i
-          class="fa fa-bars"
+          class="fa fa-bars fa-button fa-button-white"
           aria-hidden="true"
           title="Ẩn hiện cột"
           *ngIf="enableOption"
           (click)="showCustomColumn()"
-        ></i>
+        >
+          Ẩn hiện cột</i
+        >
         <div class="rightpanel-optionpanel-checkbox" *ngIf="isShowCustomColumn">
           <div class="rightpanel-optionpanel-checkbox-cbx">
             <div *ngFor="let item of columnsCustom">
@@ -34,29 +37,32 @@
             <input
               type="button"
               value="Lưu"
-              class="button-sm"
+              class="button button-primary"
               (click)="onSaveCustomColumns_Click()"
             />
           </div>
         </div>
       </div>
     </div>
-
-    <div class="rightpanel-searchpanel">
-      <div>
+    <div class="right-panel-body">
+      <div class="rightpanel-searchpanel">
         <ng-content select=".rightpanel-search"></ng-content>
+        <div class="rightpanel-buttonpanel"></div>
       </div>
-      <div class="rightpanel-buttonpanel">
-        <input
-          type="button"
-          value="Tìm kiếm"
-          (click)="onSearch_Click()"
-          class="button"
-        />
+      <div class="rightpanel-datapanel">
+        <div
+          *ngIf="isShowMessagePage"
+          [ngClass]="{
+            'modal-message-success': messageType === 1,
+            'modal-message-error': messageType === 2,
+            'modal-message-info': messageType === 3,
+            'modal-message-warning': messageType === 4
+          }"
+        >
+          {{ messageContent }}
+        </div>
+        <ng-content select=".rightpanel-data"></ng-content>
       </div>
-    </div>
-    <div class="rightpanel-datapanel">
-      <ng-content select=".rightpanel-data"></ng-content>
     </div>
   </div>
 </div>
@@ -70,9 +76,9 @@
     ></i>
   </div>
   <div
-    *ngIf="isShowMessageBox"
+    *ngIf="isShowMessagePopup"
     [ngClass]="{
-      'modal-message-success ': messageType === 1,
+      'modal-message-success': messageType === 1,
       'modal-message-error': messageType === 2,
       'modal-message-info': messageType === 3,
       'modal-message-warning': messageType === 4
@@ -88,26 +94,26 @@
     <input
       type="button"
       value="Lưu"
-      class="button"
+      class="button button-primary"
       (click)="onSave_Click(false)"
     />
     <input
       type="button"
       value="Lưu và thêm mới"
-      class="button"
+      class="button button-primary"
       (click)="onSave_Click(true)"
     />
     <input
       type="button"
       value="Xóa"
-      class="button-dangerous"
+      class="button button-dangerous"
       *ngIf="!isNew"
       (click)="onDelete_Click()"
     />
     <input
       type="button"
       value="Đóng"
-      class="button"
+      class="button button-primary"
       (click)="modal.dismiss('Cross click')"
     />
   </div>

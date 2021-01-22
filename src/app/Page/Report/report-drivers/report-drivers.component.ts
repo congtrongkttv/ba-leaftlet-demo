@@ -15,6 +15,7 @@ import { SaveType } from '../../../Enum/save-type.enum';
 import { DateTime } from '../../../Helper/DateTimeHelper';
 import { Pager } from 'src/app/Core/pager';
 import { get } from 'http';
+import { FieldsControl } from 'src/app/Helper/fields-control';
 
 @Component({
   selector: 'app-report-drivers',
@@ -37,7 +38,6 @@ export class ReportDriversComponent
   public modalTitle = 'Thêm mới lái xe';
   public reportTitle = 'Danh sách lái xe';
   public pageSize = 10;
-  public buttonNumber = 3;
 
   // Phân quyền
   public permissionKeyNameAdd = 1;
@@ -60,7 +60,7 @@ export class ReportDriversComponent
   setDataInput(pager: Pager): void {
     super.setDataInput(pager);
     this.baseManager.baseFilter.searchContent = this.searchContent;
-    this.baseManager.baseFilter.feildSum = this.baseManager.columnsSummaryItemsRequest.join(
+    this.baseManager.baseFilter.feildSum = this.baseManager.columnsSummaryItems.join(
       ','
     );
   }
@@ -88,7 +88,7 @@ export class ReportDriversComponent
   // Hàm thực hiện lưu khi ấn nút lưu ở modal
   public async onSave_Click(saveType: SaveType): Promise<void> {
     if (!this.validateDataBeChanged()) {
-      this.form.showMessageBox(
+      this.form.showMessageBoxOnPopup(
         MessageType.warning,
         'Chưa điền đầy đủ thông tin'
       );
@@ -98,50 +98,66 @@ export class ReportDriversComponent
     if (saveType === SaveType.create) {
       const isSucess = await this.create(this.currentDataModel);
       if (!isSucess) {
-        this.form.showMessageBox(
+        this.form.showMessageBoxOnPopup(
           MessageType.error,
           'Thêm mới lái xe không thành công'
         );
       } else {
         if (!this.form.isContinue) {
+          this.form.showMessageBoxOnPage(
+            MessageType.success,
+            'Thêm mới lái xe thành công'
+          );
           this.form.close();
         } else {
-          this.form.showMessageBox(
+          this.form.showMessageBoxOnPopup(
             MessageType.success,
             'Thêm mới lái xe thành công'
           );
           this.currentDataModel = new DriverEntity();
         }
+
         this.bindData();
       }
     } else if (saveType === SaveType.update) {
       // Cập nhật
       const isSucess = await this.update(this.currentDataModel);
       if (!isSucess) {
-        this.form.showMessageBox(
+        this.form.showMessageBoxOnPopup(
           MessageType.error,
           'Cập nhật không thành công'
         );
       } else {
         if (!this.form.isContinue) {
           this.form.close();
+          this.form.showMessageBoxOnPage(
+            MessageType.success,
+            'Cập nhật lái xe thành công'
+          );
         } else {
-          this.form.showMessageBox(
+          this.form.showMessageBoxOnPopup(
             MessageType.success,
             'Cập nhật lái xe thành công'
           );
           this.currentDataModel = new DriverEntity();
         }
+
         this.bindData();
       }
     } else if (saveType === SaveType.delete) {
       // Remove
-      const isSucess = await this.delete(this.currentDataModel.PK_EmployeeID);
-      if (!isSucess) {
-        this.form.showMessageBox(MessageType.error, 'Xóa không thành công');
-      } else {
-        this.form.close();
-        this.bindData();
+      if (confirm('Bạn có muốn xóa lái xe này không?')) {
+        const isSucess = await this.delete(this.currentDataModel.PK_EmployeeID);
+        if (!isSucess) {
+          this.form.showMessageBoxOnPopup(
+            MessageType.error,
+            'Xóa không thành công'
+          );
+        } else {
+          this.form.showMessageBoxOnPage(MessageType.success, 'Xóa thành công');
+          this.form.close();
+          this.bindData();
+        }
       }
     }
   }

@@ -6,6 +6,7 @@ import { GeneralBaseReport } from './GeneralBaseReport';
 import { Pager } from './pager';
 import { SaveType } from '../Enum/save-type.enum';
 import { Observable } from 'rxjs';
+import { FieldsControl } from '../Helper/fields-control';
 export class CRUDBase<
   TEntity extends BaseEntity,
   TManager extends BaseManager<TEntity, TFilter>,
@@ -21,6 +22,7 @@ export class CRUDBase<
 
   public currentDataModel: TEntity = new this.cObj();
 
+  // Validate dữ liệu khi thêm mới hoặc cập nhật
   public validateDataBeChanged(): boolean {
     return true;
   }
@@ -44,10 +46,29 @@ export class CRUDBase<
   public async lock(entity: TEntity): Promise<boolean> {
     return true;
   }
+
+  /**
+   * Sự kiện ấn nút thêm mới để mở popup
+   */
   public onCreate_Click(): void {
+    // Khởi tọa lại đối tượng đang làm việc
     this.currentDataModel = new this.cObj();
   }
+
+  /**
+   * Sự kiện khi bấm nút lưu
+   * @param saveType kiểu action thêm | Sửa | Xóa
+   */
   public async onSave_Click(saveType: SaveType): Promise<void> {}
+
+  /**
+   * sự kiện ấn nút trên lưới
+   * @param event Kiểu sửa | xóa
+   */
   public onRowComand_Click(event: any): void {}
+
+  /**
+   * Sự kiện khóa
+   */
   public onLock_Click(): void {}
 }
