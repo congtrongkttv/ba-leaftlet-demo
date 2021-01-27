@@ -1,21 +1,36 @@
 import { BaseManager } from '../BLL/BaseManager/BaseManager';
 import { BaseEntity } from '../entities/Base/BaseEntity';
 import { BaseFilter } from '../entities/Base/BaseFilter';
-import { GeneralBaseReport } from './GeneralBaseReport';
+import { GeneralBaseReport } from './general-base-report';
 import { SaveType } from '../Enum/save-type.enum';
 export class CRUDBase<
   TEntity extends BaseEntity,
   TManager extends BaseManager<TEntity, TFilter>,
   TFilter extends BaseFilter
 > extends GeneralBaseReport<TEntity, TManager, TFilter> {
+  /**
+   * Qyền thêm mới
+   */
   public permissionKeyNameAdd: number;
 
+  /**
+   * Quyền sửa
+   */
   public permissionKeyNameUpdate: number;
 
+  /**
+   * Quyền xóa
+   */
   public permissionKeyNameDelete: number;
 
+  /**
+   * Thêm mới hay sửa
+   */
   public isNew: boolean;
 
+  /**
+   * ĐỐi tượng đang được làm việc
+   */
   public currentDataModel: TEntity = new this.cObj();
 
   // Validate dữ liệu khi thêm mới hoặc cập nhật
@@ -23,10 +38,17 @@ export class CRUDBase<
     return true;
   }
 
+  /**
+   * Hàm lấy chi tiết
+   */
   public getDetail(): TEntity {
     return null;
   }
 
+  /**
+   * Hàm themem ới
+   * @param entity Đói tượng thêm mới
+   */
   public async create(entity: TEntity): Promise<boolean> {
     if (this.validateDataBeChanged()) {
       return this.baseManager.addNew(entity);
@@ -34,6 +56,10 @@ export class CRUDBase<
     return false;
   }
 
+  /**
+   * Hàm cập nhật
+   * @param entity Đối tượng cần cập nhật
+   */
   public async update(entity: TEntity): Promise<boolean> {
     if (this.validateDataBeChanged()) {
       return this.baseManager.update(entity);
@@ -41,10 +67,17 @@ export class CRUDBase<
     return false;
   }
 
+  /**
+   * Hàm xóa
+   * @param id Mã truyền vào để xóa
+   */
   public async delete(id: any): Promise<boolean> {
     return this.baseManager.delete(id);
   }
 
+  /**
+   * Hàm KHóa
+   */
   public async lock(entity: TEntity): Promise<boolean> {
     return true;
   }

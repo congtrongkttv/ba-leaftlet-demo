@@ -15,23 +15,24 @@ import {
 } from '@progress/kendo-angular-grid';
 import { Observable, zip } from 'rxjs';
 import { saveAs } from '@progress/kendo-file-saver';
+import { ExportStyleOption } from './export-style-option';
+import { CurrentData } from '../Page/tracking/tracking.component';
+import { DateTime } from './DateTimeHelper';
 
 export class ExportHelper {
   constructor(
-    private reportTitle: string,
-    private reportDate: string,
-    private reportVehicle: string,
-    private reportContent: string,
-    private sheetName: string,
-    private reportList: any,
-    private baseComponent: any,
+    private stypeOption?: ExportStyleOption,
     private option?: ExportOption
   ) {}
-
+  /**
+   * Xuất excel
+   * @param e event xuất excel
+   * @param grid đối tượng cần xuất excel
+   */
   public customExportExcel(e: ExcelExportEvent, grid: GridComponent): void {
     const workbook: Workbook = e.workbook;
     const sheet: WorkbookSheet = workbook.sheets[0];
-    sheet.name = this.sheetName;
+    sheet.name = this.option?.sheetName;
     const rows = sheet.rows;
 
     e.workbook.sheets[0].freezePane = null;
@@ -52,40 +53,24 @@ export class ExportHelper {
     // Chỉnh border  và căn giữa từng ô 1
     rows.forEach((row: WorkbookSheetRow) => {
       row.cells.forEach((cell: WorkbookSheetRowCell) => {
-        cell.borderBottom = { color: '#666664', size: 1 };
-        cell.borderLeft = { color: '#666664', size: 1 };
-        cell.borderRight = { color: '#666664', size: 1 };
-        cell.borderTop = { color: '#666664', size: 1 };
-        cell.textAlign = 'center';
-        cell.wrap = this.option?.wrap ?? true;
-        cell.fontFamily = this.option?.fontFamily ?? 'Calibri';
-        cell.fontSize = this.option?.fontSize ?? 14;
+        this.setStyleCellCommon(cell);
       });
     });
     // Cho dòng header căn giữa và đậm lên
     rows[0].height = 30;
     rows[0].cells.forEach((cell: WorkbookSheetRowCell) => {
-      cell.bold = this.option?.headerBold ?? true;
-      cell.textAlign = this.option?.headerAlignText ?? 'center';
-      cell.verticalAlign = this.option?.headerVerticalAlignText ?? 'center';
-      cell.fontSize = this.option?.headerFontSize ?? 17;
-      cell.background = this.option?.headerBackground ?? '#ffffff';
-      cell.color = this.option?.headerColor ?? '#000000';
+      this.setStyleCellHeader(cell);
     });
     if (this.option?.isSummary) {
       // Cho dòng summary căn giữa và đậm lên
       rows[rows.length - 1].height = 30;
       rows[rows.length - 1].cells.forEach((cell: WorkbookSheetRowCell) => {
-        cell.bold = this.option?.footerBold ?? true;
-        cell.textAlign = this.option?.footerAlignText ?? 'center';
-        cell.verticalAlign = this.option?.footerVerticalAlignText ?? 'center';
-        cell.fontSize = this.option?.footerFontSize ?? 15;
-        cell.background = this.option?.footerBackground ?? '#e3e3e3';
-        cell.color = this.option?.footerColor ?? 'black';
+        this.setStyleCellSummary(cell);
       });
     }
+
     // Thêm dòng nội dung tìm kiếm
-    if (this.reportContent !== '') {
+    if (this.option?.reportContent !== '') {
       rows.unshift({
         cells: [
           {
@@ -95,50 +80,53 @@ export class ExportHelper {
       });
       rows.unshift({
         cells: [
-          {
-            value: this.reportContent,
-            colSpan: numberColumns,
-            rowSpan: 1,
-            textAlign: 'center',
-            verticalAlign: 'center',
-            bold: false,
-            fontSize: this.option?.fontSize ?? 14,
-            wrap: true,
-          },
+          this.createCell(
+            this.option?.reportContent,
+            numberColumns,
+            1,
+            'center',
+            'center',
+            false,
+            this.stypeOption?.fontSize ?? 14,
+            true,
+            'black'
+          ),
         ],
       });
     }
 
     // Thêm dòng xe / nhóm xe
-    if (this.reportVehicle !== '') {
+    if (this.option?.reportVehicle !== '') {
       rows.unshift({
         cells: [
-          {
-            value: this.reportVehicle,
-            colSpan: numberColumns,
-            rowSpan: 1,
-            textAlign: 'center',
-            verticalAlign: 'center',
-            bold: false,
-            fontSize: this.option?.fontSize ?? 14,
-            wrap: true,
-          },
+          this.createCell(
+            this.option?.reportVehicle,
+            numberColumns,
+            1,
+            'center',
+            'center',
+            false,
+            this.stypeOption?.fontSize ?? 14,
+            true,
+            'black'
+          ),
         ],
       });
     }
     // Thêm dòng ngày tháng
     rows.unshift({
       cells: [
-        {
-          value: this.reportDate,
-          colSpan: numberColumns,
-          rowSpan: 1,
-          textAlign: 'center',
-          verticalAlign: 'center',
-          bold: false,
-          fontSize: this.option?.fontSize ?? 14,
-          wrap: true,
-        },
+        this.createCell(
+          this.option?.reportDate,
+          numberColumns,
+          1,
+          'center',
+          'center',
+          false,
+          this.stypeOption?.fontSize ?? 14,
+          true,
+          'black'
+        ),
       ],
     });
     // Thêm dòng tiêu đề
@@ -147,21 +135,25 @@ export class ExportHelper {
     });
     rows.unshift({
       cells: [
-        {
-          value: this.reportTitle.toUpperCase(),
-          colSpan: numberColumns,
-          rowSpan: 2,
-          textAlign: 'center',
-          verticalAlign: 'center',
-          bold: this.option?.titleBold ?? true,
-          fontSize: this.option?.titlefontSize ?? 18,
-          wrap: true,
-          color: this.option?.titleColor ?? 'black',
-        },
+        this.createCell(
+          this.option?.reportTitle.toUpperCase(),
+          numberColumns,
+          2,
+          'center',
+          'center',
+          this.stypeOption?.titleBold ?? true,
+          this.stypeOption?.titlefontSize ?? 18,
+          true,
+          this.stypeOption?.titleColor ?? 'black'
+        ),
       ],
     });
   }
-
+  /**
+   * Xuất excel với master detail
+   * @param e event xuất excel
+   * @param grid đối tượng cần xuất excel
+   */
   public customExportExcelMasterDetail(
     args: ExcelExportEvent,
     grid: GridComponent
@@ -169,25 +161,24 @@ export class ExportHelper {
     // Prevent automatically saving the file. We will save it manually after we fetch and add the details
     args.preventDefault();
     const observables = [];
-
     const workbook: Workbook = args.workbook;
     const sheet: WorkbookSheet = workbook.sheets[0];
-    sheet.name = this.sheetName;
+    sheet.name = this.option?.sheetName;
     const rows = sheet.rows;
 
-    // Chỉ lấy nhwungx cột dữ liệu, bỏ những cột command đi
+    // Lấy số cột của grid để merge dòng title
     // CommandColumnComponent không có trường 'filterable' =))
     const numberColumnsMaster = grid.columnList.filter(
       (x: ColumnComponent) => !x.hidden && x.filterable !== undefined
     ).length;
-    const numberColumnsDetail = this.baseComponent.baseManager.columnDetail
-      .length;
+    const numberColumnsDetail = this.option?.baseComponent.baseManager
+      .columnDetail.length;
     const numberColumns =
       numberColumnsMaster > numberColumnsDetail
         ? numberColumnsMaster
         : numberColumnsDetail + 1;
 
-    // Chỉnh border  và căn giữa từng ô 1
+    // Chỉnh border  và căn giữa từng ô 1 trước khi add phần detail và title vào
     rows.forEach((row: WorkbookSheetRow) => {
       row.cells.forEach((cell: WorkbookSheetRowCell) => {
         cell.borderBottom = { color: '#666664', size: 1 };
@@ -195,12 +186,14 @@ export class ExportHelper {
         cell.borderRight = { color: '#666664', size: 1 };
         cell.borderTop = { color: '#666664', size: 1 };
         cell.textAlign = 'center';
-        cell.wrap = this.option?.wrap ?? true;
-        cell.fontFamily = this.option?.fontFamily ?? 'Calibri';
-        cell.fontSize = this.option?.fontSize ?? 14;
+        cell.wrap = this.stypeOption?.wrap ?? true;
+        cell.fontFamily = this.stypeOption?.fontFamily ?? 'Calibri';
+        cell.fontSize = this.stypeOption?.fontSize ?? 14;
         cell.background = '#6be5f2';
       });
     });
+
+    // Nếu lưới master ít cột hơn thì append cột vào cho bằng với lưới detail
     if (numberColumnsMaster <= numberColumnsDetail) {
       let cols = numberColumnsDetail - numberColumnsMaster + 1;
       for (let idx = 0; idx < cols; idx++) {
@@ -211,9 +204,9 @@ export class ExportHelper {
             borderRight: { color: '#666664', size: 1 },
             borderTop: { color: '#666664', size: 1 },
             textAlign: 'center',
-            wrap: this.option?.wrap ?? true,
-            fontFamily: this.option?.fontFamily ?? 'Calibri',
-            fontSize: this.option?.fontSize ?? 14,
+            wrap: this.stypeOption?.wrap ?? true,
+            fontFamily: this.stypeOption?.fontFamily ?? 'Calibri',
+            fontSize: this.stypeOption?.fontSize ?? 14,
             background: '#6be5f2',
           });
         });
@@ -226,12 +219,14 @@ export class ExportHelper {
     const headerOptions = rows[0].cells[0];
 
     // const data = this.allCategories;
-    const data = this.reportList.data;
+    const data = this.option?.reportList.data;
 
-    // Fetch the data for all details
+    // Lấy dữ liệu chi tiết cho lưới detail
     // tslint:disable-next-line: prefer-for-of
     for (let idx = 0; idx < data.length; idx++) {
-      observables.push(this.baseComponent.getDataDetailMaster(data[idx]));
+      observables.push(
+        this.option?.baseComponent.getDataDetailMaster(data[idx])
+      );
     }
 
     // tslint:disable-next-line: deprecation
@@ -240,6 +235,7 @@ export class ExportHelper {
       // loop backwards in order to avoid changing the rows index
       for (let idx = result.length - 1; idx >= 0; idx--) {
         const detail = <any>result[idx];
+        // Số dòng dữ liệu của lưới detail ứng với từng dòng của lưới master
         const numberRowDetail = detail.data.length;
         // add the detail data
         for (let i = detail.data.length - 1; i >= 0; i--) {
@@ -248,20 +244,23 @@ export class ExportHelper {
           if (i === 0) {
             cellDetail.push({ rowSpan: i === 0 ? numberRowDetail : 0 });
           }
-          this.baseComponent.baseManager.columnDetail.forEach((element) => {
-            cellDetail.push({
-              value: dataDetail[element.field],
-              textAlign: 'center',
-              verticalAlign: 'center',
-              borderBottom: { color: '#666664', size: 1 },
-              borderLeft: { color: '#666664', size: 1 },
-              borderRight: { color: '#666664', size: 1 },
-              borderTop: { color: '#666664', size: 1 },
-            });
-          });
+          this.option?.baseComponent.baseManager.columnDetail.forEach(
+            (element) => {
+              cellDetail.push({
+                value: dataDetail[element.field],
+                textAlign: 'center',
+                verticalAlign: 'center',
+                borderBottom: { color: '#666664', size: 1 },
+                borderLeft: { color: '#666664', size: 1 },
+                borderRight: { color: '#666664', size: 1 },
+                borderTop: { color: '#666664', size: 1 },
+              });
+            }
+          );
+          // Nếu lưới detail ít cột hơn thì append cột vào cho bằng với lưới master
           if (numberColumnsMaster > numberColumnsDetail) {
-            let cols = numberColumnsMaster - numberColumnsDetail - 1;
-            for (let idx = 0; idx < cols; idx++) {
+            const cols = numberColumnsMaster - numberColumnsDetail - 1;
+            for (let j = 0; j < cols; j++) {
               cellDetail.push({
                 textAlign: 'center',
                 verticalAlign: 'center',
@@ -280,27 +279,30 @@ export class ExportHelper {
         // add the detail header
         const cellHeader: any[] = [];
         cellHeader.push({});
-        this.baseComponent.baseManager.columnDetail.forEach((element) => {
-          cellHeader.push({
-            value: element.title,
-            rowSpan: 1,
-            textAlign: 'center',
-            verticalAlign: 'center',
-            bold: true,
-            fontSize: this.option?.fontSize ?? 13,
-            wrap: true,
-            background: this.option?.headerBackground ?? '#d1d1d1',
-            borderBottom: { color: '#666664', size: 1 },
-            borderLeft: { color: '#666664', size: 1 },
-            borderRight: { color: '#666664', size: 1 },
-            borderTop: { color: '#666664', size: 1 },
-          });
-        });
-        if (numberColumnsMaster > numberColumnsDetail) {
-          let cols = numberColumnsMaster - numberColumnsDetail - 1;
-          for (let idx = 0; idx < cols; idx++) {
+        this.option?.baseComponent.baseManager.columnDetail.forEach(
+          (element) => {
             cellHeader.push({
-              background: this.option?.headerBackground ?? '#d1d1d1',
+              value: element.title,
+              rowSpan: 1,
+              textAlign: 'center',
+              verticalAlign: 'center',
+              bold: true,
+              fontSize: this.stypeOption?.fontSize ?? 13,
+              wrap: true,
+              background: this.stypeOption?.headerBackground ?? '#d1d1d1',
+              borderBottom: { color: '#666664', size: 1 },
+              borderLeft: { color: '#666664', size: 1 },
+              borderRight: { color: '#666664', size: 1 },
+              borderTop: { color: '#666664', size: 1 },
+            });
+          }
+        );
+        // Nếu lưới detail ít cột hơn thì append cột vào cho bằng với lưới master
+        if (numberColumnsMaster > numberColumnsDetail) {
+          const cols = numberColumnsMaster - numberColumnsDetail - 1;
+          for (let i = 0; i < cols; i++) {
+            cellHeader.push({
+              background: this.stypeOption?.headerBackground ?? '#d1d1d1',
               borderBottom: { color: '#666664', size: 1 },
               borderLeft: { color: '#666664', size: 1 },
               borderRight: { color: '#666664', size: 1 },
@@ -329,27 +331,29 @@ export class ExportHelper {
       // Cho dòng header căn giữa và đậm lên
       rows[0].height = 30;
       rows[0].cells.forEach((cell: WorkbookSheetRowCell) => {
-        cell.bold = this.option?.headerBold ?? true;
-        cell.textAlign = this.option?.headerAlignText ?? 'center';
-        cell.verticalAlign = this.option?.headerVerticalAlignText ?? 'center';
-        cell.fontSize = this.option?.headerFontSize ?? 17;
-        cell.background = this.option?.headerBackground ?? '#ffffff';
-        cell.color = this.option?.headerColor ?? '#000000';
+        cell.bold = this.stypeOption?.headerBold ?? true;
+        cell.textAlign = this.stypeOption?.headerAlignText ?? 'center';
+        cell.verticalAlign =
+          this.stypeOption?.headerVerticalAlignText ?? 'center';
+        cell.fontSize = this.stypeOption?.headerFontSize ?? 17;
+        cell.background = this.stypeOption?.headerBackground ?? '#ffffff';
+        cell.color = this.stypeOption?.headerColor ?? '#000000';
       });
       if (this.option?.isSummary) {
         // Cho dòng summary căn giữa và đậm lên
         rows[rows.length - 1].height = 30;
         rows[rows.length - 1].cells.forEach((cell: WorkbookSheetRowCell) => {
-          cell.bold = this.option?.footerBold ?? true;
-          cell.textAlign = this.option?.footerAlignText ?? 'center';
-          cell.verticalAlign = this.option?.footerVerticalAlignText ?? 'center';
-          cell.fontSize = this.option?.footerFontSize ?? 15;
-          cell.background = this.option?.footerBackground ?? '#e3e3e3';
-          cell.color = this.option?.footerColor ?? 'black';
+          cell.bold = this.stypeOption?.footerBold ?? true;
+          cell.textAlign = this.stypeOption?.footerAlignText ?? 'center';
+          cell.verticalAlign =
+            this.stypeOption?.footerVerticalAlignText ?? 'center';
+          cell.fontSize = this.stypeOption?.footerFontSize ?? 15;
+          cell.background = this.stypeOption?.footerBackground ?? '#e3e3e3';
+          cell.color = this.stypeOption?.footerColor ?? 'black';
         });
       }
       // Thêm dòng nội dung tìm kiếm
-      if (this.reportContent !== '') {
+      if (this.option?.reportContent !== '') {
         rows.unshift({
           cells: [
             {
@@ -360,32 +364,32 @@ export class ExportHelper {
         rows.unshift({
           cells: [
             {
-              value: this.reportContent,
+              value: this.option?.reportContent,
               colSpan: numberColumns,
               rowSpan: 1,
               textAlign: 'center',
               verticalAlign: 'center',
               bold: false,
-              fontSize: this.option?.fontSize ?? 14,
+              fontSize: this.stypeOption?.fontSize ?? 14,
               wrap: true,
-              background: this.option?.headerBackground ?? '#ffffff',
+              background: this.stypeOption?.headerBackground ?? '#ffffff',
             },
           ],
         });
       }
 
       // Thêm dòng xe / nhóm xe
-      if (this.reportVehicle !== '') {
+      if (this.option?.reportVehicle !== '') {
         rows.unshift({
           cells: [
             {
-              value: this.reportVehicle,
+              value: this.option?.reportVehicle,
               colSpan: numberColumns,
               rowSpan: 1,
               textAlign: 'center',
               verticalAlign: 'center',
               bold: false,
-              fontSize: this.option?.fontSize ?? 14,
+              fontSize: this.stypeOption?.fontSize ?? 14,
               wrap: true,
             },
           ],
@@ -395,13 +399,13 @@ export class ExportHelper {
       rows.unshift({
         cells: [
           {
-            value: this.reportDate,
+            value: this.option?.reportDate,
             colSpan: numberColumns,
             rowSpan: 1,
             textAlign: 'center',
             verticalAlign: 'center',
             bold: false,
-            fontSize: this.option?.fontSize ?? 14,
+            fontSize: this.stypeOption?.fontSize ?? 14,
             wrap: true,
           },
         ],
@@ -413,15 +417,15 @@ export class ExportHelper {
       rows.unshift({
         cells: [
           {
-            value: this.reportTitle.toUpperCase(),
+            value: this.option?.reportTitle.toUpperCase(),
             colSpan: numberColumns,
             rowSpan: 2,
             textAlign: 'center',
             verticalAlign: 'center',
-            bold: this.option?.titleBold ?? true,
-            fontSize: this.option?.titlefontSize ?? 18,
+            bold: this.stypeOption?.titleBold ?? true,
+            fontSize: this.stypeOption?.titlefontSize ?? 18,
             wrap: true,
-            color: this.option?.titleColor ?? 'black',
+            color: this.stypeOption?.titleColor ?? 'black',
           },
         ],
       });
@@ -430,15 +434,76 @@ export class ExportHelper {
       // https://www.telerik.com/kendo-angular-ui/components/excelexport/api/Workbook/
       new Workbook(workbook).toDataURL().then((dataUrl: string) => {
         // https://www.telerik.com/kendo-angular-ui/components/filesaver/
-        saveAs(dataUrl, 'Products.xlsx');
+        const reportName = this.option.reportName;
+        saveAs(dataUrl, reportName + '.xlsx');
       });
     });
   }
 
   public exportExcelFromServer(): void {}
 
-  public exportExcelWithThirty(
-    e: ExcelExportEvent,
-    grid: GridComponent
-  ): void {}
+  /**
+   * createCellHeader
+   */
+  public setStyleCellHeader(cell: WorkbookSheetRowCell): void {
+    cell.bold = this.stypeOption?.headerBold ?? true;
+    cell.textAlign = this.stypeOption?.headerAlignText ?? 'center';
+    cell.verticalAlign = this.stypeOption?.headerVerticalAlignText ?? 'center';
+    cell.fontSize = this.stypeOption?.headerFontSize ?? 17;
+    cell.background = this.stypeOption?.headerBackground ?? '#ffffff';
+    cell.color = this.stypeOption?.headerColor ?? '#000000';
+  }
+
+  /**
+   * setStyleCellSummary
+   */
+  public setStyleCellSummary(cell: WorkbookSheetRowCell): void {
+    cell.bold = this.stypeOption?.footerBold ?? true;
+    cell.textAlign = this.stypeOption?.footerAlignText ?? 'center';
+    cell.verticalAlign = this.stypeOption?.footerVerticalAlignText ?? 'center';
+    cell.fontSize = this.stypeOption?.footerFontSize ?? 15;
+    cell.background = this.stypeOption?.footerBackground ?? '#e3e3e3';
+    cell.color = this.stypeOption?.footerColor ?? 'black';
+  }
+
+  /**
+   * setStyleCellCommon
+   */
+  public setStyleCellCommon(cell: WorkbookSheetRowCell): void {
+    cell.borderBottom = { color: '#666664', size: 1 };
+    cell.borderLeft = { color: '#666664', size: 1 };
+    cell.borderRight = { color: '#666664', size: 1 };
+    cell.borderTop = { color: '#666664', size: 1 };
+    cell.textAlign = 'center';
+    cell.wrap = this.stypeOption?.wrap ?? true;
+    cell.fontFamily = this.stypeOption?.fontFamily ?? 'Calibri';
+    cell.fontSize = this.stypeOption?.fontSize ?? 14;
+  }
+
+  /**
+   * createCell
+   */
+  public createCell(
+    cellvalue: string,
+    cellcolSpan: number,
+    cellrowSpan: number,
+    celltextAlign: string,
+    cellverticalAlign: string,
+    cellbold: boolean,
+    cellfontSize: number,
+    cellwrap: boolean,
+    cellcolor: string
+  ): any {
+    return {
+      value: cellvalue,
+      colSpan: cellcolSpan,
+      rowSpan: cellrowSpan,
+      textAlign: celltextAlign,
+      verticalAlign: cellverticalAlign,
+      bold: cellbold,
+      fontSize: cellfontSize,
+      wrap: cellwrap,
+      color: cellcolor,
+    };
+  }
 }

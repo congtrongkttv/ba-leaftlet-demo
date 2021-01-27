@@ -3,7 +3,7 @@ import { DriversManager } from 'src/app/BLL/DriversManager/DriversManager';
 import { BaseReport } from 'src/app/Common/base-report';
 import { DriverEntity } from 'src/app/entities/Driver/Driver';
 import { DriverFilter } from '../../../entities/Driver/DriverFilter';
-import { CRUDBase } from '../../../Core/CRUDBase';
+import { CRUDBase } from '../../../Core/curd-base';
 import { UserEntity } from '../../../entities/Users/User';
 import { UsersManager } from '../../../BLL/UserManager/UsersManager';
 import { TwoColumnComponent } from '../BaseReport/two-column/two-column.component';

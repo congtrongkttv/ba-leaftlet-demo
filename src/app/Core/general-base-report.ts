@@ -1,3 +1,4 @@
+import { ExportOption } from '../Helper/export-option';
 import {
   ColumnBase,
   ColumnComponent,
@@ -250,6 +251,7 @@ export class GeneralBaseReport<
     this.gridComponent.columns.forEach((column: ColumnComponent) => {
       // Cột data
       if (column.field !== undefined) {
+        // Ẩn cột khi checked = false và không bắt buộc hiển thị
         column.hidden =
           !this.baseManager.columnsGridCustom.filter(
             (x) => x.field === column.field
@@ -287,21 +289,32 @@ export class GeneralBaseReport<
    * Xuất báo cáo dạng excel
    */
   public exportExcel(e: ExcelExportEvent, grid: GridComponent): void {
+    // Thiết lập header (title) cho báo cáo
+    this.setHeaderReport();
+    // Tên báo cáo
+    this.reportName =
+      this.convertUnicodeToStringNotAccented(this.reportTitle) +
+      '_' +
+      CurrentData.Username +
+      '_' +
+      new DateTime(new Date()).toFormat('dd_MM_yyyy_HH_mm_ss');
+    const option: ExportOption = {
+      reportTitle: this.reportTitle,
+      reportDate: this.reportDate,
+      reportVehicle: this.reportVehicle,
+      reportContent: this.reportContent,
+      sheetName: this.convertUnicodeToStringNotAccented(this.reportTitle),
+      reportName: this.reportName,
+      reportList: this.dataGridAll,
+      baseComponent: this,
+      isSummary: this.baseManager.columnsSummary.length > 0,
+      isMasterDetailGrid: this.isMasterDetail,
+    };
     if (this.isExportExcelInClient) {
       // Xuất excel từ client
-      this.setHeaderReport();
       const exportHelper: ExportHelper = new ExportHelper(
-        this.reportTitle,
-        this.reportDate,
-        this.reportVehicle,
-        this.reportContent,
-        this.convertUnicodeToStringNotAccented(this.reportTitle),
-        this.dataGridAll,
-        this,
-        {
-          isSummary: this.baseManager.columnsSummary.length > 0,
-          isMasterDetailGrid: this.isMasterDetail,
-        }
+        { footerBackground: '#ffffff' },
+        option
       );
       // Báo cáo bình thường
       if (!this.isMasterDetail) {
@@ -312,17 +325,7 @@ export class GeneralBaseReport<
       }
     } else {
       // Xuất excel từ server
-      const exportHelper: ExportHelper = new ExportHelper(
-        this.reportTitle,
-        this.reportDate,
-        this.reportVehicle,
-        this.reportContent,
-        this.convertUnicodeToStringNotAccented(this.reportTitle),
-        this.dataGridAll,
-        {
-          isSummary: this.baseManager.columnsSummary.length > 0,
-        }
-      );
+      const exportHelper: ExportHelper = new ExportHelper({}, option);
       exportHelper.exportExcelFromServer();
     }
   }
@@ -331,8 +334,7 @@ export class GeneralBaseReport<
    * Xuất báo cáo dạng pdf
    */
   public exportPdf(e: PDFExportEvent, grid: GridComponent): void {
-    // this.customExportExcel(e, grid);
-    console.log(e);
+    grid.saveAsPDF();
   }
 
   /**
@@ -350,19 +352,15 @@ export class GeneralBaseReport<
     if (this.validateData) {
       this.isLoading = true;
       const pager = new Pager(this.pageSize, this.pageIndex);
+      // Set dữ liệu đầu vào tìm kiếm
       this.setDataInput(pager);
+      // Lấy dữ liệu
       this.dataGrid = await this.getData();
-      // this.rowCount = await this.getRowCount();
-      // this.dataGrid = { data: this.dataSource, total: this.rowCount };
+      // Nếu có cột cần tính tổng thì láy tổng theo cột đó
       if (this.baseManager.columnsSummary.length > 0) {
         this.columnsSummaryItems = await this.getSummaryItems();
       }
-      this.reportName =
-        this.convertUnicodeToStringNotAccented(this.reportTitle) +
-        '_' +
-        CurrentData.Username +
-        '_' +
-        new DateTime(new Date()).toFormat('dd_MM_yyyy_HH_mm_ss');
+
       this.isLoading = false;
     }
   }
