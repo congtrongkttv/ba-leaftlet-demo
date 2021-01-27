@@ -24,16 +24,29 @@ export class BaseManager<TEntity, TFilter extends BaseFilter> {
   public baseFilter: TFilter = new this.bFilter();
 
   // ds cột cần tính tổng
-  public columnsSummaryItems: string[] = [];
+  public columnsSummary: string[] = [];
+
+  // ds cột của master-detail
+  public columnDetail: {
+    title: string;
+    field: string;
+    width?: number;
+  }[] = [];
 
   // ds cột bắt buộc của lưới dữ liệu
-  public columnsGridRequired: any[];
+  public columnsGridRequired: {
+    title: string;
+    field: string;
+    checked: boolean;
+    columnIndex?: number;
+  }[];
 
   // ds cột cho phép ẩn hiện của lưới dữ liệu
   public columnsGridCustom: {
     title: string;
-    feild: string;
+    field: string;
     checked: boolean;
+    columnIndex?: number;
   }[];
 
   // ds cột không cho phép hiện lên khi xuất báo cáo
@@ -43,6 +56,15 @@ export class BaseManager<TEntity, TFilter extends BaseFilter> {
    * Lấy dữ liệu
    */
   public async getDataReport(): Promise<{ data: TEntity[]; total: 0 }> {
+    return null;
+  }
+
+  /**
+   * Lấy dữ liệu
+   */
+  public async getDataReportDetail(
+    item: TEntity
+  ): Promise<{ data: TEntity[]; total: 0 }> {
     return null;
   }
 
@@ -72,7 +94,7 @@ export class BaseManager<TEntity, TFilter extends BaseFilter> {
    */
   public getColumnsGridCustom(): {
     title: string;
-    feild: string;
+    field: string;
     checked: boolean;
   }[] {
     return null;

@@ -7,7 +7,7 @@
   (onSearch)="onSearch_Click()"
   (onCreate)="onCreate_Click()"
   (onSave)="onSave_Click($event)"
-  (onSaveCustomColumns)="onSaveCustomColumns_Click()"
+  (onSaveCustomColumns)="onSaveCustomColumns_Click($event)"
 >
   <div class="rightpanel-search">
     <!-- Bắt đầu control search ở đây -->
@@ -49,6 +49,10 @@
       (pageChange)="pageChange($event)"
       (excelExport)="exportExcel($event, grid)"
     >
+      <ng-template kendoGridNoRecordsTemplate>
+        Không có dữ liệu
+        <i class="fa fa-refresh" (click)="this.bindData()"></i>
+      </ng-template>
       <ng-template
         kendoGridToolbarTemplate
         *ngIf="
@@ -58,7 +62,7 @@
       >
         <i
           kendoGridExcelCommand
-          class="fa fa-file-excel-o"
+          class="fa fa-file-excel-o fa-button fa-button-white"
           aria-hidden="true"
           style="color: green"
           title="Xuất excel"
@@ -67,7 +71,7 @@
         >
         <i
           kendoGridPDFCommand
-          class="fa fa-file-pdf-o"
+          class="fa fa-file-pdf-o fa-button fa-button-white"
           aria-hidden="true"
           title="Xuất pdf"
           style="color: orangered"
@@ -81,7 +85,7 @@
         [class]="'table-report-body'"
         [footerClass]="'table-report-header'"
         title="STT"
-        field="rowIndex"
+        field="rowNumber"
         width="50"
       >
         <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
@@ -92,15 +96,14 @@
         [headerClass]="'table-report-header'"
         [class]="'table-report-body'"
         [footerClass]="'table-report-header'"
-        [hidden]="!checkIsShowColumn('FK_CompanyID')"
         field="FK_CompanyID"
         title="Công ty"
       >
         <ng-template
           kendoGridFooterTemplate
-          *ngIf="baseManager.columnsSummaryItems.length > 0"
+          *ngIf="baseManager.columnsSummary.length > 0"
         >
-          {{ columnsSummaryItemsResponse.column1 }}
+          {{ columnsSummaryItems.column1 }}
         </ng-template>
       </kendo-grid-column>
       <kendo-grid-column
@@ -109,7 +112,6 @@
         [footerClass]="'table-report-header'"
         field="DisplayName"
         title="Tên hiển thị"
-        [hidden]="!checkIsShowColumn('DisplayName')"
       >
       </kendo-grid-column>
       <kendo-grid-column
@@ -118,7 +120,6 @@
         [footerClass]="'table-report-header'"
         field="Name"
         title="Tên"
-        [hidden]="!checkIsShowColumn('Name')"
       >
       </kendo-grid-column>
       <kendo-grid-column
@@ -127,13 +128,12 @@
         [footerClass]="'table-report-header'"
         field="FK_DepartmentID"
         title="Phòng ban"
-        [hidden]="!checkIsShowColumn('FK_DepartmentID')"
       >
         <ng-template
           kendoGridFooterTemplate
-          *ngIf="baseManager.columnsSummaryItems.length > 0"
+          *ngIf="baseManager.columnsSummary.length > 0"
         >
-          {{ columnsSummaryItemsResponse.column4 }}
+          {{ columnsSummaryItems.column4 }}
         </ng-template>
       </kendo-grid-column>
       <kendo-grid-column
@@ -142,36 +142,29 @@
         [footerClass]="'table-report-header'"
         field="EmployeeCode"
         title="Mã LX"
-        [hidden]="!checkIsShowColumn('EmployeeCode')"
       >
       </kendo-grid-column>
-
       <kendo-grid-column
         [headerClass]="'table-report-header'"
         [class]="'table-report-body'"
         [footerClass]="'table-report-header'"
         field="Flags"
         title="Flags"
-        [hidden]="!checkIsShowColumn('Flags')"
       >
         <ng-template
           kendoGridFooterTemplate
-          *ngIf="baseManager.columnsSummaryItems.length > 0"
+          *ngIf="baseManager.columnsSummary.length > 0"
         >
-          {{ columnsSummaryItemsResponse.column6 }}
+          {{ columnsSummaryItems.column6 }}
         </ng-template>
       </kendo-grid-column>
       <kendo-grid-command-column
-        field="command"
         [headerClass]="'table-report-header'"
         [class]="'table-report-body'"
         [footerClass]="'table-report-header'"
+        field="commandUpdate"
         title="Sửa"
         width="50"
-        [hidden]="
-          !checkIsShowColumn('command') ||
-          !hasPermission(permissionKeyNameUpdate)
-        "
       >
         <ng-template kendoGridCellTemplate let-dataItems="dataItems">
           <button kendoGridEditCommand>
@@ -183,13 +176,9 @@
         [headerClass]="'table-report-header'"
         [class]="'table-report-body'"
         [footerClass]="'table-report-header'"
+        field="commandDelete"
         title="Xóa"
-        field="command"
         width="50"
-        [hidden]="
-          !checkIsShowColumn('command') ||
-          !hasPermission(permissionKeyNameDelete)
-        "
       >
         <ng-template kendoGridCellTemplate let-dataItems="dataItems">
           <button kendoGridRemoveCommand>
@@ -224,7 +213,9 @@
 
   <div class="modal-content">
     <!-- Bắt đầu cho modal ở đây -->
-    <app-driver-edit [entity]="currentDataModel"></app-driver-edit>
+    <form>
+      <app-driver-edit [entity]="currentDataModel"></app-driver-edit>
+    </form>
     <!-- Kết thúc cho modal ở đây -->
   </div>
 </app-two-column>

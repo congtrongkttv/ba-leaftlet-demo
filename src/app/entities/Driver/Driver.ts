@@ -11,6 +11,7 @@ export class Driver extends BaseEntity {
 }
 
 export class DriverEntity {
+  rowNumber: number;
   PK_EmployeeID: number;
   EmployeeCode: string;
   FK_CompanyID: number;

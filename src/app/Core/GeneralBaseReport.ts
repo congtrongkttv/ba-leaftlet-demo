@@ -1,5 +1,7 @@
 import {
+  ColumnBase,
   ColumnComponent,
+  CommandColumnComponent,
   ExcelExportEvent,
   GridComponent,
   GridDataResult,
@@ -11,17 +13,18 @@ import { BaseFilter } from '../entities/Base/BaseFilter';
 
 import { Pager } from './pager';
 import { SummaryItems } from '../entities/summary-items';
-import { Observable } from 'rxjs';
 import {
   ExcelExportData,
   Workbook,
-  WorkbookSheet,
 } from '@progress/kendo-angular-excel-export';
 import { PDFExportEvent } from '@progress/kendo-angular-grid/dist/es2015/pdf/pdf-export-event';
 import { ExportHelper } from '../Helper/export-helper';
 import { CurrentData } from '../Page/tracking/tracking.component';
 import { DateTime } from '../Helper/DateTimeHelper';
-import { BaseService } from '../Services/Base/base.service';
+import { Directive, ViewChild } from '@angular/core';
+import { Observable, zip } from 'rxjs';
+import { saveAs } from '@progress/kendo-file-saver';
+@Directive()
 export class GeneralBaseReport<
   TEntity extends BaseEntity,
   TManager extends BaseManager<TEntity, TFilter>,
@@ -32,9 +35,17 @@ export class GeneralBaseReport<
     protected cObj: new () => TEntity
   ) {
     this.checkPermission();
-    this.initPage();
+
+    // Sau khi các control khởi tạo xong
+    setTimeout(() => {
+      this.initPage();
+      this.initPageData();
+    }, 100);
   }
+
   //#region PROPERTIES
+  @ViewChild('grid') gridComponent: GridComponent;
+
   // Quyền xe
   public permissionKeyNameView: number;
 
@@ -49,6 +60,9 @@ export class GeneralBaseReport<
 
   // dữ liệu truyền lên lưới
   public dataGrid: GridDataResult = { data: [], total: 0 };
+
+  // danh sách tát cả dữ liệu (phục vụ cho xuất excel)
+  public dataGridAll: any;
 
   // danh sách dữ liệu
   public dataSource: TEntity[];
@@ -92,7 +106,7 @@ export class GeneralBaseReport<
   public columnsGrid: any[];
 
   // ds cột cần tính tổng
-  public columnsSummaryItemsResponse: SummaryItems = new SummaryItems();
+  public columnsSummaryItems: SummaryItems = new SummaryItems();
 
   // Grid properties
   public pageSize = 10;
@@ -112,9 +126,18 @@ export class GeneralBaseReport<
   // Xuất ecxel tại client hay server
   public isExportExcelInClient = true;
 
+  // Có phải dạng master detail kjhoong?
+  public isMasterDetail = false;
+
+  // Lấy chi tiết của dòng cần xem
+  public viewDetail = async (
+    entity: TEntity
+  ): Promise<{ data: TEntity[]; total: 0 }> =>
+    await this.getDataDetailMaster(entity);
   //#endregion
 
   //#region METHODS
+
   /**
    * check quyền
    * Nếu không có quyền view thì sẽ redirect sang trang khác theo cấu hình
@@ -129,14 +152,16 @@ export class GeneralBaseReport<
   }
 
   public hasPermission(permissionKey: number): boolean {
-    return CurrentData.permissions.indexOf(permissionKey) >= 0;
+    const a = CurrentData.permissions.indexOf(permissionKey) >= 0;
+    return a;
   }
 
   /**
    * khỏi tạo trang
    */
-  public initPage(): void {
-    this.getColumnsGridCustom();
+  public async initPage(): Promise<void> {
+    await this.getColumnsGridCustom();
+    this.showHideColumnsGrid();
   }
 
   /**
@@ -163,15 +188,24 @@ export class GeneralBaseReport<
   }
 
   /**
+   * Lấy dữ liệu chi tiết
+   */
+  public async getDataDetailMaster(
+    item: TEntity
+  ): Promise<{ data: TEntity[]; total: 0 }> {
+    return await this.baseManager.getDataReportDetail(item);
+  }
+  /**
    * Lấy dữ liệu để xuất bc
    */
   public allDataGrid = async (): Promise<ExcelExportData> => {
     this.isLoading = true;
-    const listDriver = await (await this.baseManager.getAllDataReport()).data;
+    const lstData = await (await this.baseManager.getAllDataReport()).data;
 
     const result: ExcelExportData = {
-      data: listDriver,
+      data: lstData,
     };
+    this.dataGridAll = result;
     this.isLoading = false;
     return result;
   };
@@ -196,15 +230,46 @@ export class GeneralBaseReport<
   public getColumnsGridCustom(): void {
     const columns: {
       title: string;
-      feild: string;
+      field: string;
       checked: boolean;
     }[] = this.baseManager.getColumnsGridCustom();
     this.baseManager.columnsGridCustom.forEach((clCus) => {
       columns.forEach((cl) => {
-        if (cl.feild === clCus.feild) {
+        if (cl.field === clCus.field) {
           clCus.checked = cl.checked;
         }
       });
+    });
+  }
+
+  /**
+   * Ẩn hiện cột theo cấu hình
+   */
+  public showHideColumnsGrid(): void {
+    let index = 0;
+    this.gridComponent.columns.forEach((column: ColumnComponent) => {
+      // Cột data
+      if (column.field !== undefined) {
+        column.hidden =
+          !this.baseManager.columnsGridCustom.filter(
+            (x) => x.field === column.field
+          )[0]?.checked &&
+          this.baseManager.columnsGridRequired.filter(
+            (x) => x.field === column.field
+          ).length === 0;
+      } else {
+        // Cột command
+        const a: any = !this.baseManager.columnsGridCustom.filter(
+          (x: {
+            title: string;
+            field: string;
+            checked: boolean;
+            columnIndex?: number;
+          }) => x.columnIndex === index
+        )[0]?.checked;
+        column.hidden = a;
+      }
+      index++;
     });
   }
 
@@ -231,9 +296,20 @@ export class GeneralBaseReport<
         this.reportVehicle,
         this.reportContent,
         this.convertUnicodeToStringNotAccented(this.reportTitle),
-        {}
+        this.dataGridAll,
+        this,
+        {
+          isSummary: this.baseManager.columnsSummary.length > 0,
+          isMasterDetailGrid: this.isMasterDetail,
+        }
       );
-      exportHelper.customExportExcel(e, grid);
+      // Báo cáo bình thường
+      if (!this.isMasterDetail) {
+        exportHelper.customExportExcel(e, grid);
+      } else {
+        // Báo cáo với master detail
+        exportHelper.customExportExcelMasterDetail(e, grid);
+      }
     } else {
       // Xuất excel từ server
       const exportHelper: ExportHelper = new ExportHelper(
@@ -241,7 +317,11 @@ export class GeneralBaseReport<
         this.reportDate,
         this.reportVehicle,
         this.reportContent,
-        this.convertUnicodeToStringNotAccented(this.reportTitle)
+        this.convertUnicodeToStringNotAccented(this.reportTitle),
+        this.dataGridAll,
+        {
+          isSummary: this.baseManager.columnsSummary.length > 0,
+        }
       );
       exportHelper.exportExcelFromServer();
     }
@@ -274,8 +354,8 @@ export class GeneralBaseReport<
       this.dataGrid = await this.getData();
       // this.rowCount = await this.getRowCount();
       // this.dataGrid = { data: this.dataSource, total: this.rowCount };
-      if (this.baseManager.columnsSummaryItems.length > 0) {
-        this.columnsSummaryItemsResponse = await this.getSummaryItems();
+      if (this.baseManager.columnsSummary.length > 0) {
+        this.columnsSummaryItems = await this.getSummaryItems();
       }
       this.reportName =
         this.convertUnicodeToStringNotAccented(this.reportTitle) +
@@ -307,32 +387,30 @@ export class GeneralBaseReport<
   /**
    * Sự kiện lưu cấu hình ẩn hiện cột
    */
-  public onSaveCustomColumns_Click(): void {
-    this.baseManager.saveCustomColumns();
-  }
-
-  /**
-   * Kiểm tra xem cột có được ẩn hiện không?
-   * @param feild Tên trường cần kiểm tra
-   */
-  public checkIsShowColumn(feild: string): boolean {
-    return this.baseManager.columnsGridCustom.filter(
-      (x) => x.feild === feild
-    )[0]?.checked;
+  public onSaveCustomColumns_Click(isSave: boolean): void {
+    if (isSave) {
+      this.baseManager.saveCustomColumns();
+      this.showHideColumnsGrid();
+    } else {
+      this.getColumnsGridCustom();
+      this.showHideColumnsGrid();
+    }
   }
 
   public convertUnicodeToStringNotAccented(text: string): string {
     let outPut = text;
-    outPut = outPut.toLowerCase();
-    outPut = outPut.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g, 'a');
-    outPut = outPut.replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ/g, 'e');
-    outPut = outPut.replace(/ì|í|ị|ỉ|ĩ/g, 'i');
-    outPut = outPut.replace(/ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ/g, 'o');
-    outPut = outPut.replace(/ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ/g, 'u');
-    outPut = outPut.replace(/ỳ|ý|ỵ|ỷ|ỹ/g, 'y');
-    outPut = outPut.replace(/đ/g, 'd');
-    outPut = outPut.replace(/^\-+|\-+$/g, '');
-    outPut = outPut.replace(/ /g, '_');
+    if (text !== undefined) {
+      outPut = outPut.toLowerCase();
+      outPut = outPut.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g, 'a');
+      outPut = outPut.replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ/g, 'e');
+      outPut = outPut.replace(/ì|í|ị|ỉ|ĩ/g, 'i');
+      outPut = outPut.replace(/ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ/g, 'o');
+      outPut = outPut.replace(/ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ/g, 'u');
+      outPut = outPut.replace(/ỳ|ý|ỵ|ỷ|ỹ/g, 'y');
+      outPut = outPut.replace(/đ/g, 'd');
+      outPut = outPut.replace(/^\-+|\-+$/g, '');
+      outPut = outPut.replace(/ /g, '_');
+    }
     return outPut;
   }
   //#endregion

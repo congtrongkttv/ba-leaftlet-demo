@@ -1,7 +1,7 @@
 import { TwoColumnComponent } from './Page/Report/BaseReport/two-column/two-column.component';
 import { BrowserModule } from '@angular/platform-browser';
 import { Injector, NgModule } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { LeafletModule } from '@asymmetrik/ngx-leaflet';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -27,6 +27,10 @@ import { ReportUsersComponent } from './Page/Report/report-users/report-users.co
 import { FilterPipePipe } from './pipe/filter-pipe.pipe';
 import { DriverEditComponent } from './Page/Report/report-drivers/driver-edit/driver-edit.component';
 import { DropDownsModule } from '@progress/kendo-angular-dropdowns';
+import { NumberDirective } from './Directives/number-only.directive';
+import { MaxLengthDirective } from './Directives/max-length.directive';
+import { UserEditComponent } from './Page/Report/report-users/user-edit/user-edit.component';
+import { GridDetailComponent } from './Page/Report/BaseReport/grid-detail/grid-detail.component';
 
 export let AppInjector: Injector;
 
@@ -45,6 +49,10 @@ export let AppInjector: Injector;
     TwoColumnComponent,
     OneColumnComponent,
     DriverEditComponent,
+    NumberDirective,
+    MaxLengthDirective,
+    UserEditComponent,
+    GridDetailComponent,
   ],
   imports: [
     BrowserModule,
@@ -60,6 +68,7 @@ export let AppInjector: Injector;
     ExcelModule,
     PDFModule,
     DropDownsModule,
+    ReactiveFormsModule,
   ],
   providers: [],
   bootstrap: [AppComponent],

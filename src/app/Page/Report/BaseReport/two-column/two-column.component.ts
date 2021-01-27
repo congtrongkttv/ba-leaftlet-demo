@@ -106,8 +106,8 @@ export class TwoColumnComponent implements OnInit {
     this.onSave.emit(SaveType.delete);
   }
 
-  onSaveCustomColumns_Click(): void {
-    this.onSaveCustomColumns.emit();
+  onSaveCustomColumns_Click(isSave: boolean): void {
+    this.onSaveCustomColumns.emit(isSave);
     this.isShowCustomColumn = false;
   }
 

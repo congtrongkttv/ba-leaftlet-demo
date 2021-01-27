@@ -1,3 +1,7 @@
+$base-bg-color: #1976d2;
+$base-border-color: rgba(0, 0, 0, 0.2);
+$grid-hearder-bg-color: #f1efef;
+
 ::ng-deep .form-base {
   margin-top: 70px;
   width: 100%;
@@ -6,7 +10,7 @@
   font-size: 13px;
   color: rga(0, 0, 0, 0.9);
   .form-base-col {
-    border: 1px solid rgba(0, 0, 0, 0.2);
+    border: 1px solid $base-border-color;
   }
   .form-base-col-leftpanel {
     width: 0%;
@@ -16,7 +20,7 @@
       margin-left: 10px;
       margin-right: 10px;
       margin-bottom: 10px;
-      border: 1px solid rgba(0, 0, 0, 0.2);
+      border: 1px solid $base-border-color;
     }
     width: 99%;
     box-shadow: 5px 8px 6px #ccc;
@@ -24,7 +28,7 @@
 
     .rightpanel-titlepanel {
       position: relative;
-      background-color: #1976d2;
+      background-color: $base-bg-color;
       padding: 5px 10px;
       text-transform: uppercase;
       font-weight: 600;
@@ -104,7 +108,7 @@
       text-align: center;
       font-weight: 700;
       color: rgba(0, 0, 0, 0.9);
-      background-color: rgba(0, 0, 0, 0.07);
+      background-color: $grid-hearder-bg-color;
     }
 
     .table-report-body {
@@ -129,7 +133,7 @@
   }
 
   .fa-button-blue {
-    background-color: #1976d2;
+    background-color: $base-bg-color;
     color: #fff;
   }
 }
@@ -201,56 +205,29 @@
 }
 .button {
   margin-left: 5px;
-  background-color: #1976d2;
+  background-color: $base-bg-color;
   color: white;
-  border: 1px solid rgba(0, 0, 0, 0.2);
+  border: 1px solid $base-border-color;
   color: rgba(256, 256, 256, 0.9);
   border-radius: 3px;
   height: 30px;
   min-width: 80px;
 }
 .button-primary {
-  background-color: #1976d2;
+  background-color: $base-bg-color;
 }
 .button-dangerous {
   background-color: orangered;
 }
 ::ng-deep .k-toolbar {
   justify-content: flex-end;
-  padding-right: 20px;
+  padding: 1px 20px 1px 20px;
   font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
     "Lucida Sans Unicode", Geneva, Verdana, sans-serif !important;
-  background-color: rgba(0, 0, 0, 0.09);
-  .rightpanel-optionpanel-checkbox {
-    position: absolute;
-    min-height: 100px;
-    width: 530px;
-    right: 10px;
-    top: 25px;
-    border: 1px solid rgb(1, 136, 182);
-    border-radius: 5px;
-    background-color: #fff;
-    z-index: 1;
-    padding: 10px 20px;
-    box-shadow: 2px 3px 3px 2px #ccc;
-
-    .rightpanel-optionpanel-checkbox-cbx {
-      display: flex;
-      flex-direction: row;
-      flex-wrap: wrap;
-      div {
-        align-items: flex-start;
-        width: 120px;
-        text-align: left;
-        position: relative;
-        margin-top: 10px;
-        label {
-          margin-left: 5px;
-          margin-top: -2px;
-          position: absolute;
-        }
-      }
-    }
+  background-color: $grid-hearder-bg-color;
+  border-top: 1px solid $base-border-color;
+  i {
+    background-color: rgb(252, 252, 252) !important;
   }
 }
 
@@ -260,16 +237,19 @@
       background-color: rgba(0, 0, 0, 0.04);
     }
     td {
-      border: 1px solid rgba(0, 0, 0, 0.2);
+      border: 1px solid $base-border-color;
       border-width: 0 0 1px 1px;
     }
     th {
-      border: 1px solid rgba(0, 0, 0, 0.2);
+      border: 1px solid $base-border-color;
       border-width: 1px 0 1px 1px;
     }
   }
-}
-
-::ng-deep .k-button {
-  padding: 5px !important;
+  .k-button {
+    border-color: $base-border-color;
+    color: #656565;
+    background-color: #ffffff;
+    background-image: none;
+    padding: 4px 6px;
+  }
 }

@@ -1,4 +1,6 @@
 export interface ExportOption {
+  isSummary: boolean;
+  isMasterDetailGrid?: boolean;
   /**
    * font chữ cho cả file excel
    */

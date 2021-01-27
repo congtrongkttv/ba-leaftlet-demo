@@ -16,6 +16,7 @@ import { DateTime } from '../../../Helper/DateTimeHelper';
 import { Pager } from 'src/app/Core/pager';
 import { get } from 'http';
 import { FieldsControl } from 'src/app/Helper/fields-control';
+import { DriverEditComponent } from './driver-edit/driver-edit.component';
 
 @Component({
   selector: 'app-report-drivers',
@@ -29,6 +30,7 @@ export class ReportDriversComponent
     super(DriversManager, DriverEntity);
   }
   @ViewChild(TwoColumnComponent) form: TwoColumnComponent;
+  @ViewChild(DriverEditComponent) popupEdit: DriverEditComponent;
   public searchContent = '';
 
   /**
@@ -36,8 +38,8 @@ export class ReportDriversComponent
    */
   public title = 'Danh sách lái xe';
   public modalTitle = 'Thêm mới lái xe';
-  public reportTitle = 'Danh sách lái xe';
   public pageSize = 10;
+  public reportTitle = 'Danh sách lái xe';
 
   // Phân quyền
   public permissionKeyNameAdd = 1;
@@ -60,7 +62,7 @@ export class ReportDriversComponent
   setDataInput(pager: Pager): void {
     super.setDataInput(pager);
     this.baseManager.baseFilter.searchContent = this.searchContent;
-    this.baseManager.baseFilter.feildSum = this.baseManager.columnsSummaryItems.join(
+    this.baseManager.baseFilter.columnsSummary = this.baseManager.columnsSummary.join(
       ','
     );
   }
@@ -74,15 +76,7 @@ export class ReportDriversComponent
    * validate dữ liệu trước khi thêm mới / sửa
    */
   validateDataBeChanged(): boolean {
-    if (
-      (this.currentDataModel.DisplayName === '' ||
-        this.currentDataModel.DisplayName === undefined) &&
-      (this.currentDataModel.EmployeeCode === '' ||
-        this.currentDataModel.EmployeeCode === undefined)
-    ) {
-      return false;
-    }
-    return true;
+    return this.popupEdit.validateInput().success;
   }
 
   // Hàm thực hiện lưu khi ấn nút lưu ở modal
@@ -166,6 +160,7 @@ export class ReportDriversComponent
    * Sự kiện ấn nút thêm mới để mở popup thêm mới
    */
   public onCreate_Click(): void {
+    super.onCreate_Click();
     this.modalTitle = 'Thêm mới lái xe';
   }
 

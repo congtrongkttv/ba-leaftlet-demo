@@ -1,12 +1,8 @@
 import { BaseManager } from '../BLL/BaseManager/BaseManager';
 import { BaseEntity } from '../entities/Base/BaseEntity';
 import { BaseFilter } from '../entities/Base/BaseFilter';
-import { BaseService } from '../Services/Base/base.service';
 import { GeneralBaseReport } from './GeneralBaseReport';
-import { Pager } from './pager';
 import { SaveType } from '../Enum/save-type.enum';
-import { Observable } from 'rxjs';
-import { FieldsControl } from '../Helper/fields-control';
 export class CRUDBase<
   TEntity extends BaseEntity,
   TManager extends BaseManager<TEntity, TFilter>,
@@ -32,11 +28,17 @@ export class CRUDBase<
   }
 
   public async create(entity: TEntity): Promise<boolean> {
-    return this.baseManager.addNew(entity);
+    if (this.validateDataBeChanged()) {
+      return this.baseManager.addNew(entity);
+    }
+    return false;
   }
 
   public async update(entity: TEntity): Promise<boolean> {
-    return this.baseManager.update(entity);
+    if (this.validateDataBeChanged()) {
+      return this.baseManager.update(entity);
+    }
+    return false;
   }
 
   public async delete(id: any): Promise<boolean> {

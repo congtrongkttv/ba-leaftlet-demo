@@ -1,5 +1,12 @@
 import { FieldsControl } from './../../../../Helper/fields-control';
-import { Component, Input, OnInit } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  Input,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import { DriverEntity } from '../../../../entities/Driver/Driver';
 
 @Component({
@@ -13,5 +20,20 @@ export class DriverEditComponent implements OnInit {
   @Input() entity: DriverEntity;
   @Input() fields: FieldsControl[];
 
-  ngOnInit(): void {}
+  @ViewChild('required') txtNumber: ElementRef;
+
+  public ngOnInit(): void {}
+
+  public validateInput(): { success: boolean; message: string } {
+    // if (this.txtNumber.nativeElement.value === '') {
+    //   return {
+    //     success: false,
+    //     message: '',
+    //   };
+    // }
+    return {
+      success: true,
+      message: '',
+    };
+  }
 }

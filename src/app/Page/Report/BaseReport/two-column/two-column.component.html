@@ -6,7 +6,7 @@
         <i
           class="fa fa-plus fa-button fa-button-white"
           aria-hidden="true"
-          title="Thêm mới lái xe"
+          title="Thêm mới"
           *ngIf="enableAdd"
           (click)="create('md')"
         >
@@ -36,9 +36,15 @@
           <div class="rightpanel-optionpanel-checkbox-btn">
             <input
               type="button"
+              value="Hủy"
+              class="button button-dangerous"
+              (click)="onSaveCustomColumns_Click(false)"
+            />
+            <input
+              type="button"
               value="Lưu"
               class="button button-primary"
-              (click)="onSaveCustomColumns_Click()"
+              (click)="onSaveCustomColumns_Click(true)"
             />
           </div>
         </div>

@@ -7,15 +7,25 @@ import { Observable } from 'rxjs';
 import { SummaryItems } from '../../entities/summary-items';
 import { CurrentData } from 'src/app/Page/tracking/tracking.component';
 import { Pager } from 'src/app/Core/pager';
-export class DriversManager extends BaseManager<DriverEntity, DriverFilter> {
+import { UserEntity } from '../../entities/Users/User';
+import { UserFilter } from '../../entities/Users/UserFilter';
+import { UserService } from '../../Services/user/user.service';
+export class UsersManager extends BaseManager<UserEntity, UserFilter> {
   constructor() {
     super(DriverFilter);
-    this.baseService = AppInjector.get(DriverService);
+    this.baseService = AppInjector.get(UserService);
   }
-  baseService: DriverService;
-  // Ds các cột cần tính tổng
-  columnsSummary = ['FK_CompanyID', 'FK_DepartmentID', 'Flags'];
+  baseService: UserService;
 
+  // Ds các cột của master
+  columnDetail = [
+    { title: 'STT', field: 'rowNumber', width: 50 },
+    { title: 'Tên đăng nhập', field: 'Username' },
+    { title: 'Tên đầy đủ', field: 'Fullname' },
+    { title: 'Số điện thoại', field: 'PhoneNumber' },
+  ];
+
+  // Ds các cột cần tính tổng
   columnsGridRequired = [{ title: 'STT', field: 'rowNumber', checked: false }];
 
   /**
@@ -23,31 +33,49 @@ export class DriversManager extends BaseManager<DriverEntity, DriverFilter> {
    */
   columnsGridCustom = [
     { title: 'Công ty', field: 'FK_CompanyID', checked: true },
-    { title: 'Phòng ban', field: 'FK_DepartmentID', checked: true },
-    { title: 'Mã NV', field: 'EmployeeCode', checked: true },
-    { title: 'Tên hiển thị', field: 'DisplayName', checked: true },
-    { title: 'Tên đăng nhập', field: 'Name', checked: true },
-    { title: 'Flags', field: 'Flags', checked: true },
-    { title: 'Sửa', field: 'commandUpdate', columnIndex: 7, checked: true },
-    { title: 'Xóa', field: 'commandDelete', columnIndex: 8, checked: true },
+    { title: 'Tên đăng nhập', field: 'Username', checked: true },
+    { title: 'Tên hiển thị', field: 'Fullname', checked: true },
+    { title: 'SĐT', field: 'PhoneNumber', checked: true },
+    { title: 'Email', field: 'Email', checked: true },
   ];
 
-  async getDataReport(): Promise<{ data: DriverEntity[]; total: 0 }> {
+  async getDataReport(): Promise<{ data: UserEntity[]; total: 0 }> {
     // Lấy dữ liệu
     return await this.baseService
       .getData(this.baseFilter)
       .toPromise()
       .then((x: any) => {
-        const dataDriver = x.Data.Data;
-
-        return { data: dataDriver, total: x.Data.Count };
+        return { data: x.Data.Data, total: x.Data.Count };
       })
       .catch((ex) => {
         return { data: [], total: 0 };
       });
   }
 
-  async getAllDataReport(): Promise<{ data: DriverEntity[]; total: 0 }> {
+  public async getDataReportDetail(
+    item: UserEntity
+  ): Promise<{ data: UserEntity[]; total: 0 }> {
+    // Lấy dữ liệu
+    this.baseFilter.currentPager = this.pagerAll;
+    this.baseFilter.companyID = item.FK_CompanyID;
+    return await this.baseService
+      .getDataByCompanyID(this.baseFilter)
+      .toPromise()
+      .then((x: any) => {
+        const dataDriver = x.Data.Data;
+        let index = 0;
+        dataDriver.forEach((d: UserEntity) => {
+          index++;
+          d.rowNumber = index;
+        });
+        return { data: x.Data.Data, total: x.Data.Count };
+      })
+      .catch(() => {
+        return null;
+      });
+  }
+
+  async getAllDataReport(): Promise<{ data: UserEntity[]; total: 0 }> {
     // Lấy dữ liệu
     this.baseFilter.currentPager = this.pagerAll;
     return await this.baseService
@@ -56,7 +84,7 @@ export class DriversManager extends BaseManager<DriverEntity, DriverFilter> {
       .then((x: any) => {
         const dataDriver = x.Data.Data;
         let index = 0;
-        dataDriver.forEach((d: DriverEntity) => {
+        dataDriver.forEach((d: UserEntity) => {
           index++;
           d.rowNumber = index;
         });
@@ -100,7 +128,7 @@ export class DriversManager extends BaseManager<DriverEntity, DriverFilter> {
 
   saveCustomColumns(): void {
     localStorage.setItem(
-      'driver_custom_columns_' + CurrentData.UserID.toString(),
+      'user_custom_columns_' + CurrentData.UserID.toString(),
       JSON.stringify(this.columnsGridCustom)
     );
   }
@@ -111,7 +139,7 @@ export class DriversManager extends BaseManager<DriverEntity, DriverFilter> {
     checked: boolean;
   }[] {
     const customColumnsStr = localStorage.getItem(
-      'driver_custom_columns_' + CurrentData.UserID.toString()
+      'user_custom_columns_' + CurrentData.UserID.toString()
     );
     if (customColumnsStr != null) {
       return JSON.parse(customColumnsStr);
@@ -120,7 +148,7 @@ export class DriversManager extends BaseManager<DriverEntity, DriverFilter> {
     }
   }
 
-  async addNew(entity: DriverEntity): Promise<boolean> {
+  async addNew(entity: UserEntity): Promise<boolean> {
     return this.baseService
       .add(entity)
       .toPromise()
@@ -129,7 +157,7 @@ export class DriversManager extends BaseManager<DriverEntity, DriverFilter> {
       });
   }
 
-  async update(entity: DriverEntity): Promise<boolean> {
+  async update(entity: UserEntity): Promise<boolean> {
     return this.baseService
       .update(entity)
       .toPromise()

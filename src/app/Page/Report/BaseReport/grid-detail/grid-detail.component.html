@@ -1,0 +1,9 @@
+<kendo-grid [data]="view" [loading]="loading">
+  <kendo-grid-column
+    *ngFor="let col of fieldsDetail"
+    [field]="col.field"
+    [title]="col.title"
+    [width]="col.width"
+  >
+  </kendo-grid-column>
+</kendo-grid>

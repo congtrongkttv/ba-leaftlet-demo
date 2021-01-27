@@ -5,32 +5,44 @@ import { BaseService } from '../Base/base.service';
 import { BaseEntity } from '../../entities/Base/BaseEntity';
 import { DriverFilter } from '../../entities/Driver/DriverFilter';
 import { DriverEntity } from '../../entities/Driver/Driver';
+import { UserEntity } from '../../entities/Users/User';
+import { UserFilter } from '../../entities/Users/UserFilter';
 @Injectable({
   providedIn: 'root',
 })
-export class DriverService extends BaseService<DriverEntity, DriverFilter> {
+export class UserService extends BaseService<UserEntity, UserFilter> {
   constructor(private http: HttpClient) {
     super();
   }
 
-  getData(filter: DriverFilter): Observable<any> {
+  getData(filter: UserFilter): Observable<any> {
     const params = {
       keyword: filter.searchContent,
       pageIndex: filter.currentPager.pageIndex,
       pageSize: filter.currentPager.pageSize,
     };
-    return this.http.post('https://10.1.11.107:8036/api/hrmEmp/list', params);
+    return this.http.post('https://10.1.11.107:8036/api/admUser/list', params);
   }
 
-  getRowCount(filter: DriverFilter): Observable<any> {
+  getDataByCompanyID(filter: UserFilter): Observable<any> {
+    const params = {
+      keyword: filter.searchContent,
+      pageIndex: filter.currentPager.pageIndex,
+      pageSize: filter.currentPager.pageSize,
+      compId: filter.companyID,
+    };
+    return this.http.post('https://10.1.11.107:8036/api/admUser/comp', params);
+  }
+
+  getRowCount(filter: UserFilter): Observable<any> {
     const loginParams = new HttpParams().set('keyword', filter.searchContent);
     return this.http.post(
-      'https://10.1.11.107:8036/api/hrmEmp/count',
+      'https://10.1.11.107:8036/api/admUser/count',
       loginParams
     );
   }
 
-  getSummaries(filter: DriverFilter): Observable<any> {
+  getSummaries(filter: UserFilter): Observable<any> {
     const loginParams = new HttpParams()
       .set('keyword', filter.searchContent)
       .set('listProps', filter.columnsSummary);
@@ -40,10 +52,10 @@ export class DriverService extends BaseService<DriverEntity, DriverFilter> {
     );
   }
 
-  add(driver: DriverEntity): Observable<any> {
+  add(user: UserEntity): Observable<any> {
     return this.http.post(
       'https://10.1.11.107:8036/api/hrmEmp/create',
-      JSON.stringify(driver),
+      JSON.stringify(user),
       {
         headers: new HttpHeaders({
           'Content-Type': 'application/json',
@@ -52,7 +64,7 @@ export class DriverService extends BaseService<DriverEntity, DriverFilter> {
     );
   }
 
-  update(driver: DriverEntity): Observable<any> {
+  update(driver: UserEntity): Observable<any> {
     return this.http.post(
       'https://10.1.11.107:8036/api/hrmEmp/update',
       JSON.stringify(driver),
