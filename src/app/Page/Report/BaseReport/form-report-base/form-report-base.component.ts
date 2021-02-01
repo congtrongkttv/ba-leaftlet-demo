@@ -10,15 +10,14 @@ import {
 import { NgbModal, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
 import { time } from 'console';
 import { MessageType } from 'src/app/Enum/message-type.enum';
-import { AppInjector } from '../../../../app.module';
 import { SaveType } from '../../../../Enum/save-type.enum';
 import { CurrentData } from '../../../tracking/tracking.component';
 @Component({
-  selector: 'app-two-column',
-  templateUrl: './two-column.component.html',
-  styleUrls: ['./two-column.component.scss'],
+  selector: 'app-form-report-base',
+  templateUrl: './form-report-base.component.html',
+  styleUrls: ['./form-report-base.component.scss'],
 })
-export class TwoColumnComponent implements OnInit {
+export class FormReportBaseComponent implements OnInit {
   @Input() pageTitle: string;
   @Input() modalTitle: string;
   // tslint:disable-next-line: no-output-on-prefix

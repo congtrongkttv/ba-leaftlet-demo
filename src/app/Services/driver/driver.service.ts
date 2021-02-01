@@ -10,7 +10,7 @@ import { DriverEntity } from '../../entities/Driver/Driver';
 })
 export class DriverService extends BaseService<DriverEntity, DriverFilter> {
   constructor(private http: HttpClient) {
-    super();
+    super(http);
   }
 
   getData(filter: DriverFilter): Observable<any> {

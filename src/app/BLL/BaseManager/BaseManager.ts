@@ -1,27 +1,30 @@
-import { Component, Injector } from '@angular/core';
-import { Observable } from 'rxjs';
 import { Pager } from '../../Core/pager';
 import { BaseService } from '../../Services/Base/base.service';
 import { BaseFilter } from '../../entities/Base/BaseFilter';
 import { AppInjector } from '../../app.module';
-import { DriverService } from '../../Services/driver/driver.service';
 import { SummaryItems } from '../../entities/summary-items';
+import { CurrentData } from '../../Page/tracking/tracking.component';
+import { HttpClient } from '@angular/common/http';
+import { ExcelExportData } from '@progress/kendo-angular-excel-export';
 
 /**
  * Trang quản lý để xử lý logic, truy xuất dữ liệu
  * @template TEntity ĐỐi tượng trả về
  */
-export class BaseManager<TEntity, TFilter extends BaseFilter> {
+export abstract class BaseManager<TEntity, TFilter extends BaseFilter> {
   constructor(protected bFilter: new () => TFilter) {}
 
+  public httpClient: HttpClient = AppInjector.get(HttpClient);
   // Thông tin pagerAll: Sử dụng khi get Rowcount, lấy tất cả dữ liệu
   public pagerAll: Pager = new Pager(387590 * 1000, 0);
 
   // BaseService
-  public baseService: any;
+  public baseService = AppInjector.get(BaseService);
 
   // baseFilter: bộ lọc dữ liệu - điều kiện tìm kiếm
   public baseFilter: TFilter = new this.bFilter();
+
+  public reportType: number;
 
   // ds cột cần tính tổng
   public columnsSummary: string[] = [];
@@ -49,6 +52,19 @@ export class BaseManager<TEntity, TFilter extends BaseFilter> {
     columnIndex?: number;
   }[];
 
+  public abstract columnsGridAll: {
+    title: string;
+    field: string;
+    visible: boolean;
+    width?: number;
+    clumnSumIndex?: number;
+    format?: string;
+    isSummary?: boolean;
+    isCommand?: boolean;
+    command?: string;
+    clsCommand?: string;
+  }[];
+
   // ds cột không cho phép hiện lên khi xuất báo cáo
   public columnsGridExclude: any[];
 
@@ -62,16 +78,9 @@ export class BaseManager<TEntity, TFilter extends BaseFilter> {
   /**
    * Lấy dữ liệu
    */
-  public async getDataReportDetail(
+  public async getDataDetailOfMaster(
     item: TEntity
-  ): Promise<{ data: TEntity[]; total: 0 }> {
-    return null;
-  }
-
-  /**
-   * Lấy tất cả dữ liệu
-   */
-  public async getAllDataReport(): Promise<{ data: TEntity[]; total: 0 }> {
+  ): Promise<{ data: TEntity[]; total: number }> {
     return null;
   }
 
@@ -92,18 +101,69 @@ export class BaseManager<TEntity, TFilter extends BaseFilter> {
   /**
    * Lấy ra cấu hình ẩn hiện cột
    */
-  public getColumnsGridCustom(): {
-    title: string;
-    field: string;
-    checked: boolean;
-  }[] {
-    return null;
+  public getColumnsGridCustom(): Promise<string> {
+    const userID = CurrentData.UserID;
+    const fields = this.columnsGridCustom
+      .map(
+        (x: {
+          title: string;
+          field: string;
+          checked: boolean;
+          columnIndex?: number;
+        }) => {
+          return x.field;
+        }
+      )
+      .join(',');
+
+    const data = {
+      FK_UserID: userID,
+      ReportTypeID: this.reportType,
+    };
+    return this.httpClient
+      .post('https://10.1.11.107:8036/api/userReport/get', data)
+      .toPromise()
+      .then((x: any) => {
+        if (x.Data != null) {
+          return x.Data?.SelectedReportColumns;
+        } else {
+          return '';
+        }
+      });
   }
 
   /**
    * Lưu cấu hình ẩn hiện cột
    */
-  public saveCustomColumns(): void {}
+  public saveCustomColumns(): Promise<void> {
+    const userID = CurrentData.UserID;
+    const fields = this.columnsGridCustom
+      .map(
+        (x: {
+          title: string;
+          field: string;
+          checked: boolean;
+          columnIndex?: number;
+        }) => {
+          if (x.checked) {
+            return x.field;
+          }
+        }
+      )
+      .join(',');
+
+    const data = {
+      FK_UserID: userID,
+      ReportTypeID: this.reportType,
+      SelectedReportColumns: fields,
+    };
+    return this.httpClient
+      .post('https://10.1.11.107:8036/api/userReport/update', data)
+      .toPromise()
+      .then((x) => {
+        return null;
+      });
+  }
 
   public async addNew(entity: TEntity): Promise<boolean> {
     return null;

@@ -1,9 +1,9 @@
-<app-two-column
-  [pageTitle]="title"
+<app-form-report-base
+  [pageTitle]="pageTitle"
   [modalTitle]="modalTitle"
   [columnsCustom]="baseManager.columnsGridCustom"
-  [enableAdd]="hasPermission(permissionKeyNameAdd)"
-  [enableOption]="hasPermission(permissionKeyNameOption)"
+  [enableAdd]="authorized.canAdd"
+  [enableOption]="authorized.canOption"
   (onSearch)="onSearch_Click()"
   (onCreate)="onCreate_Click()"
   (onSave)="onSave_Click($event)"
@@ -55,10 +55,7 @@
       </ng-template>
       <ng-template
         kendoGridToolbarTemplate
-        *ngIf="
-          this.dataGrid.data.length > 0 &&
-          hasPermission(permissionKeyNameExport)
-        "
+        *ngIf="this.dataGrid.data.length > 0 && authorized.canExport"
       >
         <i
           kendoGridExcelCommand
@@ -167,6 +164,7 @@
         <kendo-pager-info></kendo-pager-info>
       </ng-template>
     </kendo-grid>
+
     <!-- kết thúc control grid ở đây -->
   </div>
 
@@ -177,4 +175,4 @@
     </form>
     <!-- Kết thúc cho modal ở đây -->
   </div>
-</app-two-column>
+</app-form-report-base>

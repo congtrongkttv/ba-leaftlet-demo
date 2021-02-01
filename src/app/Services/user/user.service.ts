@@ -12,7 +12,7 @@ import { UserFilter } from '../../entities/Users/UserFilter';
 })
 export class UserService extends BaseService<UserEntity, UserFilter> {
   constructor(private http: HttpClient) {
-    super();
+    super(http);
   }
 
   getData(filter: UserFilter): Observable<any> {

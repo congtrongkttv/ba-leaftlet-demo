@@ -1,14 +1,11 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { DriversManager } from 'src/app/BLL/DriversManager/DriversManager';
-import { BaseReport } from 'src/app/Common/base-report';
-import { DriverEntity } from 'src/app/entities/Driver/Driver';
 import { DriverFilter } from '../../../entities/Driver/DriverFilter';
 import { CRUDBase } from '../../../Core/curd-base';
 import { UserEntity } from '../../../entities/Users/User';
 import { UsersManager } from '../../../BLL/UserManager/UsersManager';
-import { TwoColumnComponent } from '../BaseReport/two-column/two-column.component';
-import { DriverEditComponent } from '../report-drivers/driver-edit/driver-edit.component';
 import { Pager } from 'src/app/Core/pager';
+import { AuthorizeBase } from '../../../Core/authorize-base';
+import { PermissionKeyNames } from 'src/app/Enum/permission-key-names.enum';
 
 @Component({
   selector: 'app-report-users',
@@ -18,20 +15,18 @@ import { Pager } from 'src/app/Core/pager';
 export class ReportUsersComponent
   extends CRUDBase<UserEntity, UsersManager, DriverFilter>
   implements OnInit {
-  public title = 'Danh sách người dùng';
+  public pageTitle = 'Danh sách người dùng';
   public modalTitle = 'Thêm mới người dùng';
   public reportTitle = 'Danh sách người dùng';
   public pageSize = 10;
   public searchContent = '';
   public isMasterDetail = true;
-  @ViewChild(TwoColumnComponent) form: TwoColumnComponent;
   // Phân quyền
-  public permissionKeyNameAdd = -1;
-  public permissionKeyNameOption = 2;
-  public permissionKeyNameUpdate = -1;
-  public permissionKeyNameDelete = -1;
-  public permissionKeyNameExport = 5;
-
+  authorized: AuthorizeBase = {
+    canView: this.hasPermission(PermissionKeyNames.userView),
+    canExport: this.hasPermission(PermissionKeyNames.userExport),
+    canOption: this.hasPermission(PermissionKeyNames.userOption),
+  };
   constructor() {
     super(UsersManager, UserEntity);
   }

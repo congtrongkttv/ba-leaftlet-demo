@@ -1,4 +1,3 @@
-import { ExportOption } from './export-option';
 import {
   Workbook,
   WorkbookSheet,
@@ -7,17 +6,14 @@ import {
   WorkbookSheetRowCell,
 } from '@progress/kendo-angular-excel-export';
 import {
-  CellComponent,
   ColumnComponent,
-  CommandColumnComponent,
   ExcelExportEvent,
   GridComponent,
 } from '@progress/kendo-angular-grid';
 import { Observable, zip } from 'rxjs';
 import { saveAs } from '@progress/kendo-file-saver';
+import { ExportOption } from './export-option';
 import { ExportStyleOption } from './export-style-option';
-import { CurrentData } from '../Page/tracking/tracking.component';
-import { DateTime } from './DateTimeHelper';
 
 export class ExportHelper {
   constructor(
@@ -61,6 +57,13 @@ export class ExportHelper {
     rows[0].cells.forEach((cell: WorkbookSheetRowCell) => {
       this.setStyleCellHeader(cell);
     });
+    // Cho dòng header căn giữa và đậm lên
+    if (this.option?.isGroupHeader) {
+      rows[1].height = 30;
+      rows[1].cells.forEach((cell: WorkbookSheetRowCell) => {
+        this.setStyleCellHeader(cell);
+      });
+    }
     if (this.option?.isSummary) {
       // Cho dòng summary căn giữa và đậm lên
       rows[rows.length - 1].height = 30;
@@ -89,7 +92,8 @@ export class ExportHelper {
             false,
             this.stypeOption?.fontSize ?? 14,
             true,
-            'black'
+            'black',
+            this.stypeOption?.fontFamily ?? 'Times New Roman'
           ),
         ],
       });
@@ -108,7 +112,8 @@ export class ExportHelper {
             false,
             this.stypeOption?.fontSize ?? 14,
             true,
-            'black'
+            'black',
+            this.stypeOption?.fontFamily ?? 'Times New Roman'
           ),
         ],
       });
@@ -125,7 +130,8 @@ export class ExportHelper {
           false,
           this.stypeOption?.fontSize ?? 14,
           true,
-          'black'
+          'black',
+          this.stypeOption?.fontFamily ?? 'Times New Roman'
         ),
       ],
     });
@@ -144,10 +150,17 @@ export class ExportHelper {
           this.stypeOption?.titleBold ?? true,
           this.stypeOption?.titlefontSize ?? 18,
           true,
-          this.stypeOption?.titleColor ?? 'black'
+          this.stypeOption?.titleColor ?? 'black',
+          this.stypeOption?.fontFamily ?? 'Times New Roman'
         ),
       ],
     });
+
+    // new Workbook(workbook).toDataURL().then((dataUrl: string) => {
+    //   // https://www.telerik.com/kendo-angular-ui/components/filesaver/
+    //   const reportName = this.option.reportName;
+    //   saveAs(dataUrl, 'a.xlsx');
+    // });
   }
   /**
    * Xuất excel với master detail
@@ -187,9 +200,8 @@ export class ExportHelper {
         cell.borderTop = { color: '#666664', size: 1 };
         cell.textAlign = 'center';
         cell.wrap = this.stypeOption?.wrap ?? true;
-        cell.fontFamily = this.stypeOption?.fontFamily ?? 'Calibri';
+        cell.fontFamily = this.stypeOption?.fontFamily ?? 'Times New Roman';
         cell.fontSize = this.stypeOption?.fontSize ?? 14;
-        cell.background = '#6be5f2';
       });
     });
 
@@ -205,9 +217,8 @@ export class ExportHelper {
             borderTop: { color: '#666664', size: 1 },
             textAlign: 'center',
             wrap: this.stypeOption?.wrap ?? true,
-            fontFamily: this.stypeOption?.fontFamily ?? 'Calibri',
+            fontFamily: this.stypeOption?.fontFamily ?? 'Times New Roman',
             fontSize: this.stypeOption?.fontSize ?? 14,
-            background: '#6be5f2',
           });
         });
       }
@@ -238,12 +249,16 @@ export class ExportHelper {
         // Số dòng dữ liệu của lưới detail ứng với từng dòng của lưới master
         const numberRowDetail = detail.data.length;
         // add the detail data
+        rows.splice(idx + 2, 0, {
+          cells: [{}],
+        });
         for (let i = detail.data.length - 1; i >= 0; i--) {
           const dataDetail = detail.data[i];
           const cellDetail: any[] = [];
           if (i === 0) {
             cellDetail.push({ rowSpan: i === 0 ? numberRowDetail : 0 });
           }
+
           this.option?.baseComponent.baseManager.columnDetail.forEach(
             (element) => {
               cellDetail.push({
@@ -254,6 +269,7 @@ export class ExportHelper {
                 borderLeft: { color: '#666664', size: 1 },
                 borderRight: { color: '#666664', size: 1 },
                 borderTop: { color: '#666664', size: 1 },
+                fontFamily: this.stypeOption?.fontFamily ?? 'Times New Roman',
               });
             }
           );
@@ -268,6 +284,7 @@ export class ExportHelper {
                 borderLeft: { color: '#666664', size: 1 },
                 borderRight: { color: '#666664', size: 1 },
                 borderTop: { color: '#666664', size: 1 },
+                fontFamily: this.stypeOption?.fontFamily ?? 'Times New Roman',
               });
             }
           }
@@ -294,6 +311,7 @@ export class ExportHelper {
               borderLeft: { color: '#666664', size: 1 },
               borderRight: { color: '#666664', size: 1 },
               borderTop: { color: '#666664', size: 1 },
+              fontFamily: this.stypeOption?.fontFamily ?? 'Times New Roman',
             });
           }
         );
@@ -310,8 +328,12 @@ export class ExportHelper {
             });
           }
         }
+
         rows.splice(idx + 2, 0, {
           cells: cellHeader,
+        });
+        rows.splice(idx + 2, 0, {
+          cells: [{}],
         });
       }
 
@@ -373,6 +395,7 @@ export class ExportHelper {
               fontSize: this.stypeOption?.fontSize ?? 14,
               wrap: true,
               background: this.stypeOption?.headerBackground ?? '#ffffff',
+              fontFamily: this.stypeOption?.fontFamily ?? 'Times New Roman',
             },
           ],
         });
@@ -391,6 +414,7 @@ export class ExportHelper {
               bold: false,
               fontSize: this.stypeOption?.fontSize ?? 14,
               wrap: true,
+              fontFamily: this.stypeOption?.fontFamily ?? 'Times New Roman',
             },
           ],
         });
@@ -407,6 +431,7 @@ export class ExportHelper {
             bold: false,
             fontSize: this.stypeOption?.fontSize ?? 14,
             wrap: true,
+            fontFamily: this.stypeOption?.fontFamily ?? 'Times New Roman',
           },
         ],
       });
@@ -426,6 +451,7 @@ export class ExportHelper {
             fontSize: this.stypeOption?.titlefontSize ?? 18,
             wrap: true,
             color: this.stypeOption?.titleColor ?? 'black',
+            fontFamily: this.stypeOption?.fontFamily ?? 'Times New Roman',
           },
         ],
       });
@@ -452,6 +478,7 @@ export class ExportHelper {
     cell.fontSize = this.stypeOption?.headerFontSize ?? 17;
     cell.background = this.stypeOption?.headerBackground ?? '#ffffff';
     cell.color = this.stypeOption?.headerColor ?? '#000000';
+    cell.fontFamily = this.stypeOption?.fontFamily ?? 'Times New Roman';
   }
 
   /**
@@ -464,6 +491,7 @@ export class ExportHelper {
     cell.fontSize = this.stypeOption?.footerFontSize ?? 15;
     cell.background = this.stypeOption?.footerBackground ?? '#e3e3e3';
     cell.color = this.stypeOption?.footerColor ?? 'black';
+    cell.fontFamily = this.stypeOption?.fontFamily ?? 'Times New Roman';
   }
 
   /**
@@ -476,7 +504,7 @@ export class ExportHelper {
     cell.borderTop = { color: '#666664', size: 1 };
     cell.textAlign = 'center';
     cell.wrap = this.stypeOption?.wrap ?? true;
-    cell.fontFamily = this.stypeOption?.fontFamily ?? 'Calibri';
+    cell.fontFamily = this.stypeOption?.fontFamily ?? 'Times New Roman';
     cell.fontSize = this.stypeOption?.fontSize ?? 14;
   }
 
@@ -492,7 +520,8 @@ export class ExportHelper {
     cellbold: boolean,
     cellfontSize: number,
     cellwrap: boolean,
-    cellcolor: string
+    cellcolor: string,
+    cellFontFamily: string
   ): any {
     return {
       value: cellvalue,
@@ -504,6 +533,7 @@ export class ExportHelper {
       fontSize: cellfontSize,
       wrap: cellwrap,
       color: cellcolor,
+      fontFamily: cellFontFamily,
     };
   }
 }

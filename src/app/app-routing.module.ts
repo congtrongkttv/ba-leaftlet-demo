@@ -4,13 +4,15 @@ import { OnlineComponent } from './Page/online/online.component';
 import { TrackingComponent } from './Page/tracking/tracking.component';
 import { ReportDriversComponent } from './Page/Report/report-drivers/report-drivers.component';
 import { ReportUsersComponent } from './Page/Report/report-users/report-users.component';
+import { NoPermissionComponent } from './Page/no-permission/no-permission.component';
 
 export let route: Router;
 const routes: Routes = [
   { path: 'online', component: OnlineComponent },
   { path: 'tracking', component: TrackingComponent },
-  { path: 'report', component: ReportDriversComponent },
-  { path: 'report1', component: ReportUsersComponent },
+  { path: 'driver', component: ReportDriversComponent },
+  { path: 'users', component: ReportUsersComponent },
+  { path: 'nopermission', component: NoPermissionComponent },
 ];
 
 @NgModule({

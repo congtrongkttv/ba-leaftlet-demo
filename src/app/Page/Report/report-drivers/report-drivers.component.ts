@@ -9,7 +9,6 @@ import { DriverEntity } from 'src/app/entities/Driver/Driver';
 import { DriversManager } from '../../../BLL/DriversManager/DriversManager';
 import { DriverFilter } from '../../../entities/Driver/DriverFilter';
 import { CRUDBase } from '../../../Core/curd-base';
-import { TwoColumnComponent } from '../BaseReport/two-column/two-column.component';
 import { MessageType } from 'src/app/Enum/message-type.enum';
 import { SaveType } from '../../../Enum/save-type.enum';
 import { DateTime } from '../../../Helper/DateTimeHelper';
@@ -17,6 +16,10 @@ import { Pager } from 'src/app/Core/pager';
 import { get } from 'http';
 import { FieldsControl } from 'src/app/Helper/fields-control';
 import { DriverEditComponent } from './driver-edit/driver-edit.component';
+import { AuthorizeBase } from 'src/app/Core/authorize-base';
+import { PermissionKeyNames } from 'src/app/Enum/permission-key-names.enum';
+import { PermissionBase } from '../../../Core/authorize-base';
+import { FormatSettings } from '@progress/kendo-angular-dateinputs';
 
 @Component({
   selector: 'app-report-drivers',
@@ -29,25 +32,31 @@ export class ReportDriversComponent
   constructor() {
     super(DriversManager, DriverEntity);
   }
-  @ViewChild(TwoColumnComponent) form: TwoColumnComponent;
   @ViewChild(DriverEditComponent) popupEdit: DriverEditComponent;
   public searchContent = '';
 
   /**
    * Danh sách properties override
    */
-  public title = 'Danh sách lái xe';
-  public modalTitle = 'Thêm mới lái xe';
-  public pageSize = 10;
-  public reportTitle = 'Danh sách lái xe';
+
+  reportTitle = 'Danh sách lái xe';
+  pageTitle = 'Danh sách lái xe';
+  public format: FormatSettings = {
+    displayFormat: 'dd/MM/yyyy',
+    inputFormat: 'dd/MM/yyyy',
+  };
 
   // Phân quyền
-  public permissionKeyNameAdd = 1;
-  public permissionKeyNameOption = 2;
-  public permissionKeyNameUpdate = 3;
-  public permissionKeyNameDelete = 4;
-  public permissionKeyNameExport = 5;
-
+  authorized: AuthorizeBase = {
+    canView: this.hasPermission(PermissionKeyNames.driverView),
+    canAdd: this.hasPermission(PermissionKeyNames.driverAdd),
+    canExport: this.hasPermission(PermissionKeyNames.driverExport),
+    canOption:
+      this.hasPermission(PermissionKeyNames.driverOption) &&
+      !this.isGroupColumnsHeader,
+    canUpdate: this.hasPermission(PermissionKeyNames.driverUpdate),
+    canDelete: this.hasPermission(PermissionKeyNames.driverDelete),
+  };
   ngAfterViewInit(): void {
     this.getColumnsGridCustom();
   }
@@ -170,7 +179,6 @@ export class ReportDriversComponent
   public onRowComand_Click(event: {
     action: string;
     dataItem: DriverEntity;
-    rowIndex: number;
   }): void {
     switch (event.action) {
       case 'edit':

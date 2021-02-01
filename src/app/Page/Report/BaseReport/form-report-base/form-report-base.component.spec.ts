@@ -3,21 +3,21 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { DebugElement } from '@angular/core';
 
-import { TwoColumnComponent } from './two-column.component';
+import { FormReportBaseComponent } from './form-report-base.component';
 
-describe('TwoColumnComponent', () => {
-  let component: TwoColumnComponent;
-  let fixture: ComponentFixture<TwoColumnComponent>;
+describe('FormReportBaseComponent', () => {
+  let component: FormReportBaseComponent;
+  let fixture: ComponentFixture<FormReportBaseComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ TwoColumnComponent ]
+      declarations: [ FormReportBaseComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(TwoColumnComponent);
+    fixture = TestBed.createComponent(FormReportBaseComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

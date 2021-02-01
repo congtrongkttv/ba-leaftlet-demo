@@ -1,37 +1,18 @@
+import { GeneralBaseReport } from './general-base-report';
 import { BaseManager } from '../BLL/BaseManager/BaseManager';
 import { BaseEntity } from '../entities/Base/BaseEntity';
 import { BaseFilter } from '../entities/Base/BaseFilter';
-import { GeneralBaseReport } from './general-base-report';
 import { SaveType } from '../Enum/save-type.enum';
-export class CRUDBase<
+import { BaseService } from '../Services/Base/base.service';
+export abstract class CRUDBase<
   TEntity extends BaseEntity,
   TManager extends BaseManager<TEntity, TFilter>,
   TFilter extends BaseFilter
 > extends GeneralBaseReport<TEntity, TManager, TFilter> {
   /**
-   * Qyền thêm mới
-   */
-  public permissionKeyNameAdd: number;
-
-  /**
-   * Quyền sửa
-   */
-  public permissionKeyNameUpdate: number;
-
-  /**
-   * Quyền xóa
-   */
-  public permissionKeyNameDelete: number;
-
-  /**
    * Thêm mới hay sửa
    */
   public isNew: boolean;
-
-  /**
-   * ĐỐi tượng đang được làm việc
-   */
-  public currentDataModel: TEntity = new this.cObj();
 
   // Validate dữ liệu khi thêm mới hoặc cập nhật
   public validateDataBeChanged(): boolean {
@@ -95,12 +76,6 @@ export class CRUDBase<
    * @param saveType kiểu action thêm | Sửa | Xóa
    */
   public async onSave_Click(saveType: SaveType): Promise<void> {}
-
-  /**
-   * sự kiện ấn nút trên lưới
-   * @param event Kiểu sửa | xóa
-   */
-  public onRowComand_Click(event: any): void {}
 
   /**
    * Sự kiện khóa

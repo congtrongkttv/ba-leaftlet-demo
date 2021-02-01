@@ -2,30 +2,35 @@ import { Injectable } from '@angular/core';
 import { BaseEntity } from '../../entities/Base/BaseEntity';
 import { Observable } from 'rxjs';
 import { BaseFilter } from 'src/app/entities/Base/BaseFilter';
+import { HttpClient } from '@angular/common/http';
 @Injectable({
   providedIn: 'root',
 })
 export class BaseService<TEntity, TFilter> {
-  constructor() {}
+  constructor(private httpClient: HttpClient) {}
 
-  getData(filter: TFilter): Observable<any> {
-    return null;
-  }
-
-  getDetail(id: any): Observable<any> {
+  public getData(filter: TFilter): Observable<any> {
     return null;
   }
 
-  add(entity: any): Observable<any> {
+  public getDetail(id: any): Observable<any> {
     return null;
   }
-  update(entity: any): Observable<any> {
+
+  public add(entity: any): Observable<any> {
     return null;
   }
-  delete(id: any): Observable<any> {
+  public update(entity: any): Observable<any> {
     return null;
   }
-  lock(id: any): boolean {
+  public delete(id: any): Observable<any> {
+    return null;
+  }
+  public lock(id: any): boolean {
     return true;
+  }
+
+  public saveCustomColumn(): Observable<any> {
+    return this.httpClient.post('url', {});
   }
 }

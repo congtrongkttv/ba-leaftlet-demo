@@ -10,16 +10,31 @@ import { Pager } from 'src/app/Core/pager';
 import { UserEntity } from '../../entities/Users/User';
 import { UserFilter } from '../../entities/Users/UserFilter';
 import { UserService } from '../../Services/user/user.service';
+import { ReportType } from '../../Enum/report-type.enum';
+import { ExcelExportData } from '@progress/kendo-angular-excel-export';
 export class UsersManager extends BaseManager<UserEntity, UserFilter> {
   constructor() {
     super(DriverFilter);
     this.baseService = AppInjector.get(UserService);
   }
   baseService: UserService;
+  reportType = ReportType.reportUsers;
+
+  columnsGridAll: {
+    title: string;
+    field: string;
+    visible: boolean;
+    width?: number;
+    format?: string;
+    isSummary?: boolean;
+    isCommand?: boolean;
+    command?: string;
+  }[] = [];
 
   // Ds các cột của master
   columnDetail = [
     { title: 'STT', field: 'rowNumber', width: 50 },
+    { title: 'Công ty', field: 'FK_CompanyID', width: 50 },
     { title: 'Tên đăng nhập', field: 'Username' },
     { title: 'Tên đầy đủ', field: 'Fullname' },
     { title: 'Số điện thoại', field: 'PhoneNumber' },
@@ -45,23 +60,6 @@ export class UsersManager extends BaseManager<UserEntity, UserFilter> {
       .getData(this.baseFilter)
       .toPromise()
       .then((x: any) => {
-        return { data: x.Data.Data, total: x.Data.Count };
-      })
-      .catch((ex) => {
-        return { data: [], total: 0 };
-      });
-  }
-
-  public async getDataReportDetail(
-    item: UserEntity
-  ): Promise<{ data: UserEntity[]; total: 0 }> {
-    // Lấy dữ liệu
-    this.baseFilter.currentPager = this.pagerAll;
-    this.baseFilter.companyID = item.FK_CompanyID;
-    return await this.baseService
-      .getDataByCompanyID(this.baseFilter)
-      .toPromise()
-      .then((x: any) => {
         const dataDriver = x.Data.Data;
         let index = 0;
         dataDriver.forEach((d: UserEntity) => {
@@ -70,16 +68,20 @@ export class UsersManager extends BaseManager<UserEntity, UserFilter> {
         });
         return { data: x.Data.Data, total: x.Data.Count };
       })
-      .catch(() => {
-        return null;
+      .catch((ex) => {
+        return { data: [], total: 0 };
       });
   }
 
-  async getAllDataReport(): Promise<{ data: UserEntity[]; total: 0 }> {
+  public async getDataDetailOfMaster(
+    item: UserEntity
+  ): Promise<{ data: UserEntity[]; total: number }> {
     // Lấy dữ liệu
     this.baseFilter.currentPager = this.pagerAll;
+    this.baseFilter.companyID = item.FK_CompanyID;
+
     return await this.baseService
-      .getData(this.baseFilter)
+      .getDataByCompanyID(this.baseFilter)
       .toPromise()
       .then((x: any) => {
         const dataDriver = x.Data.Data;
@@ -116,36 +118,14 @@ export class UsersManager extends BaseManager<UserEntity, UserFilter> {
       .toPromise()
       .then((x: any) => {
         const data: DriverEntity = x.Data;
-        summaryItems.column1 = data.FK_CompanyID;
-        summaryItems.column4 = data.FK_DepartmentID;
-        summaryItems.column6 = data.Flags;
+        // summaryItems.column1 = data.FK_CompanyID;
+        // summaryItems.column4 = data.FK_DepartmentID;
+        // summaryItems.column6 = data.Flags;
         return summaryItems;
       })
       .catch(() => {
         return summaryItems;
       });
-  }
-
-  saveCustomColumns(): void {
-    localStorage.setItem(
-      'user_custom_columns_' + CurrentData.UserID.toString(),
-      JSON.stringify(this.columnsGridCustom)
-    );
-  }
-
-  getColumnsGridCustom(): {
-    title: string;
-    field: string;
-    checked: boolean;
-  }[] {
-    const customColumnsStr = localStorage.getItem(
-      'user_custom_columns_' + CurrentData.UserID.toString()
-    );
-    if (customColumnsStr != null) {
-      return JSON.parse(customColumnsStr);
-    } else {
-      return [];
-    }
   }
 
   async addNew(entity: UserEntity): Promise<boolean> {

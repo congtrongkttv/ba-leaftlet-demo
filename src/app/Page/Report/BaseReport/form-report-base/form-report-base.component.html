@@ -36,15 +36,15 @@
           <div class="rightpanel-optionpanel-checkbox-btn">
             <input
               type="button"
-              value="Hủy"
-              class="button button-dangerous"
-              (click)="onSaveCustomColumns_Click(false)"
-            />
-            <input
-              type="button"
               value="Lưu"
               class="button button-primary"
               (click)="onSaveCustomColumns_Click(true)"
+            />
+            <input
+              type="button"
+              value="Hủy"
+              class="button button-cancel"
+              (click)="onSaveCustomColumns_Click(false)"
             />
           </div>
         </div>
@@ -52,8 +52,7 @@
     </div>
     <div class="right-panel-body">
       <div class="rightpanel-searchpanel">
-        <ng-content select=".rightpanel-search"></ng-content>
-        <div class="rightpanel-buttonpanel"></div>
+        <ng-content select=".rightpanel-search"> </ng-content>
       </div>
       <div class="rightpanel-datapanel">
         <div

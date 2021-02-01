@@ -106,9 +106,10 @@ $grid-hearder-bg-color: #f1efef;
 
     .table-report-header {
       text-align: center;
-      font-weight: 700;
+      font-weight: 600;
       color: rgba(0, 0, 0, 0.9);
       background-color: $grid-hearder-bg-color;
+      vertical-align: middle;
     }
 
     .table-report-body {
@@ -216,6 +217,12 @@ $grid-hearder-bg-color: #f1efef;
 .button-primary {
   background-color: $base-bg-color;
 }
+
+.button-cancel {
+  background-color: rgb(199, 199, 199);
+  color: rgba(0, 0, 0, 0.9);
+}
+
 .button-dangerous {
   background-color: orangered;
 }

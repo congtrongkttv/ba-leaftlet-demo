@@ -3,6 +3,9 @@ export class BaseFilter {
   // ID Công ty
   public companyID: number;
 
+  // User ID
+  public userID: string;
+
   // Từ ngày
   public fromDate: Date;
 
