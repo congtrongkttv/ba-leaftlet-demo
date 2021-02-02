@@ -1,4 +1,4 @@
-import { BaseManager } from '../BLL/BaseManager/BaseManager';
+import { BaseManager } from '../BLL/BaseManager/base-manager';
 import { BaseEntity } from '../entities/Base/BaseEntity';
 import { BaseFilter } from '../entities/Base/BaseFilter';
 import { GeneralBaseReport } from './general-base-report';

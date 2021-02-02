@@ -1,15 +1,14 @@
-import { BaseManager } from '../BaseManager/BaseManager';
-import { Driver, DriverEntity } from '../../entities/Driver/Driver';
+import { BaseManager } from '../BaseManager/base-manager';
+import { DriverEntity } from '../../entities/Driver/Driver';
 import { DriverService } from '../../Services/driver/driver.service';
 import { AppInjector } from '../../app.module';
 import { DriverFilter } from '../../entities/Driver/DriverFilter';
-import { Observable } from 'rxjs';
 import { SummaryItems } from '../../entities/summary-items';
-import { CurrentData } from 'src/app/Page/tracking/tracking.component';
-import { Pager } from 'src/app/Core/pager';
 import { ReportType } from '../../Enum/report-type.enum';
-import { HttpClient } from '@angular/common/http';
-import { title } from 'process';
+import * as FileSaver from 'file-saver';
+import { ColumnsOptions } from '../../Core/columns-option';
+import { ExportExcelOption } from '../../Helper/export-option';
+import { AnyARecord } from 'dns';
 export class DriversManager extends BaseManager<DriverEntity, DriverFilter> {
   constructor() {
     super(DriverFilter);
@@ -20,110 +19,38 @@ export class DriversManager extends BaseManager<DriverEntity, DriverFilter> {
   // Ds các cột cần tính tổng
   columnsSummary = ['FK_CompanyID', 'FK_DepartmentID', 'Flags'];
 
-  columnsGridRequired = [
-    { title: 'STT', field: 'rowNumber', checked: false },
-    { title: 'Công ty', field: 'FK_CompanyID', checked: false },
+  columnsGridRequired: ColumnsOptions[] = [
+    { title: 'STT', field: 'rowNumber', isCommand: false },
+    { title: 'Công ty', field: 'FK_CompanyID', isCommand: false },
   ];
 
   /**
    * Danh sách cột có thể ẩn hiện của lưới
    */
-  columnsGridCustom = [
-    { title: 'Phòng ban', field: 'FK_DepartmentID', checked: true },
-    { title: 'Mã NV', field: 'EmployeeCode', checked: true },
-    { title: 'Tên hiển thị', field: 'DisplayName', checked: true },
-    { title: 'Tên đăng nhập', field: 'Name', checked: true },
-    { title: 'Ngày sinh nhật', field: 'Birthday', checked: true },
-    { title: 'Flags', field: 'Flags', checked: false },
-    { title: 'Sửa', field: 'updateCommand', checked: false },
-    { title: 'Xóa', field: 'deleteCommand', checked: false },
-  ];
-
-  columnsGridAll: {
-    title: string;
-    field: string;
-    visible: boolean;
-    width?: number;
-    format?: string;
-    isSummary?: boolean;
-    isCommand?: boolean;
-    command?: string;
-    clumnSumIndex?: number;
-    clsCommand?: string;
-  }[] = [
-    {
-      title: 'STT',
-      field: 'rowNumber',
-      visible: true,
-      width: 50,
-    },
-    {
-      title: 'Công ty',
-      field: 'FK_CompanyID',
-      visible: true,
-      width: 100,
-      clumnSumIndex: 1,
-      isSummary: true,
-    },
+  columnsGridCustom: ColumnsOptions[] = [
     {
       title: 'Phòng ban',
       field: 'FK_DepartmentID',
       visible: true,
-      width: 100,
-      isSummary: true,
-      clumnSumIndex: 2,
+      isCommand: false,
     },
-    {
-      title: 'Mã NV',
-      field: 'EmployeeCode',
-      visible: true,
-      width: 100,
-    },
+    { title: 'Mã NV', field: 'EmployeeCode', visible: true, isCommand: false },
     {
       title: 'Tên hiển thị',
       field: 'DisplayName',
       visible: true,
-      width: 100,
+      isCommand: false,
     },
-    {
-      title: 'Tên đăng nhập',
-      field: 'Name',
-      visible: true,
-      width: 100,
-    },
+    { title: 'Tên đăng nhập', field: 'Name', visible: true, isCommand: false },
     {
       title: 'Ngày sinh nhật',
       field: 'Birthday',
       visible: true,
-      width: 100,
-      format: 'dd/MM/yyyyy',
+      isCommand: false,
     },
-    {
-      title: 'Flags',
-      field: 'Flags',
-      visible: true,
-      width: 100,
-      clumnSumIndex: 7,
-      isSummary: true,
-    },
-    {
-      title: 'Sửa',
-      field: 'updateCommand',
-      visible: true,
-      width: 50,
-      isCommand: true,
-      command: 'edit',
-      clsCommand: 'fa fa-edit',
-    },
-    {
-      title: 'Xóa',
-      field: 'deleteCommand',
-      visible: true,
-      width: 50,
-      isCommand: true,
-      command: 'remove',
-      clsCommand: 'fa fa-remove',
-    },
+    { title: 'Flags', field: 'Flags', visible: true, isCommand: false },
+    { title: 'Sửa', field: 'updateCommand', visible: true, isCommand: true },
+    { title: 'Xóa', field: 'deleteCommand', visible: true, isCommand: true },
   ];
 
   async getDataReport(): Promise<{ data: DriverEntity[]; total: 0 }> {
@@ -200,6 +127,24 @@ export class DriversManager extends BaseManager<DriverEntity, DriverFilter> {
       .toPromise()
       .then((x) => {
         return true;
+      });
+  }
+
+  exportExcelFromServer(option: ExportExcelOption): Promise<void> {
+    option.InputData = {
+      keyword: this.baseFilter.searchContent,
+      pageIndex: this.baseFilter.currentPager.pageIndex,
+      pageSize: this.baseFilter.currentPager.pageSize,
+    };
+    return this.baseService
+      .exportExcelFromServer(option)
+      .toPromise()
+      .then((dataRe: Response) => {
+        const binaryData = [];
+        binaryData.push(dataRe);
+        const blob = new Blob(binaryData, { type: 'application/octet-stream' });
+        const urlFile = window.URL.createObjectURL(blob);
+        FileSaver.saveAs(blob, option.Template.FileName + '.xlsx');
       });
   }
 }

@@ -29,3 +29,21 @@ export interface ExportOption {
   // Trang general-base-report => để có thể gọi được dữ liệu từ export-helper.
   baseComponent?: any;
 }
+
+export interface ExportExcelOption {
+  InputData?: any;
+  Template: {
+    ReportTitle: string;
+    ReportSubtitleLevel1: string;
+    ReportSubtitleLevel2: string;
+    reportContent?: string;
+    FileName: string;
+    SheetName: string;
+    Landscape?: boolean;
+    SettingColumns: any[];
+    isSummary?: boolean;
+    isGroupHeader?: boolean;
+    baseComponent?: any;
+    reportList?: any;
+  };
+}

@@ -8,9 +8,9 @@ import {
 import { ExcelExportData } from '@progress/kendo-angular-excel-export';
 import { PDFExportEvent } from '@progress/kendo-angular-grid/dist/es2015/pdf/pdf-export-event';
 import { BaseEntity } from '../entities/Base/BaseEntity';
-import { BaseManager } from '../BLL/BaseManager/BaseManager';
+import { BaseManager } from '../BLL/BaseManager/base-manager';
 import { BaseFilter } from '../entities/Base/BaseFilter';
-import { ExportOption } from '../Helper/export-option';
+import { ExportExcelOption, ExportOption } from '../Helper/export-option';
 import { Pager } from './pager';
 import { SummaryItems } from '../entities/summary-items';
 import { ExportHelper } from '../Helper/export-helper';
@@ -18,11 +18,11 @@ import { CurrentData } from '../Page/tracking/tracking.component';
 import { DateTime } from '../Helper/DateTimeHelper';
 import { Directive, ViewChild } from '@angular/core';
 import { FormReportBaseComponent } from '../Page/Report/BaseReport/form-report-base/form-report-base.component';
-import { BaseService } from '../Services/Base/base.service';
-import { AuthorizeBase, PermissionBase } from './authorize-base';
+import { AuthorizeBase } from './authorize-base';
 import { route } from '../app-routing.module';
 import { PermissionKeyNames } from '../Enum/permission-key-names.enum';
 import { MessageType } from '../Enum/message-type.enum';
+import { ColumnsOptions } from './columns-option';
 import {
   DateInputComponent,
   DatePickerComponent,
@@ -103,10 +103,10 @@ export abstract class GeneralBaseReport<
   public abstract reportTitle: string;
 
   // Title trang
-  abstract pageTitle: string = 'PAGE TITLE';
+  abstract pageTitle = 'PAGE TITLE';
 
   // Titile của popup edit
-  modalTitle: string = 'MODAL TITLE';
+  modalTitle = 'MODAL TITLE';
 
   // ngày tháng báo cáo
   public reportDate: string;
@@ -120,7 +120,7 @@ export abstract class GeneralBaseReport<
   public reportName: string;
 
   // số ngày hỗ trợ tìm kiếm
-  public daySupport: number = 30;
+  public daySupport = 30;
 
   // ds cột của lưới dữ liệu
   public columnsGrid: any[];
@@ -152,11 +152,6 @@ export abstract class GeneralBaseReport<
   // Header của lưới có định dạng gộp cột hay không?
   public isGroupColumnsHeader = false;
 
-  // Lấy chi tiết của dòng cần xem
-  public viewDetail = async (
-    entity: TEntity
-  ): Promise<{ data: TEntity[]; total: number }> =>
-    await this.getDataDetailMaster(entity);
   //#endregion
 
   //#region METHODS
@@ -302,6 +297,12 @@ export abstract class GeneralBaseReport<
     return result;
   };
 
+  // Lấy chi tiết của dòng cần xem
+  public viewDetail = async (
+    entity: TEntity
+  ): Promise<{ data: TEntity[]; total: number }> =>
+    await this.getDataDetailMaster(entity);
+
   /**
    * Lấy số dòng của tất cả dữ liệu theo đầu vào tìm kiếm
    */
@@ -329,7 +330,7 @@ export abstract class GeneralBaseReport<
             isChecked = true;
           }
         });
-        clCus.checked = isChecked;
+        clCus.visible = isChecked;
       }
     });
   }
@@ -343,25 +344,14 @@ export abstract class GeneralBaseReport<
       if (this.authorized.canOption) {
         // Cột data
         if (column.field !== undefined) {
-          // Ẩn cột khi checked = false và không bắt buộc hiển thị
+          // Ẩn cột khi visible = false và không bắt buộc hiển thị
           column.hidden =
             !this.baseManager.columnsGridCustom.filter(
               (x) => x.field === column.field
-            )[0]?.checked &&
+            )[0]?.visible &&
             this.baseManager.columnsGridRequired.filter(
               (x) => x.field === column.field
             ).length === 0;
-        } else {
-          // Cột command
-          const a: any = !this.baseManager.columnsGridCustom.filter(
-            (x: {
-              title: string;
-              field: string;
-              checked: boolean;
-              columnIndex?: number;
-            }) => x.columnIndex === index
-          )[0]?.checked;
-          column.hidden = a;
         }
       } else {
         // Nếu người dùng không được phép ẩn hiện cột => CHo hiện hết lên
@@ -385,6 +375,7 @@ export abstract class GeneralBaseReport<
    * Xuất báo cáo dạng excel
    */
   public exportExcel(e: ExcelExportEvent, grid: GridComponent): void {
+    this.isLoading = true;
     // Thiết lập header (title) cho báo cáo
     this.setHeaderReport();
     // Tên báo cáo
@@ -394,19 +385,24 @@ export abstract class GeneralBaseReport<
       CurrentData.Username +
       '_' +
       new DateTime(new Date()).toFormat('dd_MM_yyyy_HH_mm_ss');
-    const option: ExportOption = {
-      reportTitle: this.reportTitle,
-      reportDate: this.reportDate,
-      reportVehicle: this.reportVehicle,
-      reportContent: this.reportContent,
-      sheetName: this.convertUnicodeToStringNotAccented(this.reportTitle),
-      reportName: this.reportName,
-      reportList: this.dataGridAll,
-      baseComponent: this,
-      isSummary: this.baseManager.columnsSummary.length > 0,
-      isGroupHeader: this.isGroupColumnsHeader,
-    };
+
     if (this.isExportExcelInClient) {
+      const option: ExportExcelOption = {
+        Template: {
+          ReportTitle: this.reportTitle,
+          ReportSubtitleLevel1: this.reportDate,
+          ReportSubtitleLevel2: this.reportVehicle,
+          reportContent: this.reportContent,
+          SheetName: this.convertUnicodeToStringNotAccented(this.reportTitle),
+          FileName: this.reportName,
+          reportList: this.dataGridAll,
+          baseComponent: this,
+          isSummary: this.baseManager.columnsSummary.length > 0,
+          isGroupHeader: this.isGroupColumnsHeader,
+          SettingColumns: [],
+          Landscape: false,
+        },
+      };
       // Xuất excel từ client
       const exportHelper: ExportHelper = new ExportHelper(
         { footerBackground: '#ffffff' },
@@ -420,10 +416,48 @@ export abstract class GeneralBaseReport<
         exportHelper.customExportExcelMasterDetail(e, grid);
       }
     } else {
-      // Xuất excel từ server
-      const exportHelper: ExportHelper = new ExportHelper({}, option);
-      exportHelper.exportExcelFromServer();
+      e.preventDefault();
+      const allColumns: ColumnsOptions[] = [];
+      this.gridComponent.columns.forEach((clmn: ColumnComponent) => {
+        this.baseManager.columnsGridRequired.forEach((x) => {
+          if (clmn.field === x.field) {
+            allColumns.push(x);
+          }
+        });
+        this.baseManager.columnsGridCustom.forEach((x) => {
+          if (clmn.field === x.field) {
+            allColumns.push(x);
+          }
+        });
+      });
+
+      const columns = allColumns
+        .filter((x) => !x.isCommand)
+        .map((x) => {
+          return {
+            ColumnName: x.field,
+            Caption: x.title,
+            Visible: x.visible === undefined ? true : x.visible,
+            Format: x.format === undefined ? '' : x.format,
+            Width: x.width === undefined ? 20 : x.width,
+          };
+        });
+
+      const option: ExportExcelOption = {
+        InputData: {},
+        Template: {
+          FileName: this.reportName,
+          Landscape: false,
+          ReportTitle: this.reportTitle,
+          ReportSubtitleLevel1: this.reportDate,
+          ReportSubtitleLevel2: this.reportContent,
+          SheetName: this.convertUnicodeToStringNotAccented(this.reportTitle),
+          SettingColumns: columns,
+        },
+      };
+      this.baseManager.exportExcelFromServer(option);
     }
+    this.isLoading = false;
   }
 
   /**

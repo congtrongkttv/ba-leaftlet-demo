@@ -96,33 +96,127 @@
         >
       </ng-template>
       <kendo-grid-column
-        *ngFor="let item of baseManager.columnsGridAll"
         [headerClass]="'table-report-header'"
         [class]="'table-report-body'"
         [footerClass]="'table-report-header'"
-        [title]="item.title"
-        [field]="item.field"
-        width="item.width ?? 100"
-        [format]="item.format"
+        title="STT"
+        field="rowNumber"
+        width="50"
+      >
+        <ng-template kendoGridCellTemplate let-rowIndex="rowIndex">
+          {{ rowIndex + 1 }}
+        </ng-template>
+      </kendo-grid-column>
+      <kendo-grid-column
+        [headerClass]="'table-report-header'"
+        [class]="'table-report-body'"
+        [footerClass]="'table-report-header'"
+        title="Công ty"
+        field="FK_CompanyID"
+        width="100"
+      ></kendo-grid-column>
+      <kendo-grid-column
+        [headerClass]="'table-report-header'"
+        [class]="'table-report-body'"
+        [footerClass]="'table-report-header'"
+        title="Phòng ban"
+        field="FK_DepartmentID"
+        width="100"
+      ></kendo-grid-column>
+      <kendo-grid-column
+        [headerClass]="'table-report-header'"
+        [class]="'table-report-body'"
+        [footerClass]="'table-report-header'"
+        title="Mã nhân viên"
+        field="EmployeeCode"
+        width="100"
+      >
+      </kendo-grid-column>
+      <kendo-grid-column
+        [headerClass]="'table-report-header'"
+        [class]="'table-report-body'"
+        [footerClass]="'table-report-header'"
+        title="Tên đăng nhập"
+        field="Name"
+        width="100"
+      >
+      </kendo-grid-column>
+      <kendo-grid-column
+        [headerClass]="'table-report-header'"
+        [class]="'table-report-body'"
+        [footerClass]="'table-report-header'"
+        title="Tên hiển thị"
+        field="DisplayName"
+        width="100"
+      >
+      </kendo-grid-column>
+
+      <kendo-grid-column
+        [headerClass]="'table-report-header'"
+        [class]="'table-report-body'"
+        [footerClass]="'table-report-header'"
+        title="Ngày sinh"
+        field="Birthday"
+        width="100"
+      >
+        <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+          {{ dataItem.Birthday | date: "dd/MM/yyyy" }}
+        </ng-template>
+      </kendo-grid-column>
+
+      <kendo-grid-column
+        [headerClass]="'table-report-header'"
+        [class]="'table-report-body'"
+        [footerClass]="'table-report-header'"
+        title="Flags"
+        field="Flags"
+        width="50"
       >
         <ng-template
-          *ngIf="item.isSummary && baseManager.columnsSummary.length > 0"
+          *ngIf="baseManager.columnsSummary.length > 0"
           kendoGridFooterTemplate
         >
-          {{ columnsSummaryItems[item.clumnSumIndex] }}
+          {{ columnsSummaryItems[7] }}
         </ng-template>
+      </kendo-grid-column>
 
-        <ng-template
-          kendoGridCellTemplate
-          let-dataItem="dataItem"
-          *ngIf="item.isCommand && baseManager.columnsSummary.length > 0"
-        >
+      <kendo-grid-column
+        [headerClass]="'table-report-header'"
+        [class]="'table-report-body'"
+        [footerClass]="'table-report-header'"
+        title="Sửa"
+        field="updateCommand"
+        width="50"
+      >
+        <ng-template kendoGridCellTemplate let-dataItem="dataItem">
           <i
-            class="{{ item.clsCommand }}"
+            class="fa fa-edit"
             aria-hidden="true"
             (click)="
               onRowComand_Click({
-                action: item.command,
+                action: 'edit',
+                dataItem: dataItem
+              })
+            "
+          ></i>
+        </ng-template>
+      </kendo-grid-column>
+
+      <kendo-grid-column
+        [headerClass]="'table-report-header'"
+        [class]="'table-report-body'"
+        [footerClass]="'table-report-header'"
+        title="Xóa"
+        field="deleteCommand"
+        width="50"
+      >
+        <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+          <i
+            class="fa fa-remove"
+            aria-hidden="true"
+            (click)="
+              onRowComand_Click({
+                action: 'remove',
                 dataItem: dataItem
               })
             "

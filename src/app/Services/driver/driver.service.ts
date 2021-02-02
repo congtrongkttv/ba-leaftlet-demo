@@ -5,6 +5,8 @@ import { BaseService } from '../Base/base.service';
 import { BaseEntity } from '../../entities/Base/BaseEntity';
 import { DriverFilter } from '../../entities/Driver/DriverFilter';
 import { DriverEntity } from '../../entities/Driver/Driver';
+import { ExportExcelOption } from 'src/app/Helper/export-option';
+import { SaveType } from '../../Enum/save-type.enum';
 @Injectable({
   providedIn: 'root',
 })
@@ -69,6 +71,14 @@ export class DriverService extends BaseService<DriverEntity, DriverFilter> {
     return this.http.post(
       'https://10.1.11.107:8036/api/hrmEmp/delete',
       loginParams
+    );
+  }
+
+  public exportExcelFromServer(option: ExportExcelOption): Observable<any> {
+    return this.http.post(
+      'http://10.1.11.107:8040/api/hrmEmp/exportExcel',
+      option,
+      { responseType: 'blob' }
     );
   }
 }

@@ -66,16 +66,7 @@
           icon="file-excel"
           >Xuất excel</i
         >
-        <i
-          kendoGridPDFCommand
-          class="fa fa-file-pdf-o fa-button fa-button-white"
-          aria-hidden="true"
-          title="Xuất pdf"
-          style="color: orangered"
-          icon="file-pdf"
-          (click)="exportPdf($event, grid)"
-          >Xuất pdf</i
-        >
+
       </ng-template>
       <kendo-grid-column
         [headerClass]="'table-report-header'"
@@ -100,7 +91,7 @@
           kendoGridFooterTemplate
           *ngIf="baseManager.columnsSummary.length > 0"
         >
-          {{ columnsSummaryItems.column1 }}
+          {{ columnsSummaryItems[1] }}
         </ng-template>
       </kendo-grid-column>
       <kendo-grid-column

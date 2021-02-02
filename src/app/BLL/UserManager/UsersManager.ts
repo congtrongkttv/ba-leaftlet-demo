@@ -1,4 +1,4 @@
-import { BaseManager } from '../BaseManager/BaseManager';
+import { BaseManager } from '../BaseManager/base-manager';
 import { Driver, DriverEntity } from '../../entities/Driver/Driver';
 import { DriverService } from '../../Services/driver/driver.service';
 import { AppInjector } from '../../app.module';
@@ -32,27 +32,27 @@ export class UsersManager extends BaseManager<UserEntity, UserFilter> {
   }[] = [];
 
   // Ds các cột của master
-  columnDetail = [
-    { title: 'STT', field: 'rowNumber', width: 50 },
-    { title: 'Công ty', field: 'FK_CompanyID', width: 50 },
-    { title: 'Tên đăng nhập', field: 'Username' },
-    { title: 'Tên đầy đủ', field: 'Fullname' },
-    { title: 'Số điện thoại', field: 'PhoneNumber' },
-  ];
+  // columnDetail = [
+  //   { title: 'STT', field: 'rowNumber', width: 50 },
+  //   { title: 'Công ty', field: 'FK_CompanyID', width: 50 },
+  //   { title: 'Tên đăng nhập', field: 'Username' },
+  //   { title: 'Tên đầy đủ', field: 'Fullname' },
+  //   { title: 'Số điện thoại', field: 'PhoneNumber' },
+  // ];
 
-  // Ds các cột cần tính tổng
-  columnsGridRequired = [{ title: 'STT', field: 'rowNumber', checked: false }];
+  // // Ds các cột cần tính tổng
+  // columnsGridRequired = [{ title: 'STT', field: 'rowNumber', checked: false }];
 
-  /**
-   * Danh sách cột có thể ẩn hiện của lưới
-   */
-  columnsGridCustom = [
-    { title: 'Công ty', field: 'FK_CompanyID', checked: true },
-    { title: 'Tên đăng nhập', field: 'Username', checked: true },
-    { title: 'Tên hiển thị', field: 'Fullname', checked: true },
-    { title: 'SĐT', field: 'PhoneNumber', checked: true },
-    { title: 'Email', field: 'Email', checked: true },
-  ];
+  // /**
+  //  * Danh sách cột có thể ẩn hiện của lưới
+  //  */
+  // columnsGridCustom = [
+  //   { title: 'Công ty', field: 'FK_CompanyID', checked: true },
+  //   { title: 'Tên đăng nhập', field: 'Username', checked: true },
+  //   { title: 'Tên hiển thị', field: 'Fullname', checked: true },
+  //   { title: 'SĐT', field: 'PhoneNumber', checked: true },
+  //   { title: 'Email', field: 'Email', checked: true },
+  // ];
 
   async getDataReport(): Promise<{ data: UserEntity[]; total: 0 }> {
     // Lấy dữ liệu

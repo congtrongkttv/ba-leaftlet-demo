@@ -1,4 +1,4 @@
 export enum ReportType {
-  reportDrivers = 1002,
+  reportDrivers = 1003,
   reportUsers = 1001,
 }

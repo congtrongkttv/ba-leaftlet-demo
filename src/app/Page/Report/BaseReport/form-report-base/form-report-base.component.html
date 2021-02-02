@@ -26,11 +26,11 @@
             <div *ngFor="let item of columnsCustom">
               <input
                 type="checkbox"
-                value="{{ item.feild }}"
-                id="cbx_{{ item.feild }}"
-                [(ngModel)]="item.checked"
+                value="{{ item.field }}"
+                id="cbx_{{ item.field }}"
+                [(ngModel)]="item.visible"
               />
-              <label for="cbx_{{ item.feild }}">{{ item.title }}</label>
+              <label for="cbx_{{ item.field }}">{{ item.title }}</label>
             </div>
           </div>
           <div class="rightpanel-optionpanel-checkbox-btn">

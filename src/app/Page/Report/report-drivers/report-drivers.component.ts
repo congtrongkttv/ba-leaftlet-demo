@@ -46,6 +46,8 @@ export class ReportDriversComponent
     inputFormat: 'dd/MM/yyyy',
   };
 
+  isExportExcelInClient = false;
+
   // Phân quyền
   authorized: AuthorizeBase = {
     canView: this.hasPermission(PermissionKeyNames.driverView),
@@ -57,9 +59,7 @@ export class ReportDriversComponent
     canUpdate: this.hasPermission(PermissionKeyNames.driverUpdate),
     canDelete: this.hasPermission(PermissionKeyNames.driverDelete),
   };
-  ngAfterViewInit(): void {
-    this.getColumnsGridCustom();
-  }
+  ngAfterViewInit(): void {}
 
   // Hàm khởi tạo trang
   public ngOnInit(): void {}

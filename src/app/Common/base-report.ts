@@ -1,5 +1,5 @@
 import { GridDataResult, PageChangeEvent } from '@progress/kendo-angular-grid';
-import { BaseManager } from '../BLL/BaseManager/BaseManager';
+import { BaseManager } from '../BLL/BaseManager/base-manager';
 import { Pager } from '../Core/pager';
 import { BaseEntity } from '../entities/Base/BaseEntity';
 import { route } from '../app-routing.module';

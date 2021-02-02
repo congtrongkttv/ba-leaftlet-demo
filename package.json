@@ -48,6 +48,7 @@
     "@types/leaflet.markercluster": "^1.4.2",
     "angular-ng-autocomplete": "^2.0.2",
     "bootstrap": "^4.5.3",
+    "file-saver": "^2.0.5",
     "firebase": "^7.0 || ^8.0",
     "font-awesome": "^4.7.0",
     "jshint": "^2.12.0",

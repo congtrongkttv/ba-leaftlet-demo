@@ -5,7 +5,8 @@ import { AppInjector } from '../../app.module';
 import { SummaryItems } from '../../entities/summary-items';
 import { CurrentData } from '../../Page/tracking/tracking.component';
 import { HttpClient } from '@angular/common/http';
-import { ExcelExportData } from '@progress/kendo-angular-excel-export';
+import { ExportExcelOption } from 'src/app/Helper/export-option';
+import { ColumnsOptions } from '../../Core/columns-option';
 
 /**
  * Trang quản lý để xử lý logic, truy xuất dữ liệu
@@ -30,40 +31,13 @@ export abstract class BaseManager<TEntity, TFilter extends BaseFilter> {
   public columnsSummary: string[] = [];
 
   // ds cột của master-detail
-  public columnDetail: {
-    title: string;
-    field: string;
-    width?: number;
-  }[] = [];
+  public columnDetail: ColumnsOptions[] = [];
 
   // ds cột bắt buộc của lưới dữ liệu
-  public columnsGridRequired: {
-    title: string;
-    field: string;
-    checked: boolean;
-    columnIndex?: number;
-  }[];
+  public columnsGridRequired: ColumnsOptions[] = [];
 
   // ds cột cho phép ẩn hiện của lưới dữ liệu
-  public columnsGridCustom: {
-    title: string;
-    field: string;
-    checked: boolean;
-    columnIndex?: number;
-  }[];
-
-  public abstract columnsGridAll: {
-    title: string;
-    field: string;
-    visible: boolean;
-    width?: number;
-    clumnSumIndex?: number;
-    format?: string;
-    isSummary?: boolean;
-    isCommand?: boolean;
-    command?: string;
-    clsCommand?: string;
-  }[];
+  public columnsGridCustom: ColumnsOptions[] = [];
 
   // ds cột không cho phép hiện lên khi xuất báo cáo
   public columnsGridExclude: any[];
@@ -98,30 +72,35 @@ export abstract class BaseManager<TEntity, TFilter extends BaseFilter> {
     return null;
   }
 
+  public async addNew(entity: TEntity): Promise<boolean> {
+    return null;
+  }
+
+  public async update(entity: TEntity): Promise<boolean> {
+    return null;
+  }
+
+  public async delete(id: any): Promise<boolean> {
+    return null;
+  }
+
   /**
    * Lấy ra cấu hình ẩn hiện cột
    */
   public getColumnsGridCustom(): Promise<string> {
     const userID = CurrentData.UserID;
     const fields = this.columnsGridCustom
-      .map(
-        (x: {
-          title: string;
-          field: string;
-          checked: boolean;
-          columnIndex?: number;
-        }) => {
-          return x.field;
-        }
-      )
+      .map((x: ColumnsOptions) => {
+        return x.field;
+      })
       .join(',');
 
     const data = {
       FK_UserID: userID,
       ReportTypeID: this.reportType,
     };
-    return this.httpClient
-      .post('https://10.1.11.107:8036/api/userReport/get', data)
+    return this.baseService
+      .getColumnsGridCustom(data)
       .toPromise()
       .then((x: any) => {
         if (x.Data != null) {
@@ -138,18 +117,11 @@ export abstract class BaseManager<TEntity, TFilter extends BaseFilter> {
   public saveCustomColumns(): Promise<void> {
     const userID = CurrentData.UserID;
     const fields = this.columnsGridCustom
-      .map(
-        (x: {
-          title: string;
-          field: string;
-          checked: boolean;
-          columnIndex?: number;
-        }) => {
-          if (x.checked) {
-            return x.field;
-          }
+      .map((x: ColumnsOptions) => {
+        if (x.visible) {
+          return x.field;
         }
-      )
+      })
       .join(',');
 
     const data = {
@@ -157,23 +129,19 @@ export abstract class BaseManager<TEntity, TFilter extends BaseFilter> {
       ReportTypeID: this.reportType,
       SelectedReportColumns: fields,
     };
-    return this.httpClient
-      .post('https://10.1.11.107:8036/api/userReport/update', data)
+
+    return this.baseService
+      .saveCustomColumn(data)
       .toPromise()
       .then((x) => {
         return null;
       });
   }
 
-  public async addNew(entity: TEntity): Promise<boolean> {
-    return null;
-  }
-
-  public async update(entity: TEntity): Promise<boolean> {
-    return null;
-  }
-
-  public async delete(id: any): Promise<boolean> {
+  /**
+   * Lưu cấu hình ẩn hiện cột
+   */
+  public exportExcelFromServer(option: ExportExcelOption): Promise<void> {
     return null;
   }
 }

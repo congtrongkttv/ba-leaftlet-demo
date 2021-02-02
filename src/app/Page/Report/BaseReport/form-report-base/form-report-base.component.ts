@@ -12,6 +12,7 @@ import { time } from 'console';
 import { MessageType } from 'src/app/Enum/message-type.enum';
 import { SaveType } from '../../../../Enum/save-type.enum';
 import { CurrentData } from '../../../tracking/tracking.component';
+import { ColumnsOptions } from '../../../../Core/columns-option';
 @Component({
   selector: 'app-form-report-base',
   templateUrl: './form-report-base.component.html',
@@ -34,7 +35,7 @@ export class FormReportBaseComponent implements OnInit {
   @Input() isShowCustomColumn: boolean;
   @Input() enableAdd: boolean;
   @Input() enableOption: boolean;
-  @Input() columnsCustom: { title: any; feild: any; checked: boolean }[];
+  @Input() columnsCustom: ColumnsOptions[];
   public permissions = CurrentData.permissions;
   @ViewChild('mymodal', { static: true }) input: ElementRef;
 

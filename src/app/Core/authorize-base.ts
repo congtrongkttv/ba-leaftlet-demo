@@ -9,12 +9,3 @@ export interface AuthorizeBase {
   canExport: boolean;
   canOption: boolean;
 }
-
-export class PermissionBase {
-  permissionView: number = PermissionKeyNames.none;
-  permissionAdd?: number = PermissionKeyNames.none;
-  permissionUpdate?: number = PermissionKeyNames.none;
-  permissionDelete?: number = PermissionKeyNames.none;
-  permissionExport: number = PermissionKeyNames.none;
-  permissionOption: number = PermissionKeyNames.none;
-}

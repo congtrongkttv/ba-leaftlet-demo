@@ -12,13 +12,13 @@ import {
 } from '@progress/kendo-angular-grid';
 import { Observable, zip } from 'rxjs';
 import { saveAs } from '@progress/kendo-file-saver';
-import { ExportOption } from './export-option';
+import { ExportOption, ExportExcelOption } from './export-option';
 import { ExportStyleOption } from './export-style-option';
 
 export class ExportHelper {
   constructor(
     private stypeOption?: ExportStyleOption,
-    private option?: ExportOption
+    private option?: ExportExcelOption
   ) {}
   /**
    * Xuất excel
@@ -28,7 +28,7 @@ export class ExportHelper {
   public customExportExcel(e: ExcelExportEvent, grid: GridComponent): void {
     const workbook: Workbook = e.workbook;
     const sheet: WorkbookSheet = workbook.sheets[0];
-    sheet.name = this.option?.sheetName;
+    sheet.name = this.option?.Template.SheetName;
     const rows = sheet.rows;
 
     e.workbook.sheets[0].freezePane = null;
@@ -58,13 +58,13 @@ export class ExportHelper {
       this.setStyleCellHeader(cell);
     });
     // Cho dòng header căn giữa và đậm lên
-    if (this.option?.isGroupHeader) {
+    if (this.option?.Template.isGroupHeader) {
       rows[1].height = 30;
       rows[1].cells.forEach((cell: WorkbookSheetRowCell) => {
         this.setStyleCellHeader(cell);
       });
     }
-    if (this.option?.isSummary) {
+    if (this.option?.Template.isSummary) {
       // Cho dòng summary căn giữa và đậm lên
       rows[rows.length - 1].height = 30;
       rows[rows.length - 1].cells.forEach((cell: WorkbookSheetRowCell) => {
@@ -73,7 +73,7 @@ export class ExportHelper {
     }
 
     // Thêm dòng nội dung tìm kiếm
-    if (this.option?.reportContent !== '') {
+    if (this.option?.Template.reportContent !== '') {
       rows.unshift({
         cells: [
           {
@@ -84,7 +84,7 @@ export class ExportHelper {
       rows.unshift({
         cells: [
           this.createCell(
-            this.option?.reportContent,
+            this.option?.Template.reportContent,
             numberColumns,
             1,
             'center',
@@ -100,11 +100,11 @@ export class ExportHelper {
     }
 
     // Thêm dòng xe / nhóm xe
-    if (this.option?.reportVehicle !== '') {
+    if (this.option?.Template.ReportSubtitleLevel2 !== '') {
       rows.unshift({
         cells: [
           this.createCell(
-            this.option?.reportVehicle,
+            this.option?.Template.ReportSubtitleLevel2,
             numberColumns,
             1,
             'center',
@@ -122,7 +122,7 @@ export class ExportHelper {
     rows.unshift({
       cells: [
         this.createCell(
-          this.option?.reportDate,
+          this.option?.Template.ReportSubtitleLevel1,
           numberColumns,
           1,
           'center',
@@ -142,7 +142,7 @@ export class ExportHelper {
     rows.unshift({
       cells: [
         this.createCell(
-          this.option?.reportTitle.toUpperCase(),
+          this.option?.Template.ReportTitle.toUpperCase(),
           numberColumns,
           2,
           'center',
@@ -176,7 +176,7 @@ export class ExportHelper {
     const observables = [];
     const workbook: Workbook = args.workbook;
     const sheet: WorkbookSheet = workbook.sheets[0];
-    sheet.name = this.option?.sheetName;
+    sheet.name = this.option?.Template.SheetName;
     const rows = sheet.rows;
 
     // Lấy số cột của grid để merge dòng title
@@ -184,7 +184,7 @@ export class ExportHelper {
     const numberColumnsMaster = grid.columnList.filter(
       (x: ColumnComponent) => !x.hidden && x.filterable !== undefined
     ).length;
-    const numberColumnsDetail = this.option?.baseComponent.baseManager
+    const numberColumnsDetail = this.option?.Template.baseComponent.baseManager
       .columnDetail.length;
     const numberColumns =
       numberColumnsMaster > numberColumnsDetail
@@ -230,13 +230,13 @@ export class ExportHelper {
     const headerOptions = rows[0].cells[0];
 
     // const data = this.allCategories;
-    const data = this.option?.reportList.data;
+    const data = this.option?.Template.reportList.data;
 
     // Lấy dữ liệu chi tiết cho lưới detail
     // tslint:disable-next-line: prefer-for-of
     for (let idx = 0; idx < data.length; idx++) {
       observables.push(
-        this.option?.baseComponent.getDataDetailMaster(data[idx])
+        this.option?.Template.baseComponent.getDataDetailMaster(data[idx])
       );
     }
 
@@ -259,7 +259,7 @@ export class ExportHelper {
             cellDetail.push({ rowSpan: i === 0 ? numberRowDetail : 0 });
           }
 
-          this.option?.baseComponent.baseManager.columnDetail.forEach(
+          this.option?.Template.baseComponent.baseManager.columnDetail.forEach(
             (element) => {
               cellDetail.push({
                 value: dataDetail[element.field],
@@ -296,7 +296,7 @@ export class ExportHelper {
         // add the detail header
         const cellHeader: any[] = [];
         cellHeader.push({});
-        this.option?.baseComponent.baseManager.columnDetail.forEach(
+        this.option?.Template.baseComponent.baseManager.columnDetail.forEach(
           (element) => {
             cellHeader.push({
               value: element.title,
@@ -361,7 +361,7 @@ export class ExportHelper {
         cell.background = this.stypeOption?.headerBackground ?? '#ffffff';
         cell.color = this.stypeOption?.headerColor ?? '#000000';
       });
-      if (this.option?.isSummary) {
+      if (this.option?.Template.isSummary) {
         // Cho dòng summary căn giữa và đậm lên
         rows[rows.length - 1].height = 30;
         rows[rows.length - 1].cells.forEach((cell: WorkbookSheetRowCell) => {
@@ -375,7 +375,7 @@ export class ExportHelper {
         });
       }
       // Thêm dòng nội dung tìm kiếm
-      if (this.option?.reportContent !== '') {
+      if (this.option?.Template.reportContent !== '') {
         rows.unshift({
           cells: [
             {
@@ -386,7 +386,7 @@ export class ExportHelper {
         rows.unshift({
           cells: [
             {
-              value: this.option?.reportContent,
+              value: this.option?.Template.reportContent,
               colSpan: numberColumns,
               rowSpan: 1,
               textAlign: 'center',
@@ -402,11 +402,11 @@ export class ExportHelper {
       }
 
       // Thêm dòng xe / nhóm xe
-      if (this.option?.reportVehicle !== '') {
+      if (this.option?.Template.ReportSubtitleLevel2 !== '') {
         rows.unshift({
           cells: [
             {
-              value: this.option?.reportVehicle,
+              value: this.option?.Template.ReportSubtitleLevel2,
               colSpan: numberColumns,
               rowSpan: 1,
               textAlign: 'center',
@@ -423,7 +423,7 @@ export class ExportHelper {
       rows.unshift({
         cells: [
           {
-            value: this.option?.reportDate,
+            value: this.option?.Template.ReportSubtitleLevel1,
             colSpan: numberColumns,
             rowSpan: 1,
             textAlign: 'center',
@@ -442,7 +442,7 @@ export class ExportHelper {
       rows.unshift({
         cells: [
           {
-            value: this.option?.reportTitle.toUpperCase(),
+            value: this.option?.Template.ReportTitle.toUpperCase(),
             colSpan: numberColumns,
             rowSpan: 2,
             textAlign: 'center',
@@ -460,7 +460,7 @@ export class ExportHelper {
       // https://www.telerik.com/kendo-angular-ui/components/excelexport/api/Workbook/
       new Workbook(workbook).toDataURL().then((dataUrl: string) => {
         // https://www.telerik.com/kendo-angular-ui/components/filesaver/
-        const reportName = this.option.reportName;
+        const reportName = this.option?.Template.FileName;
         saveAs(dataUrl, reportName + '.xlsx');
       });
     });
