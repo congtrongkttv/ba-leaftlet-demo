@@ -11,14 +11,10 @@ import { DriverFilter } from '../../../entities/Driver/DriverFilter';
 import { CRUDBase } from '../../../Core/curd-base';
 import { MessageType } from 'src/app/Enum/message-type.enum';
 import { SaveType } from '../../../Enum/save-type.enum';
-import { DateTime } from '../../../Helper/DateTimeHelper';
 import { Pager } from 'src/app/Core/pager';
-import { get } from 'http';
-import { FieldsControl } from 'src/app/Helper/fields-control';
 import { DriverEditComponent } from './driver-edit/driver-edit.component';
 import { AuthorizeBase } from 'src/app/Core/authorize-base';
 import { PermissionKeyNames } from 'src/app/Enum/permission-key-names.enum';
-import { PermissionBase } from '../../../Core/authorize-base';
 import { FormatSettings } from '@progress/kendo-angular-dateinputs';
 
 @Component({
@@ -59,10 +55,10 @@ export class ReportDriversComponent
     canUpdate: this.hasPermission(PermissionKeyNames.driverUpdate),
     canDelete: this.hasPermission(PermissionKeyNames.driverDelete),
   };
-  ngAfterViewInit(): void {}
+  ngAfterViewInit(): void { }
 
   // Hàm khởi tạo trang
-  public ngOnInit(): void {}
+  public ngOnInit(): void { }
 
   /**
    * Thiết lập thông tin đầu vào
